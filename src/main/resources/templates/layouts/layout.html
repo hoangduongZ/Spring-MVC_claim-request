@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+</head>
+<body>
+<div th:replace="~{common/header::header}"></div>
+<div class="flex">
+    <div th:replace="~{common/aside::aside}"></div>
+    <main layout:fragment="content" class="bg-purple-100/30 w-5/6">
+    </main>
+</div>
+<script>
+    const asides = document.querySelectorAll(".aside-item button");
+    asides.forEach(e => {
+        e.addEventListener("click", () => {
+            asides.forEach(btn => {
+                if (btn !== e) {
+                    btn.classList.remove("text-purple-500", "font-bold");
+                }
+            });
+            e.classList.toggle("text-purple-500");
+            e.classList.toggle("font-bold");
+            e.nextElementSibling.classList.toggle("hidden")
+            e.querySelector('i').classList.toggle("-rotate-90")
+        })
+    })
+</script>
+</body>
+
+</html>
