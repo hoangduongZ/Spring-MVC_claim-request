@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("requests")
+@RequestMapping("claims")
 public class RequestController{
-    @GetMapping
+    @GetMapping("/add")
     public String getCreate(){
-        return "request/create";
+        return "claim/create";
     }
 }
