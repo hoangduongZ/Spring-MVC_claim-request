@@ -23,7 +23,6 @@ public class Department {
     @Column(nullable = false)
     private String name;
 
-    @Column
     private String description;
 
     @OneToMany(mappedBy = "department")

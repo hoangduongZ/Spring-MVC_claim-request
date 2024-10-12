@@ -1,6 +1,9 @@
 package mock.claimrequest.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,7 +16,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -25,14 +30,20 @@ public class Claim {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     private String title;
-    private LocalDateTime date;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate date;
+    @Column(name = "start_time")
+    private LocalTime startTime;
+    @Column(name = "end_time")
+    private LocalTime endTime;
+    @Column(name = "request_reason")
     private String requestReason;
+    @Column(name = "reject_reason")
     private String rejectReason;
+    @Column(name = "return_reason")
     private String returnReason;
+    @Enumerated(EnumType.STRING)
+    private ClaimStatus status;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
