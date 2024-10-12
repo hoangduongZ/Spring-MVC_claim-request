@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layouts/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<main layout:fragment="content" class="flex-1 p-6 w-full mx-auto p-6 bg-purple-100/30 w-5/6">
+    <h1 class="text-2xl font-bold">Welcome to the Request Dashboard</h1>
+    <p class="mt-4 text-gray-600">Manage your requests, employees, and projects efficiently.</p>
+
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
+            <h3 class="font-bold text-lg">Pending Requests</h3>
+            <p class="text-gray-500">You have 5 pending requests.</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
+            <h3 class="font-bold text-lg">Approved Requests</h3>
+            <p class="text-gray-500">You have 10 approved requests.</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
+            <h3 class="font-bold text-lg">Rejected Requests</h3>
+            <p class="text-gray-500">You have 2 rejected requests.</p>
+        </div>
+    </div>
+</main>
+</body>
+</html>
