@@ -1,4 +1,4 @@
 package mock.claimrequest.service;
 
-public interface RequestService {
+public interface ClaimService {
 }
