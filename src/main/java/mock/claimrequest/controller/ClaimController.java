@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("claims")
-public class RequestController{
+public class ClaimController {
     @GetMapping("/add")
     public String getCreate(){
         return "claim/create";

@@ -22,13 +22,6 @@
     const asides = document.querySelectorAll(".aside-item button");
     asides.forEach(e => {
         e.addEventListener("click", () => {
-            asides.forEach(btn => {
-                if (btn !== e) {
-                    btn.classList.remove("text-purple-500", "font-bold");
-                }
-            });
-            e.classList.toggle("text-purple-500");
-            e.classList.toggle("font-bold");
             e.nextElementSibling.classList.toggle("hidden")
             e.querySelector('i').classList.toggle("-rotate-90")
         })
