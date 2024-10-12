@@ -61,6 +61,7 @@ public class DepartmentController {
 
         model.addAttribute("pageSizes", new Integer[]{10, 20, 30, 50, 100});
 
+        model.addAttribute("currentPage", "departments");
 //        // Get message from redirect
 //        if (!model.containsAttribute("message")) {
 //            model.addAttribute("message", new Message());
