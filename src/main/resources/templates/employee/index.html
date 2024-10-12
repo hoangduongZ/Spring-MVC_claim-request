@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layouts/layout">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+      <main layout:fragment="content">
+<form action="@{/employees}" method="post">
+            <table class="w-4/5 bg-white shadow-md rounded overflow-hidden mx-auto"  >
+                  <thead class="bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 ... text-white">
+                  <tr>
+                      <th class="py-2 px-4 ">First Name</th>
+                      <th class="py-2 px-4">Last name</th>
+                      <th class="py-2 px-4">Gender</th>
+                      <th class="py-2 px-4">Date of Birth</th>
+                      <th class="py-2 px-4">Address</th>
+                      <th class="py-2 px-4">Rank</th>
+                      <th class="py-2 px-4">Salary</th>
+                      <th class="py-2 px-4">Action</th>
+          
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="employee : ${employees}" class="w-4/5 border-b border-gray-200 " >
+                      <td class="py-2 px-4 text-center" th:text="${employee.firstName}"></div></td>
+                      <td class="py-2 px-4 text-center" th:text="${employee.lastName}"></td>
+                      <td class="py-2 px-4 text-center" th:text="${employee.gender ? 'Nam' : 'Nữ'}"></td>
+                      <td class="py-2 px-4 text-center" th:text="${#dates.format(employee.dob, 'yyyy-MM-dd')}"></td>
+                      <td class="py-2 px-4 text-center" th:text="${employee.address}"></td>
+                      <td class="py-2 px-4 text-center" th:text="${employee.ranked}"></td>
+                      <td class="py-2 px-4 text-center" th:text="${employee.salary}"></td>
+                      <td class="py-2 px-4 text-center"> 
+                          <a class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition" th:href="@{/employees/edit(id=${employee.id})}">Edit</a>
+                          <a class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition ml-2" th:href="@{/employees/delete(id=${employee.id})}">Delete</a>
+                      </td>
+                  </tr>
+          
+          
+                  <!-- <form th:action="@{/classes/add}" th:object="${class}" method ="post">
+                         <div class="form-group">
+                          <label for="className">classname</label>
+                          <input class="border" type="text" id="className" name="className">
+                         </div>
+          
+                         <div class="form-group">
+                          <label for="teacherName">teacher name</label>
+                          <input class="border" type="text" id="teacherName" name="teacherName">
+                         </div>
+          
+                         <div class="form-group">
+                          <label for="className">Room number</label>
+                          <input class="border" type="text" id="roomNumber" name="roomNumber">
+                         </div>
+          
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                  </form> -->
+          
+          
+                  </tbody>
+              </table>
+          
+            </form>     
+      
+            </main>
+</body>
+</html>
+
+
+</html>

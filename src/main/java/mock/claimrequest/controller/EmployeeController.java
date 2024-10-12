@@ -5,16 +5,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("requests")
-public class RequestController{
-    @GetMapping
-    public String getCreate(){
-        return "request/create";
+@RequestMapping("/employees")
+// @CrossOrigin
+public class EmployeeController {
+    @GetMapping("/add")
+    public String getAddEmployee() {
+        return "employee/add";
     }
 }
-
-
-
-
 
 
