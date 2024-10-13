@@ -49,6 +49,10 @@ public class Claim {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
+
     @CreationTimestamp
     private LocalDateTime createdTime;
     @UpdateTimestamp

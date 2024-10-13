@@ -13,6 +13,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,4 +42,7 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee")
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
+
+    @OneToMany(mappedBy = "employee")
+    private List<Claim> claims;
 }

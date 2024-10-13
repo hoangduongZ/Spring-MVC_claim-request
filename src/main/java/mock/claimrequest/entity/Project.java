@@ -45,4 +45,7 @@ public class Project {
 
     @OneToMany(mappedBy = "project")
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
+
+    @OneToMany(mappedBy = "project")
+    private List<Claim> claims;
 }
