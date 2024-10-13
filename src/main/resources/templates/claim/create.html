@@ -4,11 +4,88 @@
       layout:decorate="layouts/layout">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo yêu cầu mới</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f3e8ff; /* Màu nền tím nhạt */
+        }
+    </style>
 </head>
-<body>
-<main class="bg-purple-100/30 w-5/6">
-    This is create request
+<main layout:fragment="content" class="w-full mx-auto p-6">
+    <form action="@{/projects}" method="post" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+    <h2 class="text-center text-2xl font-bold text-purple-600">Tạo yêu cầu mới</h2>
+    <div class="mt-4">
+        <label for="title" class="block text-gray-700">Tiêu đề yêu cầu:</label>
+        <input type="text" id="title" class="mt-1 block w-full p-2 border border-gray-300 rounded" placeholder="Nhập tiêu đề yêu cầu">
+    </div>
+    <div class="mt-4">
+        <label for="date" class="block text-gray-700">Ngày:</label>
+        <input type="date" id="date" class="mt-1 block w-full p-2 border border-gray-300 rounded">
+    </div>
+    <div class="mt-4">
+        <label for="start-time" class="block text-gray-700">Giờ bắt đầu:</label>
+        <input type="time" id="start-time" class="mt-1 block w-full p-2 border border-gray-300 rounded">
+    </div>
+    <div class="mt-4">
+        <label for="end-time" class="block text-gray-700">Giờ kết thúc:</label>
+        <input type="time" id="end-time" class="mt-1 block w-full p-2 border border-gray-300 rounded">
+    </div>
+    <div class="mt-4">
+        <label for="hours" class="block text-gray-700">Số giờ:</label>
+        <input type="text" id="hours" class="mt-1 block w-full p-2 border border-gray-300 rounded" readonly>
+    </div>
+    <div class="mt-4">
+        <label for="reason" class="block text-gray-700">Lý do yêu cầu:</label>
+        <textarea id="reason" class="mt-1 block w-full p-2 border border-gray-300 rounded" placeholder="Nhập lý do yêu cầu"></textarea>
+    </div>
+    <div class="mt-4">
+        <label for="employee" class="block text-gray-700">Nhân viên:</label>
+        <input type="text" id="employee" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Tên nhân viên hiện tại" readonly>
+    </div>
+    <div class="mt-4">
+        <label for="project" class="block text-gray-700">Dự án:</label>
+        <input type="text" id="project" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Tên dự án tự động hiển thị" readonly>
+    </div>
+    <div class="mt-4">
+        <label for="role" class="block text-gray-700">Vai trò:</label>
+        <input type="text" id="role" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Vai trò của nhân viên" readonly>
+    </div>
+    <div class="mt-6 text-center">
+        <button type="button" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" onclick="submitRequest()">Gửi yêu cầu</button>
+        <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 ml-2" onclick="cancelRequest()">Hủy</button>
+    </div>
+</form>
 </main>
+
+<script>
+    function calculateHours() {
+        const startTime = document.getElementById('start-time').value;
+        const endTime = document.getElementById('end-time').value;
+
+        if (startTime && endTime) {
+            const start = new Date(`1970-01-01T${startTime}:00`);
+            const end = new Date(`1970-01-01T${endTime}:00`);
+            const hours = (end - start) / 3600000; // Chuyển đổi từ milliseconds sang hours
+            document.getElementById('hours').value = hours >= 0 ? hours : 0;
+        } else {
+            document.getElementById('hours').value = '';
+        }
+    }
+
+    document.getElementById('start-time').addEventListener('change', calculateHours);
+    document.getElementById('end-time').addEventListener('change', calculateHours);
+
+    function submitRequest() {
+        // Logic để gửi yêu cầu
+        alert('Yêu cầu đã được gửi!');
+    }
+
+    function cancelRequest() {
+        // Logic để hủy yêu cầu
+        alert('Đã hủy yêu cầu!');
+    }
+</script>
 </body>
 </html>
