@@ -1,46 +1,22 @@
-<aside th:fragment="aside" class="sm:w-1/6 shadow bg-white min-h-[90vh] text-gray-500">
-  <div class="aside-item">
-    <button class="p-2 shadow-sm w-full text-left">Dashboard</button>
+<aside th:fragment="aside" class="sm:w-1/6 shadow bg-white min-h-[90vh] text-gray-700">
+  <div class="aside-item hover:bg-slate-200">
+    <a th:href="@{/dashboard}"
+       class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+    >
+      <span th:class="${currentPage == 'dashboard'} ? 'text-purple-500 font-bold' : ''">Dashboard</span>
+    </a>
+  </div>
+
+  <div class="aside-item hover:bg-slate-200">
+    <a th:href="@{/claims}"
+       class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+    >
+      <span th:class="${currentPage == 'claims'} ? 'text-purple-500 font-bold' : ''">My claims</span>
+    </a>
   </div>
 
   <div class="aside-item">
-    <button class="p-2 flex justify-between items-center w-full text-left shadow-sm">
-      <span>Request</span>
-      <i class="fa-solid fa-chevron-left text-xs transition"></i>
-    </button>
-    <div class="hidden list-item flex flex-col">
-      <a href="#!"
-         class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-        <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-          <span class="group-hover:ml-2 duration-300">List</span>
-        </div>
-        <i class="fa-solid fa-table-list"></i>
-      </a>
-      <a href="#!"
-         class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-        <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-          <span class="group-hover:ml-2 duration-300">Create</span>
-        </div>
-        <i class="fa-regular fa-square-plus"></i>
-      </a>
-      <a href="#!"
-         class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-        <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-          <span class="group-hover:ml-2 duration-300">History</span>
-        </div>
-        <i class="fa-solid fa-clock-rotate-left"></i>
-      </a>
-    </div>
-  </div>
-
-  <div class="aside-item">
-    <button class="p-2 flex justify-between items-center w-full text-left shadow-sm">
+    <button class="p-2 flex justify-between items-center w-full text-left shadow-sm hover:bg-slate-200">
       <span>Employee</span>
       <i class="fa-solid fa-chevron-left text-xs transition"></i>
     </button>
@@ -68,7 +44,7 @@
 
   <!-- New Project Section -->
   <div class="aside-item">
-    <button class="p-2 flex justify-between items-center w-full text-left shadow-sm">
+    <button class="p-2 flex justify-between items-center w-full text-left shadow-sm hover:bg-slate-200">
       <span>Project</span>
       <i class="fa-solid fa-chevron-left text-xs transition"></i>
     </button>
@@ -93,30 +69,19 @@
       </a>
     </div>
     <!-- New Project Section -->
-    <div class="aside-item">
-      <button class="p-2 flex justify-between items-center w-full text-left shadow-sm">
-        <span>Department</span>
-        <i class="fa-solid fa-chevron-left text-xs transition"></i>
-      </button>
-      <div class="hidden list-item flex flex-col">
-        <a href="#!"
-           class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-          <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-            <span class="group-hover:ml-2 duration-300">Create</span>
-          </div>
-          <i class="fa-regular fa-square-plus"></i>
-        </a>
-        <a href="#!"
-           class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-          <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-            <span class="group-hover:ml-2 duration-300">List</span>
-          </div>
-          <i class="fa-solid fa-table-list"></i>
-        </a>
-      </div>
+    <div class="aside-item hover:bg-slate-200">
+      <a th:href="@{/departments}"
+         class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+         >
+        <span th:class="${currentPage == 'departments'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Department</span>
+      </a>
+    </div>
+    <div class="aside-item hover:bg-slate-200">
+      <a th:href="@{/paid}"
+         class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+      >
+        <span th:class="${currentPage == 'paid'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Paid Claim</span>
+      </a>
+    </div>
   </div>
 </aside>

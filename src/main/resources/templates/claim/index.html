@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layouts/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<main layout:fragment="content" class="bg-purple-100/30 w-5/6">
+    <div class="p-6 flex flex-col gap-1 ">
+        <div class="w-full flex bg-white shadow rounded-t-2xl">
+            <a class="cursor-pointer px-4 py-5 relative group">
+                <span class="relative hover:drop-shadow-md hover:shadow-blue-600/50 hover:text-purple-600 font-bold">Primary</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </a>
+            <a class="cursor-pointer px-4 py-5 relative group">
+                <span class="relative hover:drop-shadow-md hover:shadow-blue-600/50 hover:text-purple-600 font-bold">Approve</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-green-500 scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </a>
+            <a class="cursor-pointer px-4 py-5 pb-3 relative group">
+                <span class="relative hover:drop-shadow-md hover:shadow-blue-600/50 hover:text-purple-600 font-bold">Return</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-yellow-500 scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </a>
+            <a class="cursor-pointer px-4 py-5 pb-3 relative group">
+                <span class="relative hover:drop-shadow-md hover:shadow-blue-600/50 hover:text-purple-600 font-bold">Reject</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-red-500 scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </a>
+        </div>
+        <div>
+            <div class="bg-white shadow-md border p-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
+                <div class="flex-1">
+                    <h2 class="text-lg font-semibold">Nguyễn Văn A</h2>
+                    <p class="text-gray-600">Yêu cầu chi phí cho dự án XYZ.</p>
+                </div>
+                <div class="text-gray-500 text-sm">10:30 AM</div>
+                <div class="flex space-x-2 ml-4">
+                    <form action="/claims/12345/approve" method="post">
+                        <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>
+                    </form>
+                    <form action="/claims/12345/reject" method="post">
+                        <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject</button>
+                    </form>
+                    <form action="/claims/12345/return" method="post">
+                        <button type="submit" class="bg-yellow-500 text-white rounded px-2 py-1 hover:bg-yellow-600">Return</button>
+                    </form>
+                </div>
+            </div>
+            <div class="bg-white shadow-md border p-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
+                <div class="flex-1">
+                    <h2 class="text-lg font-semibold">Nguyễn Văn A</h2>
+                    <p class="text-gray-600">Yêu cầu chi phí cho dự án XYZ.</p>
+                </div>
+                <div class="text-gray-500 text-sm">10:30 AM</div>
+                <div class="flex space-x-2 ml-4">
+                    <form action="/claims/12345/approve" method="post">
+                        <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>
+                    </form>
+                    <form action="/claims/12345/reject" method="post">
+                        <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject</button>
+                    </form>
+                    <form action="/claims/12345/return" method="post">
+                        <button type="submit" class="bg-yellow-500 text-white rounded px-2 py-1 hover:bg-yellow-600">Return</button>
+                    </form>
+                </div>
+            </div>
+            <div class="bg-white shadow-md border p-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
+                <div class="flex-1">
+                    <h2 class="text-lg font-semibold">Nguyễn Văn A</h2>
+                    <p class="text-gray-600">Yêu cầu chi phí cho dự án XYZ.</p>
+                </div>
+                <div class="text-gray-500 text-sm">10:30 AM</div>
+                <div class="flex space-x-2 ml-4">
+                    <form action="/claims/12345/approve" method="post">
+                        <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>
+                    </form>
+                    <form action="/claims/12345/reject" method="post">
+                        <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject</button>
+                    </form>
+                    <form action="/claims/12345/return" method="post">
+                        <button type="submit" class="bg-yellow-500 text-white rounded px-2 py-1 hover:bg-yellow-600">Return</button>
+                    </form>
+                </div>
+            </div>
+            <div class="bg-white shadow-md border p-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
+                <div class="flex-1">
+                    <h2 class="text-lg font-semibold">Nguyễn Văn A</h2>
+                    <p class="text-gray-600">Yêu cầu chi phí cho dự án XYZ.</p>
+                </div>
+                <div class="text-gray-500 text-sm">10:30 AM</div>
+                <div class="flex space-x-2 ml-4">
+                    <form action="/claims/12345/approve" method="post">
+                        <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>
+                    </form>
+                    <form action="/claims/12345/reject" method="post">
+                        <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject</button>
+                    </form>
+                    <form action="/claims/12345/return" method="post">
+                        <button type="submit" class="bg-yellow-500 text-white rounded px-2 py-1 hover:bg-yellow-600">Return</button>
+                    </form>
+                </div>
+            </div>
+            <div class="bg-white shadow-md border p-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
+                <div class="flex-1">
+                    <h2 class="text-lg font-semibold">Nguyễn Văn A</h2>
+                    <p class="text-gray-600">Yêu cầu chi phí cho dự án XYZ.</p>
+                </div>
+                <div class="text-gray-500 text-sm">10:30 AM</div>
+                <div class="flex space-x-2 ml-4">
+                    <form action="/claims/12345/approve" method="post">
+                        <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>
+                    </form>
+                    <form action="/claims/12345/reject" method="post">
+                        <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject</button>
+                    </form>
+                    <form action="/claims/12345/return" method="post">
+                        <button type="submit" class="bg-yellow-500 text-white rounded px-2 py-1 hover:bg-yellow-600">Return</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

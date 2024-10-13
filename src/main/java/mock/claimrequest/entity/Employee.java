@@ -1,5 +1,6 @@
 package mock.claimrequest.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +11,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,10 +25,12 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "first_name")
     private String firstname;
+    @Column(name = "last_name")
     private String lastname;
     private boolean gender;
-    private String dob;
+    private LocalDate dob;
     private String address;
 
     @ManyToOne
@@ -37,4 +42,7 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee")
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
+
+    @OneToMany(mappedBy = "employee")
+    private List<Claim> claims;
 }

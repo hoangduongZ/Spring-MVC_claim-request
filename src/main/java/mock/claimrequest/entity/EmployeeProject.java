@@ -2,6 +2,8 @@ package mock.claimrequest.entity;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
@@ -24,5 +26,6 @@ public class EmployeeProject implements Serializable {
     @MapsId("projectId")
     private Project project;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private ProjectRole role;
 }
