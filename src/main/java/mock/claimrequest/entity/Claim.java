@@ -32,11 +32,7 @@ public class Claim {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String title;
-    private LocalDate date;
-    @Column(name = "start_time")
-    private LocalTime startTime;
-    @Column(name = "end_time")
-    private LocalTime endTime;
+    private LocalDateTime date;
     @Column(name = "request_reason")
     private String requestReason;
     @Column(name = "reject_reason")
@@ -45,6 +41,7 @@ public class Claim {
     private String returnReason;
     @Enumerated(EnumType.STRING)
     private ClaimStatus status;
+    private long duration;
     private BigDecimal amount;
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)

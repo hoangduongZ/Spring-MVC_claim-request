@@ -47,6 +47,13 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
+    public void cancelClaim(UUID id) {
+        Claim claim = claimRepository.findById(id).orElseThrow(()-> new RuntimeException("Claim not exist"));
+        claim.setStatus(ClaimStatus.CANCEL);
+        claimRepository.save(claim);
+    }
+
+    @Override
     public ClaimGetDto findById(UUID id) {
         Claim claim= claimRepository.findById(id).orElseThrow(()-> new RuntimeException("Claim not exist"));
         ClaimGetDto claimGetDto = new ClaimGetDto();
@@ -59,4 +66,6 @@ public class ClaimServiceImpl implements ClaimService {
         claimGetDto.setId(claim.getId());
         return claimGetDto;
     }
+
+
 }

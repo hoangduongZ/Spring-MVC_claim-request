@@ -11,4 +11,6 @@ public interface ClaimService {
     void paidClaim(UUID id);
 
     ClaimGetDto findById(UUID id);
+
+    void cancelClaim(UUID id);
 }

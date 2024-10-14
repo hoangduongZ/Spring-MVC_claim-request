@@ -65,10 +65,8 @@ public class ClaimController {
     }
 
     @PostMapping("{id}/cancel")
-    public String postClaimCancel(Model model){
-        List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.PENDING);
-        model.addAttribute("claims",claims);
-        model.addAttribute("active","pending");
+    public String postClaimCancel(RedirectAttributes attributes, @PathVariable UUID id){
+        claimService.cancelClaim(id);
         return "claim/pending";
     }
 
