@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ClaimServiceImpl implements ClaimService {
@@ -24,7 +25,6 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     public List<ClaimGetDto> getClaimByStatus(ClaimStatus claimStatus){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         return claimRepository.findAllByStatus(claimStatus).stream().map(
                 claim -> {
                     ClaimGetDto claimGetDto= new ClaimGetDto();
@@ -34,8 +34,15 @@ public class ClaimServiceImpl implements ClaimService {
                     claimGetDto.setCreatedTime(claim.getCreatedTime());
                     claimGetDto.setAmount(claim.getAmount());
                     claimGetDto.setStatus(claim.getStatus());
+                    claimGetDto.setId(claim.getId());
                     return claimGetDto;
                 }
         ).toList();
+    }
+
+    public void paidClaim(UUID id){
+        Claim claim = claimRepository.findById(id).orElseThrow(()-> new RuntimeException("Claim not exist"));
+        claim.setStatus(ClaimStatus.PAID);
+        claimRepository.save(claim);
     }
 }

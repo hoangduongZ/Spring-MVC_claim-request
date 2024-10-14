@@ -1,5 +1,5 @@
 <aside th:fragment="aside" class="sm:w-1/6 shadow bg-white min-h-[90vh] text-gray-700 overflow-hidden">
-  <div class="aside-item text-gray-700 flex p-2">
+  <div class="aside-item text-gray-700 flex p-2 cursor-pointer">
     <div class="font-bold text-white p-4 rounded-lg text-lg w-[60%] bg-gradient-to-l from-purple-400 to-purple-500
             hover:drop-shadow-lg transition-transform transform hover:scale-[1.02]">
       <i class="fa-solid fa-plus"></i>
@@ -8,7 +8,7 @@
   </div>
 <!--  transition-transform transform hover:scale-105-->
 
-  <div class="aside-item hover:bg-slate-200 ">
+  <div class="aside-item hover:bg-slate-200">
     <a th:href="@{/dashboard}"
        class="p-2 flex justify-between items-center w-full text-left"
     >
@@ -86,7 +86,7 @@
       </a>
     </div>
     <div class="aside-item hover:bg-slate-200">
-      <a th:href="@{/paid}"
+      <a th:href="@{/claims/paid}"
          class="p-2 flex justify-between items-center w-full text-left shadow-sm"
       >
         <span th:class="${currentPage == 'paid'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Paid Claim</span>

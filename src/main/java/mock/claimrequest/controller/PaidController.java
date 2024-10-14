@@ -7,6 +7,8 @@ import mock.claimrequest.service.ClaimService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -20,11 +22,5 @@ public class PaidController {
         this.claimService = claimService;
     }
 
-    @GetMapping
-    public String getPaidNonVerify(Model model){
-        List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.APPROVE);
-        model.addAttribute("claims",claims );
-        model.addAttribute("currentPage", "paid");
-        return "paid/paid-non-verify";
-    }
+
 }

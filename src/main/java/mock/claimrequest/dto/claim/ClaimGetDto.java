@@ -9,12 +9,14 @@ import mock.claimrequest.entity.ClaimStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClaimGetDto {
+    private UUID id;
     private String employeeName;
     private String projectName;
     private String requestReason;
