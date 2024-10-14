@@ -51,7 +51,6 @@
     </div>
   </div>
 
-  <!-- New Project Section -->
   <div class="aside-item">
     <button class="p-2 flex justify-between items-center w-full text-left hover:bg-slate-200">
       <span>Project</span>
@@ -86,10 +85,10 @@
       </a>
     </div>
     <div class="aside-item hover:bg-slate-200">
-      <a th:href="@{/claims/paid}"
+      <a th:href="@{/claims/pending}"
          class="p-2 flex justify-between items-center w-full text-left shadow-sm"
       >
-        <span th:class="${currentPage == 'paid'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Paid Claim</span>
+        <span th:class="${currentPage == 'pending'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Pending</span>
       </a>
     </div>
   </div>

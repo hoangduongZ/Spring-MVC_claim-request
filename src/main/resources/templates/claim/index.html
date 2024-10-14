@@ -9,19 +9,19 @@
 </head>
 <body>
 <main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100/30 w-5/6">
-    <h1 class="inline-block p-6 bg-white text-2xl mb-3 shadow text-purple-500 font-bold rounded-md">Pending pay</h1>
+    <h1 class="inline-block p-6 bg-white text-2xl mb-3 shadow text-purple-500 font-bold rounded-md">Payment</h1>
     <div class="flex flex-col gap-1">
         <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
-            <a th:href="@{/claims(active='pendingPay')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
-                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold" >Pending pay</span>
-                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pendingPay'? 'w-full':'w-0'"></span>
+            <a th:href="@{/claims(active='payment')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
+                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold" >Payment</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'payment'? 'w-full':'w-0'"></span>
             </a>
             <a th:href="@{/claims(active='paid')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
                 <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold">Paid</span>
                 <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'paid'? 'w-full':'w-0'"></span>
             </a>
         </div>
-        <div th:if="${active}== 'pendingPay'">
+        <div th:if="${active}== 'payment'">
             <div class="overflow-x-auto border-t">
                 <div th:each="claim : ${claims} ">
                     <div class="bg-white shadow-md border-b border-x p-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
@@ -37,6 +37,22 @@
                             <div class="flex space-x-2 ml-4">
                                 <form th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">
                                     <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Verify
+                                    </button>
+                                </form>
+                                <form th:action="@{/claims/{id}/approve(id=${claim.id})}" method="post">
+                                    <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve
+                                    </button>
+                                </form>
+                                <form th:action="@{/claims/{id}/return(id=${claim.id})}" method="post">
+                                    <button type="submit" class="bg-sky-500 text-white rounded px-2 py-1 hover:bg-sky-600">Return
+                                    </button>
+                                </form>
+                                <form th:action="@{/claims/{id}/reject(id=${claim.id})}" method="post">
+                                    <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject
+                                    </button>
+                                </form>
+                                <form th:action="@{/claims/{id}/cancel(id=${claim.id})}" method="post">
+                                    <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Cancel
                                     </button>
                                 </form>
                             </div>

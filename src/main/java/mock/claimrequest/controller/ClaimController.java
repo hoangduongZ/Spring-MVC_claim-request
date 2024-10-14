@@ -29,20 +29,13 @@ public class ClaimController {
         return "claim/create";
     }
 
-//    @GetMapping
-//    public String getClaims(Model model) {
-////        List<EmployeeProject> projects =
-//        model.addAttribute("currentPage", "claims");
-//        return "claim/index";
-//    }
-
     @GetMapping
-    public String getPaidNonVerify(Model model, @RequestParam(required = false) String active){
+    public String getClaims(Model model, @RequestParam(required = false) String active){
         model.addAttribute("currentPage", "claims");
-        if(active == null || "pendingPay".equals(active)){
+        if(active == null || "payment".equals(active)){
             List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.APPROVE);
             model.addAttribute("claims",claims );
-            model.addAttribute("active","pendingPay");
+            model.addAttribute("active","payment");
         }else if ("paid".equals(active)){
             List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.PAID);
             model.addAttribute("claims",claims);
@@ -54,7 +47,7 @@ public class ClaimController {
     @PostMapping("/{id}/paid")
     public String postClaimsPaid(RedirectAttributes attributes, @PathVariable UUID id) {
         claimService.paidClaim(id);
-        return "redirect:/claims/paid";
+        return "redirect:/claims";
     }
 
     @GetMapping("/{id}/detail")
@@ -63,5 +56,20 @@ public class ClaimController {
         return "claim/detail";
     }
 
+    @GetMapping("pending")
+    public String getClaims(Model model){
+        List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.PENDING);
+        model.addAttribute("claims",claims);
+        model.addAttribute("active","pending");
+        return "claim/pending";
+    }
+
+    @PostMapping("{id}/cancel")
+    public String postClaimCancel(Model model){
+        List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.PENDING);
+        model.addAttribute("claims",claims);
+        model.addAttribute("active","pending");
+        return "claim/pending";
+    }
 
 }
