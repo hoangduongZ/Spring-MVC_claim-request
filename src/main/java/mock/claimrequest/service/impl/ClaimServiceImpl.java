@@ -16,8 +16,7 @@ public class ClaimServiceImpl implements ClaimService {
         this.claimRepository = claimRepository;
     }
 
-    public List<Claim> getClaimPending(){
-        List<Claim> claims= claimRepository.findAllByStatus(ClaimStatus.PENDING);
-        return null;
+    public List<Claim> getClaimByStatus(ClaimStatus claimStatus){
+        return claimRepository.findAllByStatus(claimStatus);
     }
 }

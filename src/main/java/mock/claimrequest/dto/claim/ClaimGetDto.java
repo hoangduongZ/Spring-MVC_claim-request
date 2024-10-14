@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mock.claimrequest.entity.ClaimStatus;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,5 +18,6 @@ public class ClaimGetDto {
     private String projectName;
     private String requestReason;
     private ClaimStatus status;
-    private String createdTime;
+    private LocalDateTime createdTime;
+    private BigDecimal amount;
 }
