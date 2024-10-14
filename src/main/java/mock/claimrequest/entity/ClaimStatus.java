@@ -6,7 +6,8 @@ public enum ClaimStatus {
     RETURN("Returned"),
     REJECT("Rejected"),
     PAID("Paid"),
-    CANCEL("Cancel");
+    CANCEL("Cancel"),
+    DRAFT("Draft");
 
     private final String displayName;
 

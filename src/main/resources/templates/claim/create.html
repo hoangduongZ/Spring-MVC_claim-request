@@ -5,11 +5,89 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Request</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f3e8ff; /* Light purple background */
+        }
+    </style>
 </head>
 <body>
-<main class="bg-purple-100/30 w-5/6">
-    This is create request
+<main layout:fragment="content" class="w-full mx-auto p-6">
+    <form action="@{/projects}" method="post" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+        <h2 class="text-center text-2xl font-bold text-purple-600">Create New Request</h2>
+        <div class="mt-4">
+            <label for="title" class="block text-gray-700">Request Title:</label>
+            <input type="text" id="title" name="title" class="mt-1 block w-full p-2 border border-gray-300 rounded" placeholder="Enter request title" required>
+        </div>
+        <div class="mt-4">
+            <label for="date" class="block text-gray-700">Date:</label>
+            <input type="date" id="date" name="date" class="mt-1 block w-full p-2 border border-gray-300 rounded" required>
+        </div>
+        <div class="mt-4">
+            <label for="start-time" class="block text-gray-700">Start Time:</label>
+            <input type="time" id="start-time" name="startTime" class="mt-1 block w-full p-2 border border-gray-300 rounded" required>
+        </div>
+        <div class="mt-4">
+            <label for="end-time" class="block text-gray-700">End Time:</label>
+            <input type="time" id="end-time" name="endTime" class="mt-1 block w-full p-2 border border-gray-300 rounded" required>
+        </div>
+        <div class="mt-4">
+            <label for="hours" class="block text-gray-700">Hours:</label>
+            <input type="text" id="hours" name="hours" class="mt-1 block w-full p-2 border border-gray-300 rounded" readonly>
+        </div>
+        <div class="mt-4">
+            <label for="reason" class="block text-gray-700">Request Reason:</label>
+            <textarea id="reason" name="reason" class="mt-1 block w-full p-2 border border-gray-300 rounded" placeholder="Enter request reason" required></textarea>
+        </div>
+        <div class="mt-4">
+            <label for="employee" class="block text-gray-700">Employee:</label>
+            <input type="text" id="employee" name="employee" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Current employee name" readonly>
+        </div>
+        <div class="mt-4">
+            <label for="project" class="block text-gray-700">Project:</label>
+            <input type="text" id="project" name="project" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Automatically displayed project name" readonly>
+        </div>
+        <div class="mt-4">
+            <label for="role" class="block text-gray-700">Role:</label>
+            <input type="text" id="role" name="role" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Employee's role" readonly>
+        </div>
+        <div class="mt-6 text-center">
+            <button type="button" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" onclick="submitRequest()">Submit Request</button>
+            <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 ml-2" onclick="cancelRequest()">Cancel</button>
+        </div>
+    </form>
 </main>
+
+<script>
+    function calculateHours() {
+        const startTime = document.getElementById('start-time').value;
+        const endTime = document.getElementById('end-time').value;
+
+        if (startTime && endTime) {
+            const start = new Date(`1970-01-01T${startTime}:00`);
+            const end = new Date(`1970-01-01T${endTime}:00`);
+            const hours = (end - start) / 3600000; // Convert from milliseconds to hours
+            document.getElementById('hours').value = hours >= 0 ? hours : 0;
+        } else {
+            document.getElementById('hours').value = '';
+        }
+    }
+
+    document.getElementById('start-time').addEventListener('change', calculateHours);
+    document.getElementById('end-time').addEventListener('change', calculateHours);
+
+    function submitRequest() {
+        alert('Request has been submitted!');
+        // Logic to submit the request can be added here
+    }
+
+    function cancelRequest() {
+        alert('Request has been canceled!');
+        // Logic to cancel the request can be added here
+    }
+</script>
 </body>
 </html>
