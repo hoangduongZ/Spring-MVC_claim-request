@@ -6,14 +6,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mock.claimrequest.entity.ClaimStatus;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClaimGetDto {
+    private UUID id;
     private String employeeName;
     private String projectName;
     private String requestReason;
     private ClaimStatus status;
-    private String createdTime;
+    private LocalDateTime createdTime;
+    private BigDecimal amount;
+
+    public String getFormattedCreatedTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return createdTime.format(formatter);
+    }
 }

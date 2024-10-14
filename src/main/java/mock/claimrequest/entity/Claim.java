@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -44,7 +45,7 @@ public class Claim {
     private String returnReason;
     @Enumerated(EnumType.STRING)
     private ClaimStatus status;
-
+    private BigDecimal amount;
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;

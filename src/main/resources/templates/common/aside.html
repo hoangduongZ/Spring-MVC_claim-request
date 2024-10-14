@@ -1,7 +1,16 @@
-<aside th:fragment="aside" class="sm:w-1/6 shadow bg-white min-h-[90vh] text-gray-700">
+<aside th:fragment="aside" class="sm:w-1/6 shadow bg-white min-h-[90vh] text-gray-700 overflow-hidden">
+  <div class="aside-item text-gray-700 flex p-2 cursor-pointer">
+    <div class="font-bold text-white pl-3 py-3 rounded-lg text-lg w-[50%] bg-gradient-to-l from-purple-400 to-purple-500
+            hover:drop-shadow-lg transition-transform transform hover:scale-[1.02]">
+      <i class="fa-solid fa-plus"></i>
+      <span>Claim</span>
+    </div>
+  </div>
+<!--  transition-transform transform hover:scale-105-->
+
   <div class="aside-item hover:bg-slate-200">
     <a th:href="@{/dashboard}"
-       class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+       class="p-2 flex justify-between items-center w-full text-left"
     >
       <span th:class="${currentPage == 'dashboard'} ? 'text-purple-500 font-bold' : ''">Dashboard</span>
     </a>
@@ -9,14 +18,14 @@
 
   <div class="aside-item hover:bg-slate-200">
     <a th:href="@{/claims}"
-       class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+       class="p-2 flex justify-between items-center w-full text-left "
     >
       <span th:class="${currentPage == 'claims'} ? 'text-purple-500 font-bold' : ''">My claims</span>
     </a>
   </div>
 
-  <div class="aside-item">
-    <button class="p-2 flex justify-between items-center w-full text-left shadow-sm hover:bg-slate-200">
+  <div class="aside-item ">
+    <button class="p-2 flex justify-between items-center w-full text-left  hover:bg-slate-200">
       <span>Employee</span>
       <i class="fa-solid fa-chevron-left text-xs transition"></i>
     </button>
@@ -44,7 +53,7 @@
 
   <!-- New Project Section -->
   <div class="aside-item">
-    <button class="p-2 flex justify-between items-center w-full text-left shadow-sm hover:bg-slate-200">
+    <button class="p-2 flex justify-between items-center w-full text-left hover:bg-slate-200">
       <span>Project</span>
       <i class="fa-solid fa-chevron-left text-xs transition"></i>
     </button>
@@ -71,13 +80,13 @@
     <!-- New Project Section -->
     <div class="aside-item hover:bg-slate-200">
       <a th:href="@{/departments}"
-         class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+         class="p-2 flex justify-between items-center w-full text-left"
          >
         <span th:class="${currentPage == 'departments'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Department</span>
       </a>
     </div>
     <div class="aside-item hover:bg-slate-200">
-      <a th:href="@{/paid}"
+      <a th:href="@{/claims/paid}"
          class="p-2 flex justify-between items-center w-full text-left shadow-sm"
       >
         <span th:class="${currentPage == 'paid'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Paid Claim</span>
