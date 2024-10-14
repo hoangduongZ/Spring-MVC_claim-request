@@ -75,28 +75,28 @@ public class EmployeeController {
 //     @GetMapping("/edit/{id}")
 //     public String showEditPage(@PathVariable UUID id, Model model) {
 //        EmployeeDTO employeeDTO = new EmployeeDTO();
-//        Employee employee = employeeService.getEmployeeDTOById(id)
+//        Employee employee = employeeService.getEmployeeById(id)
 //                .orElseThrow(() -> new RuntimeException("Employee not found"));
-//
-//        // Thiết lập giá trị cho employeeDTO từ employee
+
+//        // tạo giá trị cho employeeDTO từ employee
 //        employeeDTO.setFirstname(employee.getFirstname());
 //        employeeDTO.setLastname(employee.getLastname());
 //        employeeDTO.setGender(employee.isGender());
 //        employeeDTO.setDob(employee.getDob());
 //        employeeDTO.setAddress(employee.getAddress());
 //        employeeDTO.setDepartment(employee.getDepartment()); // gán Department cho employeeDTO(sửa lỗi)
-//
+
 //        model.addAttribute("employeeDTO", employeeDTO);
-//        model.addAttribute("departments", employeeService.getAllDepartments());
-//        return "employee/edit"; // Trả về trang edit.html
-//
-//
-//         Account account = accountRepository.find(employee.getId())
+//        model.addAttribute("departments", departmentService.getDepartments());
+//        return "employee/edit"; 
+
+
+//         Account account = accountRepository.findById(employee.getId())
 //                .orElseThrow(() -> new RuntimeException("Account not found"));
 //        account.setUserName(employeeDTO.getAccountDTO().getUserName());
 //        account.setEmail(employeeDTO.getAccountDTO().getEmail());
 //        account.setPassword(employeeDTO.getAccountDTO().getPassword());
-//
+
 //        accountRepository.save(account);
 //    }
 
