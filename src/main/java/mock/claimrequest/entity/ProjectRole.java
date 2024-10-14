@@ -5,7 +5,9 @@ public enum ProjectRole {
     DEV("Developer"),
     QA("Quality Assurance"),
     DESIGN("Designer"),
-    BA("Business Analyst");
+    BA("Business Analyst"),
+    TL("Technical lead"),
+    TESTER("Tester");
 
     private final String displayName;
 

@@ -17,7 +17,6 @@
             const table = document.getElementById('employeeTable');
             const newRow = table.insertRow();
             newRow.innerHTML = `
-                <td class="border px-4 py-2"><input type="checkbox" name="selectedEmployees"></td>
                 <td class="border px-4 py-2">
                     <select name="employeeName" class="border rounded py-1 px-2">
                         <option value="1">John Doe</option>
@@ -32,7 +31,7 @@
                         <option value="admin">Admin</option>
                     </select>
                 </td>
-                <td class="border px-4 py-2"><button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button></td>
+                <td class="border px-4 py-2 text-center"><button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button></td>
             `;
         }
 
@@ -44,7 +43,13 @@
 </head>
 <body class="bg-purple-100">
 <main layout:fragment="content" class="w-full mx-auto p-6">
-    <form action="@{/projects}" method="post" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+    <div class="w-full flex bg-white shadow rounded-t-2xl p-3">
+        <div class="w-8 h-8 block rounded-full bg-purple-400 hover:bg-purple-500 flex justify-center items-center"
+             onclick="history.back()">
+            <i class="fa-solid fa-chevron-left text-white"></i>
+        </div>
+    </div>
+    <form action="@{/projects}" method="post" class="bg-white shadow-md rounded-b px-8  pb-8 mb-4">
         <h1 class="text-3xl text-center text-purple-600 font-bold mb-6">Add New Project</h1>
         <div class="mb-4">
             <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Project Name:</label>
@@ -81,15 +86,13 @@
         <table id="employeeTable" class="mb-4 border border-gray-300">
             <thead class="bg-purple-200">
             <tr>
-                <th class="border px-4 py-2">Select</th>
                 <th class="border px-4 py-2">Employee Name</th>
                 <th class="border px-4 py-2">Role</th>
-                <th class="border px-4 py-2">Remove</th>
+                <th class="border px-4 py-2">Action</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td class="border px-4 py-2"><input type="checkbox" name="selectedEmployees"></td>
                 <td class="border px-4 py-2">
                     <select name="employeeName" class="border rounded py-1 px-2">
                         <option value="1">John Doe</option>
@@ -104,22 +107,20 @@
                         <option value="admin">Admin</option>
                     </select>
                 </td>
-                <td class="border px-4 py-2"><button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button></td>
+                <td class="border px-4 py-2 text-center"><button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)"> Remove</button></td>
             </tr>
             </tbody>
         </table>
-        <button type="button" onclick="addRow()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline mb-4">
-            Add Employee
-        </button>
-
+        <div class="flex justify-end mt-2">
+            <button type="button" onclick="addRow()" class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white  w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
+                <span><i class="fa-solid fa-plus text-center"></i></span>
+            </button>
+        </div>
         <div class="flex items-center justify-between">
             <button type="submit"
                     class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
                 Create Project
             </button>
-            <a href="@{/projects}" class="inline-block align-baseline font-bold text-sm text-purple-500 hover:text-purple-800">
-                Cancel
-            </a>
         </div>
     </form>
 </main>
