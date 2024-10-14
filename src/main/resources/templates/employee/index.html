@@ -1,55 +1,55 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="layouts/layout">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Title</title>
+    
 </head>
 <body>
-    <main layout:fragment="content">
-        <table class="w-4/5 bg-white shadow-md rounded-lg overflow-hidden mx-auto"  >
-            <thead class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 ... text-white">
-            <tr>
-                <th class="py-2 px-4">First Name</th>
-                <th class="py-2 px-4">Last name</th>
-                <th class="py-2 px-4">Gender</th>
-                <th class="py-2 px-4">Date of Birth</th>
-                <th class="py-2 px-4">Address</th>
-                <th class="py-2 px-4">Action</th>
+    <h1 class="text-center my-4"> welcometo our website</h1>
+
+    <a class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700" href="/employees/add">Add</a>
+
+    <table class="w-4/5 bg-white shadow-md rounded-lg overflow-hidden mx-auto"  >
+        <thead class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 ... text-white">
+        <tr>
+            <th class="py-2 px-4 ">First Name</th>
+            <th class="py-2 px-4">Last name</th>
+            <th class="py-2 px-4">Gender</th>
+            <th class="py-2 px-4">Date of Birth</th>
+            <th class="py-2 px-4">Address</th>    
+            <th class="py-2 px-4">Department</th>    
+            <th class="py-2 px-4">Action</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employee : ${employees}" class="border-b border-gray-200 " >
+            <td class="py-2 px-4 text-center" th:text="${employee.firstname}"></div></td>
+            <td class="py-2 px-4 text-center" th:text="${employee.lastname}"></td>
+            <td class="py-2 px-4 text-center">
+                <label>
+                    <input type="checkbox" th:checked="${employee.gender}" disabled /> Nam
+                </label>
+                <label class="ml-2">
+                    <input type="checkbox" th:checked="${!employee.gender}" disabled /> Nữ
+                </label>
+            </td>
+            <td class="py-2 px-4 text-center" th:text="${employee.dob}"></td>
+            <td class="py-2 px-4 text-center" th:text="${employee.address}"></td>
+            <td class="py-2 px-4 text-center" th:text="${employee.department.name}"></td>
+            
+            <td class="py-2 px-4 text-center"> 
+                <a class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition" 
+                   th:href="@{/employees/edit(id=${employee.id})}">Edit</a>
+                <a class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition ml-2" 
+                   th:href="@{/employees/delete(id=${employee.id})}"
+                   onclick() ="return confirm('Are you sure')">Delete</a>
+            </td>
+        </tr>
     
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="employee : ${employees}" class="border-b border-gray-200 " >
-                <td class="py-2 px-4 text-center" th:text="${employee.firstname}"></div></td>
-                <td class="py-2 px-4 text-center" th:text="${employee.lastname}"></td>
-                <td class="py-2 px-4 text-center">
-                    <label>
-                        <input type="checkbox" th:checked="${employee.gender}" disabled /> Nam
-                    </label>
-                    <label class="ml-2">
-                        <input type="checkbox" th:checked="${!employee.gender}" disabled /> Nữ
-                    </label>
-                </td>
-                <td class="py-2 px-4 text-center" th:text="${#dates.format(employee.dob, 'yyyy-MM-dd')}"></td>
-                <td class="py-2 px-4 text-center" th:text="${employee.address}"></td>
-                
-                <td class="py-2 px-4 text-center"> 
-                    <a class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition" 
-                       th:href="@{/employees/edit(id=${employee.id})}">Edit</a>
-                    <a class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition ml-2" 
-                       th:href="@{/employees/delete(id=${employee.id})}"
-                       onclick() ="return confirm('Are you sure')">Delete</a>
-                </td>
-            </tr>
-         
-    </main>
 </body>
-</html>
-
-
 </html>

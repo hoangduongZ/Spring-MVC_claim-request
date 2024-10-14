@@ -1,15 +1,18 @@
 package mock.claimrequest.service.impl;
 
-import mock.claimrequest.dto.department.DepartmentDTO;
-import mock.claimrequest.dto.department.DepartmentSaveDTO;
-import mock.claimrequest.entity.Department;
-import mock.claimrequest.repository.DepartmentRepository;
-import mock.claimrequest.service.DepartmentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import mock.claimrequest.dto.department.DepartmentDTO;
+import mock.claimrequest.dto.department.DepartmentSaveDTO;
+import mock.claimrequest.entity.Department;
+import mock.claimrequest.repository.DepartmentRepository;
+import mock.claimrequest.service.DepartmentService;
+
+import java.util.List;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
@@ -49,5 +52,12 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = modelMapper.map(departmentSaveDTO, Department.class);
         departmentRepository.save(department);
     }
+
+    @Override
+    public List<Department> getDepartments() {
+            return departmentRepository.findAll();
+
+    }
+
 
 }
