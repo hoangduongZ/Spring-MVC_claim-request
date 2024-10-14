@@ -75,13 +75,6 @@ public class DepartmentController {
             throw new IllegalStateException("Department not null");
         }
         departmentService.create(departmentSaveDTO);
-
-//        redirectAttributes.addFlashAttribute("message", "Department created successfully");
-//        redirectAttributes.addFlashAttribute("keyword", null); // Hoặc giá trị bạn muốn
-//        redirectAttributes.addFlashAttribute("sortBy", "name"); // Giá trị mặc định
-//        redirectAttributes.addFlashAttribute("order", "desc"); // Giá trị mặc định
-//        redirectAttributes.addFlashAttribute("page", 0); // Giá trị trang đầu tiên
-
         return "redirect:/departments";
     }
 

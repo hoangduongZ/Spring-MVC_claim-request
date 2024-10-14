@@ -1,10 +1,9 @@
 package mock.claimrequest.repository;
 
-import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface ProjectRepository extends JpaRepository<Project, UUID> {
-
+public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
 }
