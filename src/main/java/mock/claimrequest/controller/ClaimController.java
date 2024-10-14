@@ -7,8 +7,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("claims")
 public class ClaimController {
+
     @GetMapping("/add")
-    public String getCreate(){
+    public String getCreate() {
         return "claim/create";
+    }
+
+    @GetMapping
+    public String getIndex() {
+        return "claim/index"; // Trả về view cho trang index
     }
 }
