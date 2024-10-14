@@ -2,7 +2,6 @@ package mock.claimrequest.controller;
 
 import mock.claimrequest.dto.claim.ClaimGetDto;
 import mock.claimrequest.entity.ClaimStatus;
-import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.service.ClaimService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,39 +29,38 @@ public class ClaimController {
         return "claim/create";
     }
 
-    @GetMapping
-    public String getClaims(Model model) {
-//        List<EmployeeProject> projects =
-        model.addAttribute("currentPage", "claims");
-        return "claim/index";
-    }
+//    @GetMapping
+//    public String getClaims(Model model) {
+////        List<EmployeeProject> projects =
+//        model.addAttribute("currentPage", "claims");
+//        return "claim/index";
+//    }
 
-    @GetMapping("/paid")
+    @GetMapping
     public String getPaidNonVerify(Model model, @RequestParam(required = false) String active){
-        model.addAttribute("currentPage", "paid");
-        if(active == null || "pending".equals(active)){
+        model.addAttribute("currentPage", "claims");
+        if(active == null || "pendingPay".equals(active)){
             List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.APPROVE);
             model.addAttribute("claims",claims );
-            model.addAttribute("active","pending");
+            model.addAttribute("active","pendingPay");
         }else if ("paid".equals(active)){
             List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.PAID);
             model.addAttribute("claims",claims);
             model.addAttribute("active","paid");
         }
-        return "paid/paid-non-verify";
+        return "claim/index";
     }
 
     @PostMapping("/{id}/paid")
     public String postClaimsPaid(RedirectAttributes attributes, @PathVariable UUID id) {
         claimService.paidClaim(id);
-//        attributes.addFlashAttribute("active","pending");
         return "redirect:/claims/paid";
     }
 
     @GetMapping("/{id}/detail")
     public String getClaimDetail(Model model, @PathVariable UUID id) {
         model.addAttribute("claim",claimService.findById(id));
-        return "paid/detail";
+        return "claim/detail";
     }
 
 

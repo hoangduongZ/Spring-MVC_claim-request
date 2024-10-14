@@ -38,6 +38,12 @@
                         <span th:text="${claim.requestReason}"></span>
                     </div>
                 </div>
+                <div class="flex space-x-2 mt-6">
+                    <form th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">
+                        <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Verify
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
