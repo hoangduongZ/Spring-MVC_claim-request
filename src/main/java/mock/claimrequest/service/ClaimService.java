@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface ClaimService {
     public List<ClaimGetDto> getClaimByStatus(ClaimStatus claimStatus);
     void paidClaim(UUID id);
+
+    ClaimGetDto findById(UUID id);
 }

@@ -45,4 +45,18 @@ public class ClaimServiceImpl implements ClaimService {
         claim.setStatus(ClaimStatus.PAID);
         claimRepository.save(claim);
     }
+
+    @Override
+    public ClaimGetDto findById(UUID id) {
+        Claim claim= claimRepository.findById(id).orElseThrow(()-> new RuntimeException("Claim not exist"));
+        ClaimGetDto claimGetDto = new ClaimGetDto();
+        claimGetDto.setEmployeeName(claim.getEmployee().getFirstname() + " " + claim.getEmployee().getLastname());
+        claimGetDto.setRequestReason(claim.getRequestReason());
+        claimGetDto.setProjectName(claim.getProject().getName());
+        claimGetDto.setCreatedTime(claim.getCreatedTime());
+        claimGetDto.setAmount(claim.getAmount());
+        claimGetDto.setStatus(claim.getStatus());
+        claimGetDto.setId(claim.getId());
+        return claimGetDto;
+    }
 }

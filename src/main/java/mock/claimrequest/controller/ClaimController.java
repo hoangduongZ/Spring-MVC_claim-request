@@ -59,5 +59,11 @@ public class ClaimController {
         return "redirect:/claims/paid";
     }
 
+    @GetMapping("/{id}/detail")
+    public String getClaimDetail(Model model, @PathVariable UUID id) {
+        model.addAttribute("claim",claimService.findById(id));
+        return "paid/detail";
+    }
+
 
 }
