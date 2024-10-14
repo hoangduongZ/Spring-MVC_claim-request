@@ -24,59 +24,18 @@
             </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">
-            <tr class="border-b border-gray-200">
-                <td class="py-3 px-6">Dương Văn Anh</td>
-                <td class="py-3 px-6">Request for OT</td>
-                <td class="py-3 px-6">Project A</td>
-                <td class="py-3 px-6">2024-01-01</td>
-                <td class="py-3 px-6">$100</td>
-<!--                <td class="py-3 px-6">Approve</td>-->
+            <tr th:each="claim : ${claims} " class="border-b border-gray-200">
+                <td class="py-3 px-6" th:text="${claim.employeeName}">Dương Văn Anh</td>
+                <td class="py-3 px-6" th:text="${claim.requestReason}">Request for OT</td>
+                <td class="py-3 px-6" th:text="${claim.projectName}">Project A</td>
+                <td class="py-3 px-6" th:text="${claim.getFormattedCreatedTime()}">2024-01-01</td>
+                <td class="py-3 px-6" th:text="${claim.amount}">$100</td>
                 <td class="py-3 px-6">
                     <div>
                         <a href="#!" class="bg-green-500 py-2 px-3 rounded-md text-white hover:bg-green-600">Verify</a>
                     </div>
                 </td>
             </tr>
-            <tr class="border-b border-gray-200">
-                <td class="py-3 px-6">Dương Văn Anh</td>
-                <td class="py-3 px-6">Request for OT</td>
-                <td class="py-3 px-6">Project A</td>
-                <td class="py-3 px-6">2024-01-01</td>
-                <td class="py-3 px-6">$100</td>
-<!--                <td class="py-3 px-6">Approve</td>-->
-                <td class="py-3 px-6">
-                    <div>
-                        <a href="#!" class="bg-green-500 py-2 px-3 rounded-md text-white hover:bg-green-600">Verify</a>
-                    </div>
-                </td>
-            </tr>
-            <tr class="border-b border-gray-200">
-                <td class="py-3 px-6">Dương Văn Anh</td>
-                <td class="py-3 px-6">Request for OT</td>
-                <td class="py-3 px-6">Project A</td>
-                <td class="py-3 px-6">2024-01-01</td>
-                <td class="py-3 px-6">$100</td>
-<!--                <td class="py-3 px-6">Approve</td>-->
-                <td class="py-3 px-6">
-                    <div>
-                        <a href="#!" class="bg-green-500 py-2 px-3 rounded-md text-white hover:bg-green-600">Verify</a>
-                    </div>
-                </td>
-            </tr>
-            <tr class="border-b border-gray-200">
-                <td class="py-3 px-6">Dương Văn Anh</td>
-                <td class="py-3 px-6">Request for OT</td>
-                <td class="py-3 px-6">Project A</td>
-                <td class="py-3 px-6">2024-01-01</td>
-                <td class="py-3 px-6">$100</td>
-<!--                <td class="py-3 px-6">Approve</td>-->
-                <td class="py-3 px-6">
-                    <div>
-                        <a href="#!" class="bg-green-500 py-2 px-3 rounded-md text-white hover:bg-green-600">Verify</a>
-                    </div>
-                </td>
-            </tr>
-
             </tbody>
         </table>
     </div>

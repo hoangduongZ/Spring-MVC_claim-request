@@ -8,6 +8,7 @@ import mock.claimrequest.entity.ClaimStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -20,4 +21,9 @@ public class ClaimGetDto {
     private ClaimStatus status;
     private LocalDateTime createdTime;
     private BigDecimal amount;
+
+    public String getFormattedCreatedTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return createdTime.format(formatter);
+    }
 }
