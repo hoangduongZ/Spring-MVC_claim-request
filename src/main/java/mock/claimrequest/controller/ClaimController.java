@@ -1,7 +1,7 @@
 package mock.claimrequest.controller;
 
 import mock.claimrequest.dto.claim.ClaimGetDto;
-import mock.claimrequest.entity.ClaimStatus;
+import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.service.ClaimService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,10 +65,8 @@ public class ClaimController {
     }
 
     @PostMapping("{id}/cancel")
-    public String postClaimCancel(Model model){
-        List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.PENDING);
-        model.addAttribute("claims",claims);
-        model.addAttribute("active","pending");
+    public String postClaimCancel(RedirectAttributes attributes, @PathVariable UUID id){
+        claimService.cancelClaim(id);
         return "claim/pending";
     }
 

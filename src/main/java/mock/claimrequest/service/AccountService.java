@@ -1,11 +1,10 @@
 package mock.claimrequest.service;
 
-import java.util.Optional;
-import java.util.UUID;
-
-import mock.claimrequest.entity.Account;
+import mock.claimrequest.dto.auth.AccountRegisterDTO;
 
 public interface AccountService {
-    Optional<Account> getAccountsByEmployeeId(UUID employeeId);
-    
+    boolean register(AccountRegisterDTO accountRegisterDTO);
+
+    boolean existByEmail(String email);
+    boolean existByUsername(String username);
 }

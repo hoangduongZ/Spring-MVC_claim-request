@@ -9,8 +9,12 @@ import mock.claimrequest.dto.department.DepartmentSaveDTO;
 
 import java.util.List;
 
+import java.util.List;
+
 public interface DepartmentService {
     Page<DepartmentDTO> findAll(String keyword, Pageable pageable);
+
+    List<DepartmentDTO> findAll();
 
     void create(DepartmentSaveDTO departmentSaveDTO);
 

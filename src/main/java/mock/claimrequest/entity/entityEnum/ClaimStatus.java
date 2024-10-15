@@ -1,4 +1,4 @@
-package mock.claimrequest.entity;
+package mock.claimrequest.entity.entityEnum;
 
 public enum ClaimStatus {
     PENDING("Pending"),

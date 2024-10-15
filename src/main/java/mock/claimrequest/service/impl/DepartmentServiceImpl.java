@@ -14,6 +14,8 @@ import mock.claimrequest.service.DepartmentService;
 
 import java.util.List;
 
+import java.util.List;
+
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
@@ -42,6 +44,12 @@ public class DepartmentServiceImpl implements DepartmentService {
             departmentDTO.setName(ingredient.getName());
             return departmentDTO;
         });
+    }
+
+    @Override
+    public List<DepartmentDTO> findAll() {
+        return departmentRepository.findAll().stream().
+                map(department -> modelMapper.map(department, DepartmentDTO.class)).toList();
     }
 
     @Override

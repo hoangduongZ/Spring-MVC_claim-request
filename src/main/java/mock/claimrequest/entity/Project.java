@@ -2,12 +2,15 @@ package mock.claimrequest.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import mock.claimrequest.entity.entityEnum.ProjectStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,6 +45,10 @@ public class Project {
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ProjectStatus projectStatus;
 
     @OneToMany(mappedBy = "project")
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
