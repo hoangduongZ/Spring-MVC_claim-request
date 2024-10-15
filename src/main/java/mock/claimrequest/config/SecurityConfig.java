@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("/dashboard")
                         .failureUrl("/login?error"))
                 .logout(LogoutConfigurer::permitAll)
                 .exceptionHandling(exceptionHandling -> exceptionHandling

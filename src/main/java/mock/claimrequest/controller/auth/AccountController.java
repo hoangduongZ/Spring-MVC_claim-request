@@ -29,6 +29,15 @@ public class AccountController {
         if (accountRegisterDTO == null){
             throw new IllegalStateException("Account not null");
         }
+
+        if (accountService.existByUsername(accountRegisterDTO.getUserName())){
+            throw new IllegalStateException("Username is existed");
+        }
+
+        if (accountService.existByEmail(accountRegisterDTO.getEmail())){
+            throw new IllegalStateException("Email is existed");
+        }
+
         accountService.register(accountRegisterDTO);
         return "redirect:/login";
     }

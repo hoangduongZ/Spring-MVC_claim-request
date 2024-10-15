@@ -26,10 +26,21 @@ public class AccountServiceImpl implements AccountService {
         if (accountRegisterDTO == null){
             throw new IllegalStateException("Account not null");
         }
+
         Account account= modelMapper.map(accountRegisterDTO, Account.class);
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         account.setStatus(AccountStatus.ACTIVE);
         accountRepository.save(account);
         return account.getId() != null;
+    }
+
+    @Override
+    public boolean existByEmail(String email){
+        return accountRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existByUsername(String username) {
+        return accountRepository.existsByUserName(username);
     }
 }
