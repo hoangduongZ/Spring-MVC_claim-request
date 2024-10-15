@@ -1,7 +1,7 @@
 package mock.claimrequest.repository;
 
 import mock.claimrequest.entity.Claim;
-import mock.claimrequest.entity.ClaimStatus;
+import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

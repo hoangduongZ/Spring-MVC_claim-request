@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import mock.claimrequest.entity.entityEnum.ProjectStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -47,7 +48,7 @@ public class Project {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private ProjectStatus projectStaus;
+    private ProjectStatus projectStatus;
 
     @OneToMany(mappedBy = "project")
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
