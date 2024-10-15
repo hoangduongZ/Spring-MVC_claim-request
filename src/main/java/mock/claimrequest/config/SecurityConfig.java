@@ -29,13 +29,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("*").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/img/**").permitAll())
+                        .requestMatchers("/css/**", "/js/**", "/img/**").permitAll() // Cho phép truy cập tệp tĩnh
+                        .requestMatchers("/login", "/register").permitAll() // Cho phép truy cập trang đăng nhập và đăng ký
+                        .anyRequest().authenticated())
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/dashboard")
-                        .failureUrl("/login?error"))
+                        .defaultSuccessUrl("/dashboard",true)
+                        .permitAll())
                 .logout(LogoutConfigurer::permitAll)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(accessDeniedHandler()));
