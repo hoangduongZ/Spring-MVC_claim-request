@@ -48,7 +48,7 @@ public class Project {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private ProjectStatus projectStaus;
+    private ProjectStatus projectStatus;
 
     @OneToMany(mappedBy = "project")
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
