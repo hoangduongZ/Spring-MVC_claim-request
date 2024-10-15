@@ -2,7 +2,7 @@ package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.auth.AccountRegisterDTO;
 import mock.claimrequest.entity.Account;
-import mock.claimrequest.entity.AccountStatus;
+import mock.claimrequest.entity.entityEnum.AccountStatus;
 import mock.claimrequest.entity.Role;
 import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.RoleRepository;

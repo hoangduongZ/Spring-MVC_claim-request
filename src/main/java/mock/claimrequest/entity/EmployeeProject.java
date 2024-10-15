@@ -8,6 +8,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.Data;
+import mock.claimrequest.entity.entityEnum.ProjectRole;
 
 import java.io.Serializable;
 

@@ -2,14 +2,12 @@ package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.claim.ClaimGetDto;
 import mock.claimrequest.entity.Claim;
-import mock.claimrequest.entity.ClaimStatus;
-import mock.claimrequest.entity.Employee;
+import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.repository.ClaimRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.service.ClaimService;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 

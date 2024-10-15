@@ -1,6 +1,5 @@
 package mock.claimrequest;
 
-import mock.claimrequest.entity.ProjectRole;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

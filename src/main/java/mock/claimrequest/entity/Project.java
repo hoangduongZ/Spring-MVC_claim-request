@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import mock.claimrequest.entity.entityEnum.ProjectStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
