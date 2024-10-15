@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .gradient-bg {
+      background: linear-gradient(to left, #9A55FF, #D78AFF);
+    }
+    .input-effect:hover,
+    .input-effect:focus {
+      transform: scale(1.05);
+      border-color: #6b46c1;
+      box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.5);
+    }
+    .input-effect {
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+  </style>
+</head>
+<body class="gradient-bg flex items-center justify-center h-screen">
+<div class="bg-white p-8 rounded-lg shadow-md w-96">
+  <div class="flex justify-center mb-6">
+    <img th:src="@{/img/user.png}" alt="FPT Software Logo" class="w-24">
+  </div>
+  <h1 class="text-3xl font-semibold text-center mb-4">Register</h1>
+  <form id="registerForm" th:action="@{/register}" th:object="${account}" method="post">
+    <div class="mb-4">
+      <label for="username" class="block text-gray-700">Username</label>
+      <input type="text" name="userName" id="username" class="w-full px-4 py-2 mt-2 border rounded-md input-effect focus:outline-none" placeholder="Enter your username" >
+      <p id="usernameError" class="text-red-500 text-sm mt-1"></p>
+    </div>
+    <div class="mb-4">
+      <label for="email" class="block text-gray-700">Email</label>
+      <input type="email" name="email" id="email" class="w-full px-4 py-2 mt-2 border rounded-md input-effect focus:outline-none" placeholder="Enter your email" >
+      <p id="emailError" class="text-red-500 text-sm mt-1"></p>
+    </div>
+    <div class="mb-4">
+      <label for="password" class="block text-gray-700">Password</label>
+      <input type="password" name="password" id="password" class="w-full px-4 py-2 mt-2 border rounded-md input-effect focus:outline-none" placeholder="Enter your password" >
+      <p id="passwordError" class="text-red-500 text-sm mt-1"></p>
+    </div>
+<!--    <div class="mb-4">-->
+<!--      <label for="repassword" class="block text-gray-700">Re-Password</label>-->
+<!--      <input type="password" id="repassword" class="w-full px-4 py-2 mt-2 border rounded-md input-effect focus:outline-none" placeholder="Re-your password" >-->
+<!--      <p id="repasswordError" class="text-red-500 text-sm mt-1"></p>-->
+<!--    </div>-->
+    <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 focus:outline-none">Register</button>
+  </form>
+  <p class="text-center text-gray-600 mt-6">Already have an account? <a th:href="@{login}" class="text-blue-600 hover:underline">Login here!</a></p>
+</div>
+</body>
+</html>

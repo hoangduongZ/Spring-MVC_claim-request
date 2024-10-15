@@ -2,6 +2,8 @@ package mock.claimrequest.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,8 +31,6 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(name = "fullname")
-    private String fullName;
     @Column(name = "username", nullable = false, unique = true)
     private String userName;
     @Column(name = "email", nullable = false, unique = true)
@@ -38,7 +38,8 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "status")
-    private boolean status;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
 
     @ManyToMany
     @JoinTable(name = "account_roles",
@@ -47,6 +48,6 @@ public class Account {
     )
     private Set<Role> roles;
     @OneToOne
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "employee_id")
     private Employee employee;
 }
