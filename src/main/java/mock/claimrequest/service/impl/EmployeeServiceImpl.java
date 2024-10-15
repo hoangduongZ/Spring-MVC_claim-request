@@ -1,8 +1,10 @@
 package mock.claimrequest.service.impl ;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import mock.claimrequest.dto.account.AccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,13 @@ import mock.claimrequest.service.EmployeeService;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
-    
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     
     @Override
@@ -28,18 +36,51 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee getEmployeeById(UUID id) {
+    public EmployeeDTO getEmployeeById(UUID id) {
 
-        throw new UnsupportedOperationException("Unimplemented method 'getEmployeeByID'");
-        // if (id == null) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        //     throw new IllegalArgumentException("ID must not be null");
-        // }
+        EmployeeDTO employeeDTO = new EmployeeDTO();
 
-        // // Lấy Employee theo ID
-        // return employeeRepository.findById(id)
-        //         .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + id));
+
+        employeeDTO.setFirstname(employee.getFirstname());
+        employeeDTO.setLastname(employee.getLastname());
+        employeeDTO.setGender(employee.isGender());
+        employeeDTO.setDob(employee.getDob());
+        employeeDTO.setAddress(employee.getAddress());
+
+
+        employeeDTO.setDepartment(employee.getDepartment());
+
+
+        AccountDTO accountDTO = new AccountDTO();
+        Set<Account> accounts = employee.getAccounts();  // Lấy tập hợp các Account
+
+        if (accounts != null && !accounts.isEmpty()) {
+            // Lấy tài khoản đầu tiên từ Set (hoặc bạn có thể thêm logic chọn tài khoản khác)
+            Account account = accounts.iterator().next();
+
+            // Map dữ liệu từ Account sang AccountDTO
+            accountDTO.setUserName(account.getUserName());
+            accountDTO.setEmail(account.getEmail());
+            accountDTO.setPassword(account.getPassword());
+        } else {
+            // Xử lý khi không có Account nào liên kết với Employee
+            accountDTO.setUserName("");
+            accountDTO.setEmail("");
+            accountDTO.setPassword("");
+        }
+
+
+        return employeeDTO;
+
     }
+
+
+
+
+
 
 
     @Override
@@ -54,27 +95,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         throw new UnsupportedOperationException("Unimplemented method 'deleteEmployee'");
     }
 
-
-     @Autowired
-     private EmployeeRepository employeeRepository;
-
-     @Autowired
-     private AccountRepository accountRepository;
-
-     @Autowired
-     private DepartmentRepository departmentRepository;
-
-    // @Override
-    // public List<EmployeeDTO> getAllEmployees() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getAllEmployees'");
-    // }
-
-    // @Override
-    // public Employee getEmployeeById(UUID id) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getEmployeeById'");
-    // }
 
     @Override
     public void saveEmployee(EmployeeDTO employeeDTO) {
@@ -94,7 +114,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         // lưu Employee
         Employee savedEmployee = employeeRepository.save(employee);
 
-        // tao Account từ DTO, bắt lỗi ngoại l ệ
+        // tao Account từ DTO, ( phai bắt lỗi ngoại lệ )
         Account account = new Account();
         account.setUserName(employeeDTO.getAccountDTO().getUserName()); //đoạn này bị lỗi, cần thêm unique
         account.setEmail(employeeDTO.getAccountDTO().getEmail());
@@ -104,21 +124,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         accountRepository.save(account);
     }
 
-    // @Override
-    // public void updateEmployee(UUID id, EmployeeDTO employeeDTO) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'updateEmployee'");
-    // }
 
-    // @Override
-    // public void deleteEmployee(UUID id) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'deleteEmployee'");
-    // }
 
-    // @Override
-    // public List<Department> getAllDepartments() {
-    //     return departmentRepository.findAll();
-    // }
+
+
     
 }
