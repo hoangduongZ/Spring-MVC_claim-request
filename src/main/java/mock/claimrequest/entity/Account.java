@@ -29,8 +29,6 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(name = "fullname")
-    private String fullName;
     @Column(name = "username", nullable = false, unique = true)
     private String userName;
     @Column(name = "email", nullable = false, unique = true)

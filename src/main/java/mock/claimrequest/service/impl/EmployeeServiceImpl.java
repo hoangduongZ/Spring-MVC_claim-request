@@ -1,5 +1,6 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.dto.employee.EmployeeForProjectSaveDto;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.service.EmployeeService;
@@ -15,8 +16,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public List<Employee> getAll(){
-        return employeeRepository.findAll();
+    public List<EmployeeForProjectSaveDto> getAll(){
+        return employeeRepository.findAll().stream().map(
+                employee -> new EmployeeForProjectSaveDto(employee.getId(), employee.getAccounts().getUserName())).toList();
     }
 
 }
