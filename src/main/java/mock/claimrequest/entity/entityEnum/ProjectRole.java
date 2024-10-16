@@ -9,13 +9,13 @@ public enum ProjectRole {
     TL("Technical lead"),
     TESTER("Tester");
 
-    private final String displayName;
+    private final String name;
 
-    ProjectRole(String displayName) {
-        this.displayName = displayName;
+    ProjectRole(String name) {
+        this.name = name;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getName() {
+        return name;
     }
 }

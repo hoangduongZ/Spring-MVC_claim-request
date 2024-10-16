@@ -40,7 +40,7 @@ public class Employee {
     private Department department;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
-    private Account accounts;
+    private Account account;
 
     @OneToMany(mappedBy = "employee")
     private Set<EmployeeProject> employeeProjects = new HashSet<>();

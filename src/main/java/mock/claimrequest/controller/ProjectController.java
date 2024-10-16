@@ -1,6 +1,8 @@
 package mock.claimrequest.controller;
 
+import mock.claimrequest.dto.project.ProjectSaveDTO;
 import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.service.EmployeeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +20,9 @@ public class ProjectController {
 
     @GetMapping("/add")
     public String getAddProject(Model model){
-        model.addAttribute("employees", employeeService);
+        model.addAttribute("project", new ProjectSaveDTO());
+        model.addAttribute("employees", employeeService.getAll());
+        model.addAttribute("roles", ProjectRole.values());
         return "project/create";       
     }
 }

@@ -1,6 +1,6 @@
 package mock.claimrequest.controller;
 
-import mock.claimrequest.dto.claim.ClaimGetDto;
+import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.service.ClaimService;
 import org.springframework.stereotype.Controller;
@@ -33,11 +33,11 @@ public class ClaimController {
     public String getClaims(Model model, @RequestParam(required = false) String active){
         model.addAttribute("currentPage", "claims");
         if(active == null || "payment".equals(active)){
-            List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.APPROVE);
+            List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.APPROVE);
             model.addAttribute("claims",claims );
             model.addAttribute("active","payment");
         }else if ("paid".equals(active)){
-            List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.PAID);
+            List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.PAID);
             model.addAttribute("claims",claims);
             model.addAttribute("active","paid");
         }
@@ -58,7 +58,7 @@ public class ClaimController {
 
     @GetMapping("pending")
     public String getClaims(Model model){
-        List<ClaimGetDto> claims = claimService.getClaimByStatus(ClaimStatus.PENDING);
+        List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.PENDING);
         model.addAttribute("claims",claims);
         model.addAttribute("active","pending");
         return "claim/pending";
