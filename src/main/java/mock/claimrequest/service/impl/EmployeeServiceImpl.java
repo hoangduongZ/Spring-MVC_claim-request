@@ -1,5 +1,6 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.dto.employee.EmployeeDTO;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
 import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Department;
@@ -10,7 +11,6 @@ import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.DepartmentRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.RoleRepository;
-import mock.claimrequest.service.AccountService;
 import mock.claimrequest.service.EmployeeService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -74,5 +75,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
+    @Override
+    public List<EmployeeDTO> getAllEmployees() {
+        return null;
+    }
 
+    @Override
+    public EmployeeDTO getEmployeeById(UUID id) {
+        return null;
+    }
+
+    @Override
+    public void saveEmployee(EmployeeDTO employeeDTO) {
+
+    }
+
+    @Override
+    public void updateEmployee(UUID id, EmployeeDTO employeeDTO) {
+
+    }
+
+    @Override
+    public void deleteEmployee(UUID id) {
+
+    }
 }

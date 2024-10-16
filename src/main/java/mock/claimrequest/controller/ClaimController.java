@@ -1,19 +1,24 @@
 package mock.claimrequest.controller;
 
-import mock.claimrequest.dto.claim.ClaimGetDto;
-import mock.claimrequest.entity.entityEnum.ClaimStatus;
-import mock.claimrequest.service.ClaimService;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.UUID;
+import jakarta.validation.Valid;
+import mock.claimrequest.dto.claim.ClaimGetDto;
+import mock.claimrequest.dto.test.ClaimTestDTO;
+import mock.claimrequest.entity.entityEnum.ClaimStatus;
+import mock.claimrequest.service.ClaimService;
 
 @Controller
 @RequestMapping("claims")
@@ -68,6 +73,20 @@ public class ClaimController {
     public String postClaimCancel(RedirectAttributes attributes, @PathVariable UUID id){
         claimService.cancelClaim(id);
         return "claim/pending";
+    }
+
+
+    @GetMapping("/claim-test")
+    public String showSubmitForm(Model model) {
+        model.addAttribute("claimDTO", new ClaimTestDTO());
+        return "/claim/form_submit_test" ;
+    }
+
+    @PostMapping("/claim-test")
+    public String submitClaim(@Valid @ModelAttribute("claimDTO") ClaimTestDTO claimTestDTO, BindingResult resullt) {
+        claimService.submitClaim(claimTestDTO);
+        return "claim/create" ;
+
     }
 
 }

@@ -1,6 +1,7 @@
 package mock.claimrequest.service;
 
 import mock.claimrequest.dto.claim.ClaimGetDto;
+import mock.claimrequest.dto.test.ClaimTestDTO;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 
 import java.util.List;
@@ -13,4 +14,7 @@ public interface ClaimService {
     ClaimGetDto findById(UUID id);
 
     void cancelClaim(UUID id);
+
+    void submitClaim(ClaimTestDTO claimTestDTO);
+
 }

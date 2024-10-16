@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+<form th:action="@{/claims/claim-test}" th:object="${claimDTO}" method="post" >
+    <div >
+        <label for="request title" >Request Title</label>
+        <input type="text" id="request title" th:field="*{title}"  placeholder="1 đoạn text viets title">
+    </div> 
+    <div >
+        <label for="request title" >Employee ID</label>
+        <input type="text" id="request title" th:field="*{employeeId}"  placeholder="paste employe id vào đây">
+    </div> 
+    <div >
+        <label for="request title" >Project ID</label>
+        <input type="text" id="request title" th:field="*{projectId}"  placeholder="paste project id vào đây ">
+    </div> 
+<!-- 
+    <label for="project"> Chọn 1 project </label>
+    <select id="project" name="project">
+        <option value="">Select project</option>
+        <option> chọn các project ở đây</option>
+    </select> -->
+    <div >
+        <label for="requestreason" >request Reason</label>
+        <input type="text" id="requestreason" th:field="*{requestReason}">
+    </div>
+
+    <table class="min-w-full bg-white border border-gray-300" >
+        <thead>
+        <tr class="bg-gray-200 text-gray-700">
+            <th class="py-2 px-4 border-b">Date</th>
+            <th class="py-2 px-4 border-b">Start Time</th>
+            <th class="py-2 px-4 border-b">End Time</th>
+            <th class="py-2 px-4 border-b">Total OT (hours)</th>
+            <th class="py-2 px-4 border-b">Action</th>
+        </tr>
+        </thead>
+        <tbody id="ot-table-body">
+        <tr>
+           
+            <td class="py-2 px-4 border-b"><input th:field="*{startTime}" type="datetime-local" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input th:field="*{endTime}" type="datetime-local" class="border rounded w-full p-1"></td>
+           
+            <td class="py-2 px-4 border-b"><button type="button" onclick="deleteOTRow(this)" class="bg-red-500 text-white py-1 px-2 rounded">Delete</button></td>
+        </tr>
+        <div class="mt-4">
+            <button type="button" onclick="addOTRow()" class="bg-purple-700 text-white py-2 px-4 rounded">Add OT Row</button>
+        </div>
+        </div>
+        </tbody>
+
+    </table>
+
+
+
+
+    <div >
+        <button type="submit">Submit</button>
+    </div>
+    <!-- <div >
+        <button type="submit">Drart</button>
+    </div> -->
+</form>
+
+
+<script>
+
+function addOTRow() {
+        const tableBody = document.getElementById('ot-table-body');
+        const newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+            <td class="py-2 px-4 border-b"><input type="date" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input type="time" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input type="time" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input type="number" min="0" step="0.01" class="border rounded w-full p-1" disabled></td>
+            <td class="py-2 px-4 border-b"><button type="button" onclick="deleteOTRow(this)" class="bg-red-500 text-white py-1 px-2 rounded">Delete</button></td>
+        `;
+
+        tableBody.appendChild(newRow);
+    }
+
+
+ function deleteOTRow(button) {
+     const row = button.parentElement.parentElement;
+     row.remove();
+ }
+</script>
+
+</body>
+</html>

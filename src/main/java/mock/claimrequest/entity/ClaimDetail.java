@@ -1,5 +1,7 @@
 package mock.claimrequest.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,10 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,6 +25,7 @@ public class ClaimDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+   
     @Column(name = "start_time")
     private LocalDateTime startTime;
     @Column(name = "end_time")
