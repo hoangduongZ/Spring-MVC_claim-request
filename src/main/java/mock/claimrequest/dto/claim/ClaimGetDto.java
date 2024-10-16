@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mock.claimrequest.entity.ClaimStatus;
+import mock.claimrequest.entity.entityEnum.ClaimStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
