@@ -1,6 +1,6 @@
 package mock.claimrequest.service.impl;
 
-import mock.claimrequest.dto.employee.EmployeeDTO;
+import mock.claimrequest.dto.employee.EmployeeGetDTO;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
 import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Department;
@@ -12,6 +12,7 @@ import mock.claimrequest.repository.DepartmentRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.RoleRepository;
 import mock.claimrequest.service.EmployeeService;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,21 +28,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final DepartmentRepository departmentRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, AccountRepository accountRepository, DepartmentRepository departmentRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, AccountRepository accountRepository, DepartmentRepository departmentRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.employeeRepository = employeeRepository;
         this.accountRepository = accountRepository;
         this.departmentRepository = departmentRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
-    }
-
-    public List<Employee> getAll(){
-        return employeeRepository.findAll();
+        this.modelMapper = modelMapper;
     }
 
     @Override
-    public boolean saveEmployeeAlongWithAccount(EmployeeSaveDTO employeeSaveDTO){
+    public boolean saveEmployeeAlongWithAccount(EmployeeSaveDTO employeeSaveDTO) {
         if (employeeSaveDTO == null) {
             throw new IllegalStateException("Employee should be not null");
         }
@@ -62,7 +61,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.findByName("CLAIMER"));
         account.setRoles(roles);
-        employee.setAccounts(account);
+        employee.setAccount(account);
 
         Department department = departmentRepository.
                 findById(employeeSaveDTO.getDepartmentId()).orElseThrow(
@@ -74,29 +73,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee.getId() != null;
     }
 
-
     @Override
-    public List<EmployeeDTO> getAllEmployees() {
-        return null;
+    public List<EmployeeGetDTO> getAll() {
+        return employeeRepository.findByAccountIsNotNull().stream().map(
+                employee -> {
+                    EmployeeGetDTO saveDTO = new EmployeeGetDTO();
+                    saveDTO.setUserName(employee.getAccount().getUserName());
+                    saveDTO.setId(employee.getId());
+                    return saveDTO;
+                }).toList();
     }
 
-    @Override
-    public EmployeeDTO getEmployeeById(UUID id) {
-        return null;
-    }
 
-    @Override
-    public void saveEmployee(EmployeeDTO employeeDTO) {
-
-    }
-
-    @Override
-    public void updateEmployee(UUID id, EmployeeDTO employeeDTO) {
-
-    }
-
-    @Override
-    public void deleteEmployee(UUID id) {
-
-    }
 }

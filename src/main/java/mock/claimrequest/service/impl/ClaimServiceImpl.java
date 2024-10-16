@@ -36,10 +36,10 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public List<ClaimGetDto> getClaimByStatus(ClaimStatus claimStatus){
+    public List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus){
         return claimRepository.findAllByStatus(claimStatus).stream().map(
                 claim -> {
-                    ClaimGetDto claimGetDto= new ClaimGetDto();
+                    ClaimGetDTO claimGetDto= new ClaimGetDTO();
                     claimGetDto.setEmployeeName(claim.getEmployee().getFirstname() + " " +claim.getEmployee().getLastname());
                     claimGetDto.setRequestReason(claim.getRequestReason());
                     claimGetDto.setProjectName(claim.getProject().getName());
@@ -117,7 +117,7 @@ public class ClaimServiceImpl implements ClaimService {
     @Override
     public ClaimGetDto findById(UUID id) {
         Claim claim= claimRepository.findById(id).orElseThrow(()-> new RuntimeException("Claim not exist"));
-        ClaimGetDto claimGetDto = new ClaimGetDto();
+        ClaimGetDTO claimGetDto = new ClaimGetDTO();
         claimGetDto.setEmployeeName(claim.getEmployee().getFirstname() + " " + claim.getEmployee().getLastname());
         claimGetDto.setRequestReason(claim.getRequestReason());
         claimGetDto.setProjectName(claim.getProject().getName());

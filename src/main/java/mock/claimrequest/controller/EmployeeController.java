@@ -1,8 +1,9 @@
 package mock.claimrequest.controller;
 
-import java.util.List;
-import java.util.UUID;
-
+import jakarta.validation.Valid;
+import mock.claimrequest.dto.employee.EmployeeSaveDTO;
+import mock.claimrequest.service.DepartmentService;
+import mock.claimrequest.service.EmployeeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,18 +58,12 @@ public class EmployeeController {
     }
 
     @PostMapping("/add")
-    public String saveEmployee(@ModelAttribute("employeeDTO") EmployeeDTO employeeDTO) {
-        employeeService.saveEmployee(employeeDTO);
-        return "redirect:/employees/index" ; 
+    public String postEmployeeAdd(@Valid @ModelAttribute EmployeeSaveDTO employeeSaveDTO, RedirectAttributes attributes){
+        if(employeeService.saveEmployeeAlongWithAccount(employeeSaveDTO)){
+            attributes.addFlashAttribute("message", "Save employee success");
+        }
+        return "redirect:/employees/add";
     }
-
-     @GetMapping("/edited")
-     public String showEditPage(@RequestParam UUID id, Model model) {
-        var employeeDTO = employeeService.getEmployeeById(id) ;
-        model.addAttribute("employeeDTO", employeeDTO) ;
-        model.addAttribute("departments", departmentService.getDepartments());
-        return "employee/edit" ;
-     }
 }
 
 
