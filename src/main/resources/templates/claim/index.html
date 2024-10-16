@@ -4,85 +4,117 @@
       layout:decorate="layouts/layout">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Claims</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100/30 w-5/6">
-    <h1 class="inline-block p-6 bg-white text-2xl mb-3 shadow text-purple-500 font-bold rounded-md">Payment</h1>
-    <div class="flex flex-col gap-1">
-        <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
-            <a th:href="@{/claims(active='payment')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
-                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold" >Payment</span>
-                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'payment'? 'w-full':'w-0'"></span>
-            </a>
-            <a th:href="@{/claims(active='paid')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
-                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold">Paid</span>
-                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'paid'? 'w-full':'w-0'"></span>
-            </a>
-        </div>
-        <div th:if="${active}== 'payment'">
-            <div class="overflow-x-auto border-t">
-                <div th:each="claim : ${claims} ">
-                    <div class="bg-white shadow-md border-b border-x p-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
-                        <div><input type="checkbox" class="w-4 h-4"/></div>
-                        <div class="ml-4 flex-1">
-                            <a th:href="@{/claims/{id}/detail(id=${claim.id})}">
-                                <h2 class="text-lg font-semibold" th:text="${claim.employeeName}">Nguyễn Văn A</h2>
-                                <p class="text-gray-600" th:text="${claim.requestReason} +' - '+${claim.amount} + '$'">OT project fir</p>
-                            </a>
-                        </div>
-                        <div class="flex gap-10 justify-between items-center">
-                            <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM</div>
-                            <div class="flex space-x-2 ml-4">
-                                <form th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">
-                                    <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Verify
-                                    </button>
-                                </form>
-                                <form th:action="@{/claims/{id}/approve(id=${claim.id})}" method="post">
-                                    <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve
-                                    </button>
-                                </form>
-                                <form th:action="@{/claims/{id}/return(id=${claim.id})}" method="post">
-                                    <button type="submit" class="bg-sky-500 text-white rounded px-2 py-1 hover:bg-sky-600">Return
-                                    </button>
-                                </form>
-                                <form th:action="@{/claims/{id}/reject(id=${claim.id})}" method="post">
-                                    <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject
-                                    </button>
-                                </form>
-                                <form th:action="@{/claims/{id}/cancel(id=${claim.id})}" method="post">
-                                    <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Cancel
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div th:if="${active}== 'paid'">
-            <div class="overflow-x-auto border-t">
-                <div th:each="claim : ${claims} ">
-                    <div class="bg-white shadow-md border-b border-x p-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
-                        <div><input type="checkbox" class="w-4 h-4"/></div>
-                        <div class="ml-4 flex-1">
-                            <h2 class="text-lg font-semibold" th:text="${claim.employeeName}">Nguyễn Văn A</h2>
-                            <p class="text-gray-600" th:text="${claim.requestReason} +' - '+${claim.amount} + '$'">OT project fir</p>
-                        </div>
-                        <!--                        <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM</div>-->
-                        <!--                        <div class="flex space-x-2 ml-4">-->
-                        <!--                            <form th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">-->
-                        <!--                                <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Verify-->
-                        <!--                                </button>-->
-                        <!--                            </form>-->
-                        <!--                        </div>-->
-                    </div>
-                </div>
-            </div>
-        </div>
+<body class="bg-gray-100 font-sans">
 
+<main layout:fragment="content" class="w-3/4 mx-auto p-6">
+    <!-- Menu for Claim Requests (Tab Style) -->
+    <div class="navbar flex bg-purple-500 text-white p-1 rounded-lg shadow-md justify-between overflow-hidden">
+        <a href="#" class="navbar-item px-6 py-3 rounded-t-md hover:bg-purple-600 transition-all tab" onclick="showClaims('all', this)">View All</a>
+        <a href="#" class="navbar-item px-6 py-3 rounded-t-md hover:bg-purple-600 transition-all tab" onclick="showClaims('pending', this)">Pending</a>
+        <a href="#" class="navbar-item px-6 py-3 rounded-t-md hover:bg-purple-600 transition-all tab" onclick="showClaims('approved', this)">Approved</a>
+        <a href="#" class="navbar-item px-6 py-3 rounded-t-md hover:bg-purple-600 transition-all tab" onclick="showClaims('paid', this)">Paid</a>
+        <a href="#" class="navbar-item px-6 py-3 rounded-t-md hover:bg-purple-600 transition-all tab" onclick="showClaims('draft', this)">Draft</a>
+        <a href="#" class="navbar-item px-6 py-3 rounded-t-md hover:bg-purple-600 transition-all tab" onclick="showClaims('cancel', this)">Cancel & Reject</a>
     </div>
+
+    <!-- Claims List -->
+    <div id="claims-list" class="p-6 bg-white shadow-lg rounded-lg mt-4">
+        <table class="min-w-full border-collapse">
+            <thead>
+            <tr class="bg-gray-200">
+                <th class="border px-4 py-2">Select</th>
+                <th class="border px-4 py-2">Title & Name</th>
+                <th class="border px-4 py-2">Duration</th>
+                <th class="border px-4 py-2">Amount</th>
+                <th class="border px-4 py-2">Status</th>
+                <th class="border px-4 py-2">Action</th>
+            </tr>
+            </thead>
+            <tbody id="claims-table-body">
+            <!-- The content will be populated here dynamically -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        // Sample data for claims
+        const claimsData = {
+            all: [
+                { name: 'Nguyễn Văn A', description: 'OT project', duration: '1 month', amount: '1000$', status: 'pending' },
+                { name: 'Trần Văn B', description: 'Business trip', duration: '2 weeks', amount: '500$', status: 'approved' },
+                { name: 'Lê Thị C', description: 'Meal allowance', duration: '1 week', amount: '150$', status: 'paid' },
+                { name: 'Nguyễn Văn D', description: 'Training reimbursement', duration: '3 days', amount: '200$', status: 'draft' },
+                { name: 'Nguyễn Văn E', description: 'Medical expense', duration: '1 day', amount: '300$', status: 'cancel' }
+            ],
+            pending: [
+                { name: 'Nguyễn Văn A', description: 'OT project', duration: '1 month', amount: '1000$', status: 'pending' }
+            ],
+            approved: [
+                { name: 'Trần Văn B', description: 'Business trip', duration: '2 weeks', amount: '500$', status: 'approved' }
+            ],
+            paid: [
+                { name: 'Lê Thị C', description: 'Meal allowance', duration: '1 week', amount: '150$', status: 'paid' }
+            ],
+            draft: [
+                { name: 'Nguyễn Văn D', description: 'Training reimbursement', duration: '3 days', amount: '200$', status: 'draft' }
+            ],
+            cancel: [
+                { name: 'Nguyễn Văn E', description: 'Medical expense', duration: '1 day', amount: '300$', status: 'cancel' }
+            ]
+        };
+
+        // Show claims based on the selected status
+        function showClaims(status, clickedElement) {
+            // Remove active class from all navbar items
+            const links = document.querySelectorAll('.tab');
+            links.forEach(link => link.classList.remove('bg-purple-600', 'text-white', 'font-semibold'));
+
+            // Add active class to the clicked item
+            clickedElement.classList.add('bg-purple-600', 'text-white', 'font-semibold');
+
+            // Get the claims data for the selected status
+            const claims = claimsData[status] || claimsData['all'];
+
+            // Clear the current claims list
+            const claimsTableBody = document.getElementById('claims-table-body');
+            claimsTableBody.innerHTML = '';  // Clear previous content
+
+            // Display claims for the selected status
+            claims.forEach(claim => {
+                const claimRow = document.createElement('tr');
+                claimRow.classList.add('border-b');
+
+                claimRow.innerHTML = `
+                    <td class="border px-4 py-2"><input type="checkbox"></td>
+                    <td class="border px-4 py-2">${claim.description} - ${claim.name}</td>
+                    <td class="border px-4 py-2">${claim.duration}</td>
+                    <td class="border px-4 py-2">${claim.amount}</td>
+                    <td class="border px-4 py-2">
+                        <span class="capitalize text-${claim.status === 'pending' ? 'yellow' : claim.status === 'approved' ? 'green' : claim.status === 'paid' ? 'blue' : claim.status === 'draft' ? 'purple' : 'red'}-500">
+                            ${claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="border px-4 py-2">
+                        <button class="text-blue-500 hover:underline">Edit</button>
+                        <button class="text-red-500 hover:underline ml-2">Delete</button>
+                    </td>
+                `;
+                claimsTableBody.appendChild(claimRow);
+            });
+        }
+
+        // Initially load all claims
+        window.onload = function() {
+            const firstLink = document.querySelector('.navbar-item');
+            showClaims('all', firstLink);  // Set the first tab as active on load
+        }
+    </script>
 </main>
+
+
+
 </body>
 </html>
