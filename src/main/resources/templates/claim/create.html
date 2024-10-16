@@ -1,14 +1,200 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="layouts/layout">
+      layout:decorate="layouts/layout" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Create Claim with Modal</title>
+    <style>
+        .input-purple {
+            border-color: #6b46c1; /* Purple border */
+        }
+        .input-purple:focus {
+            border-color: #6b46c1;
+            box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.3); /* Purple glow */
+        }
+        .hidden { display: none; }
+    </style>
+    <script>
+        function showModal() {
+            document.getElementById('claimModal').classList.remove('hidden');
+        }
+
+        function hideModal() {
+            document.getElementById('claimModal').classList.add('hidden');
+        }
+
+        function addClaimDetails(event) {
+            event.preventDefault();
+
+            const date = document.getElementById('date').value;
+            const day = document.getElementById('day').value;
+            const fromTime = document.getElementById('fromTime').value;
+            const toTime = document.getElementById('toTime').value;
+            const totalHours = document.getElementById('totalHours').value;
+            const remarks = document.getElementById('remarks').value;
+
+            if (!date || !day || !fromTime || !toTime || !totalHours || !remarks) {
+                alert('Please fill out all fields');
+                return;
+            }
+
+            const tableBody = document.querySelector('#claimsTable tbody');
+            const newRow = document.createElement('tr');
+
+            newRow.innerHTML = `
+                <td class="py-2 px-4">${day}</td>
+                <td class="py-2 px-4">${date}</td>
+                <td class="py-2 px-4">${fromTime}</td>
+                <td class="py-2 px-4">${toTime}</td>
+                <td class="py-2 px-4">${totalHours}</td>
+                <td class="py-2 px-4">${remarks}</td>
+                <td class="py-2 px-4">
+                    <button class="text-red-600 hover:text-red-800 focus:outline-none" onclick="deleteRow(this)">Delete</button>
+                </td>
+            `;
+
+            tableBody.appendChild(newRow);
+
+            hideModal();
+            document.getElementById('claimForm').reset();
+        }
+
+        function deleteRow(button) {
+            const row = button.parentElement.parentElement;
+            row.remove();
+        }
+    </script>
 </head>
-<body>
-<main class="bg-purple-100/30 w-5/6">
-    This is create request
+<body class="bg-gray-100">
+<main layout:fragment="content" class="w-full mx-auto p-6">
+    <form th:action="@{/claims}" method="post" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+        <div class="container mx-auto p-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <!-- Main Create Claim Form -->
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-4">
+                        <a href="#" class="text-blue-600 hover:underline">Back</a>
+                        <h1 class="text-2xl font-bold bg-purple-500 text-white px-4 py-2 rounded-md text-center">CREATE CLAIM</h1>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button class="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none">Save</button>
+                        <button class="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 focus:outline-none">Submit</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="mb-2 text-gray-700"><strong>StaffId:</strong></label>
+                        <input type="text" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter StaffId" readonly>
+                    </div>
+                    <div>
+                        <label class="mb-2 text-gray-700"><strong>Staff Name:</strong></label>
+                        <input type="text" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter Staff Name" readonly>
+                    </div>
+                    <div>
+                        <label class="mb-2 text-gray-700"><strong>Staff Department:</strong></label>
+                        <input type="text" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter Department" readonly>
+                    </div>
+                    <div>
+                        <label class="mb-2 text-gray-700"><strong>Project Name:</strong></label>
+                        <select class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full">
+                            <option>Just Blog</option>
+                            <!-- Add more options here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="mb-2 text-gray-700"><strong>Role In Project:</strong></label>
+                        <input type="text" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter Role" readonly>
+                    </div>
+                    <div>
+                        <label class="mb-2 text-gray-700"><strong>Project Duration:</strong></label>
+                        <input type="text" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter Duration" readonly>
+                    </div>
+                    <div class="mb-4">
+                        <label for="totalHours" class="block text-gray-700">Total No. of Hours</label>
+                        <input type="number" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter total hours" readonly>
+                    </div>
+                </div>
+
+                <!-- Button to trigger the modal -->
+                <div class="mb-4">
+                    <button type="button" onclick="showModal()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none">Add more</button>
+                </div>
+
+                <!-- Table to list added claim entries -->
+                <table id="claimsTable" class="w-full text-left bg-white rounded-md shadow-md">
+                    <thead class="bg-gray-200 text-gray-600 uppercase text-sm">
+                    <tr>
+                        <th class="py-3 px-4">Day</th>
+                        <th class="py-3 px-4">Date</th>
+                        <th class="py-3 px-4">From</th>
+                        <th class="py-3 px-4">To</th>
+                        <th class="py-3 px-4">Total No. of Hours</th>
+                        <th class="py-3 px-4">Remarks</th>
+                        <th class="py-3 px-4">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Claim entries will be dynamically added here -->
+                    </tbody>
+                </table>
+
+                <!-- Modal (Hidden by default) -->
+                <div id="claimModal" class="hidden fixed z-10 inset-0 overflow-y-auto">
+                    <div class="flex items-center justify-center min-h-screen">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                            <div class="mb-4">
+                                <h2 class="text-xl font-bold">Claim details</h2>
+                            </div>
+
+                            <!-- Form inside modal -->
+                            <form  id="claimForm" onsubmit="addClaimDetails(event)">
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label for="date" class="block text-gray-700">Date</label>
+                                        <input type="date" id="date" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full">
+                                    </div>
+                                    <div>
+                                        <label for="day" class="block text-gray-700">Day</label>
+                                        <input type="text" id="day" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter day">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label for="fromTime" class="block text-gray-700">From</label>
+                                        <input type="time" id="fromTime" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full">
+                                    </div>
+                                    <div>
+                                        <label for="toTime" class="block text-gray-700">To</label>
+                                        <input type="time" id="toTime" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="totalHours" class="block text-gray-700">Total No. of Hours</label>
+                                    <input type="number" id="totalHours" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter total hours">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="remarks" class="block text-gray-700">Remarks</label>
+                                    <textarea id="remarks" rows="3" class="input-purple border px-4 py-2 rounded-md focus:outline-none w-full" placeholder="Enter remarks"></textarea>
+                                </div>
+
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" onclick="hideModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none">Close</button>
+                                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none">Add details</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
 </main>
+
 </body>
 </html>
