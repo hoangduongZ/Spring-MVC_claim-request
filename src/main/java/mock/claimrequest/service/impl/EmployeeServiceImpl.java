@@ -1,6 +1,6 @@
 package mock.claimrequest.service.impl;
 
-import mock.claimrequest.dto.employee.EmployeeForProjectSaveDTO;
+import mock.claimrequest.dto.employee.EmployeeGetDTO;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
 import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Department;
@@ -73,10 +73,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeForProjectSaveDTO> getAll() {
+    public List<EmployeeGetDTO> getAll() {
         return employeeRepository.findByAccountIsNotNull().stream().map(
                 employee -> {
-                    EmployeeForProjectSaveDTO saveDTO = new EmployeeForProjectSaveDTO();
+                    EmployeeGetDTO saveDTO = new EmployeeGetDTO();
                     saveDTO.setUserName(employee.getAccount().getUserName());
                     saveDTO.setId(employee.getId());
                     return saveDTO;

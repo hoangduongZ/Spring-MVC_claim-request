@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mock.claimrequest.entity.entityEnum.ProjectRole;
+import mock.claimrequest.dto.employeeProject.EmployeeForProjectSaveDTO;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,15 +18,15 @@ import java.util.UUID;
 public class ProjectSaveDTO {
     private String name;
 
-    private LocalDateTime startDate;
+    private String description;
 
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
     private BigDecimal budget;
 
     private ProjectStatus projectStatus;
 
-    private UUID employeeId;
-
-    private ProjectRole role;
+    private List<EmployeeForProjectSaveDTO> employeeProjects;
 }
