@@ -12,6 +12,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,10 +45,10 @@ public class Project {
 
     private BigDecimal budget;
 
-    @Column(name = "create_time", updatable = false)
+    @CreationTimestamp
     private LocalDateTime createTime;
 
-    @Column(name = "update_time")
+    @UpdateTimestamp
     private LocalDateTime updateTime;
 
     @Column(name = "status")

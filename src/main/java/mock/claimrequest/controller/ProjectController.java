@@ -3,9 +3,7 @@ package mock.claimrequest.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
-import mock.claimrequest.dto.employeeProject.EmployeeForProjectSaveDTO;
 import mock.claimrequest.dto.project.ProjectSaveDTO;
-import mock.claimrequest.entity.Project;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.service.EmployeeService;
@@ -17,11 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("projects")
@@ -68,4 +61,11 @@ public class ProjectController {
         projectService.create(projectSaveDTO);
         return "redirect:/projects/add";
     }
+
+    @GetMapping("/index")
+    public String getListProject(Model model){
+        model.addAttribute("projects", projectService.list());
+        return "project/index";
+    }
+
 }

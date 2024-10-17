@@ -57,6 +57,15 @@
       <i class="fa-solid fa-chevron-left text-xs transition"></i>
     </button>
     <div class="hidden list-item flex flex-col">
+      <a th:href="@{/projects/index}"
+         class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
+        <div>
+          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
+            <i class="text-xs fa-solid fa-arrow-right"></i></span>
+          <span class="group-hover:ml-2 duration-300">List</span>
+        </div>
+        <i class="fa-solid fa-table-list"></i>
+      </a>
       <a th:href="@{/projects/add}"
          class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
         <div>
@@ -65,15 +74,6 @@
           <span class="group-hover:ml-2 duration-300">Add</span>
         </div>
         <i class="fa-regular fa-square-plus"></i>
-      </a>
-      <a href="#!"
-         class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-        <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-          <span class="group-hover:ml-2 duration-300">List</span>
-        </div>
-        <i class="fa-solid fa-table-list"></i>
       </a>
     </div>
     <!-- New Project Section -->
@@ -86,9 +86,16 @@
     </div>
     <div class="aside-item hover:bg-slate-200">
       <a th:href="@{/claims/pending}"
-         class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+         class="p-2 flex justify-between items-center w-full text-left"
       >
         <span th:class="${currentPage == 'pending'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Pending</span>
+      </a>
+    </div>
+    <div class="aside-item hover:bg-slate-200">
+      <a th:href="@{/claims/pending}"
+         class="p-2 flex justify-between items-center w-full text-left shadow-sm"
+      >
+        <span>Draft</span>
       </a>
     </div>
   </div>
