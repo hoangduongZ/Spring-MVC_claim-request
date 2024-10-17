@@ -8,8 +8,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
-    List<Project> findByProjectStatus(String projectStatus);
-
-
-
+    List<Project> findAllByProjectStatus(ProjectStatus projectStatus);
 }

@@ -1,5 +1,6 @@
 package mock.claimrequest.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,11 +12,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,26 +38,39 @@ public class Project {
     private String description;
 
     @Column(name = "start_date")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     private BigDecimal budget;
 
-    @Column(name = "create_time", updatable = false)
+    @CreationTimestamp
     private LocalDateTime createTime;
 
-    @Column(name = "update_time")
+    @UpdateTimestamp
     private LocalDateTime updateTime;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private ProjectStatus projectStatus;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
 
     @OneToMany(mappedBy = "project")
     private List<Claim> claims;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Project)) return false;
+        Project project = (Project) o;
+        return id != null && id.equals(project.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

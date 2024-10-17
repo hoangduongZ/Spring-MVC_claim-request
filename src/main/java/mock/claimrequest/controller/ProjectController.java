@@ -1,44 +1,96 @@
 package mock.claimrequest.controller;
 
-import mock.claimrequest.entity.Project;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
+import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
+import mock.claimrequest.dto.project.ProjectDTO;
+import mock.claimrequest.dto.project.ProjectSaveDTO;
+import mock.claimrequest.entity.entityEnum.ProjectRole;
+import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.service.EmployeeService;
 import mock.claimrequest.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+import java.util.List;
+import java.util.UUID;
+
 @Controller
 @RequestMapping("projects")
 public class ProjectController {
     private final EmployeeService employeeService;
+    private final ProjectService projectService;
 
-    public ProjectController(EmployeeService employeeService) {
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    public ProjectController(EmployeeService employeeService, ProjectService projectService) {
         this.employeeService = employeeService;
+        this.projectService = projectService;
     }
 
     @GetMapping("/add")
-    public String getAddProject(Model model){
-        model.addAttribute("employees", employeeService);
+    public String getAddProject(Model model) throws JsonProcessingException {
+        var employees = employeeService.getAllEmployeeFree();
+
+        model.addAttribute("project", new ProjectSaveDTO());
+        model.addAttribute("employees", employees);
+        model.addAttribute("roles", ProjectRole.values());
+        model.addAttribute("projectStatuses", ProjectStatus.values());
+        String json = objectMapper.writeValueAsString(employees);
+
+        model.addAttribute("employeesJSON", json);
         return "project/create";       
     }
-    @Autowired
-    private ProjectService projectService;
 
-    @GetMapping("/index")
-    public String getIndex(Model model, @RequestParam(value = "projectStatus", required = false) String projectStatus) {
-        List<Project> projects;
-        if (projectStatus != null) {
-            projects = projectService.getProjectsByStatus(projectStatus);
-        } else {
-            projects = projectService.getAllProjects();
-        }
-        model.addAttribute("projects", projects);
-        model.addAttribute("status", projectStatus);
+
+    @PostMapping("/add")
+    public String postAddProject(@ModelAttribute @Valid ProjectSaveDTO projectSaveDTO){
+        projectService.create(projectSaveDTO);
+        return "redirect:/projects/add";
+    }
+
+    @GetMapping
+    public String getListProject(Model model){
+        model.addAttribute("projects", projectService.list());
         return "project/index";
     }
+
+    @GetMapping("/{id}/edit")
+    public String editProject(@PathVariable("id") UUID projectId, Model model) {
+        ProjectDTO project = projectService.getById(projectId);
+
+        List<EmployeeProjectDTO> employeeProjects = projectService.getEmployeeProjectsByProjectId(projectId);
+        model.addAttribute("projectStatuses", ProjectStatus.values());
+        model.addAttribute("project", project);
+        model.addAttribute("employeeProjects", employeeProjects);
+
+        var employees = employeeService.getAllEmployeeFreeAndWorkingCurrentProject(projectId);
+        model.addAttribute("employees", employees);
+        model.addAttribute("roles", ProjectRole.values());
+        return "project/edit";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String updateProject(@ModelAttribute ProjectDTO projectDTO) {
+        projectService.update(projectDTO);
+        return "redirect:/projects";
+    }
+
+    @GetMapping("/{id}/delete")
+    public String deleteProject(@PathVariable UUID id) {
+        projectService.delete(id);
+        return "redirect:/projects";
+    }
+
 }

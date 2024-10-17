@@ -1,6 +1,6 @@
 package mock.claimrequest.service.impl;
 
-import mock.claimrequest.dto.claim.ClaimGetDto;
+import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.repository.ClaimRepository;
@@ -22,10 +22,10 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public List<ClaimGetDto> getClaimByStatus(ClaimStatus claimStatus){
+    public List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus){
         return claimRepository.findAllByStatus(claimStatus).stream().map(
                 claim -> {
-                    ClaimGetDto claimGetDto= new ClaimGetDto();
+                    ClaimGetDTO claimGetDto= new ClaimGetDTO();
                     claimGetDto.setEmployeeName(claim.getEmployee().getFirstname() + " " +claim.getEmployee().getLastname());
                     claimGetDto.setRequestReason(claim.getRequestReason());
                     claimGetDto.setProjectName(claim.getProject().getName());
@@ -52,9 +52,9 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public ClaimGetDto findById(UUID id) {
+    public ClaimGetDTO findById(UUID id) {
         Claim claim= claimRepository.findById(id).orElseThrow(()-> new RuntimeException("Claim not exist"));
-        ClaimGetDto claimGetDto = new ClaimGetDto();
+        ClaimGetDTO claimGetDto = new ClaimGetDTO();
         claimGetDto.setEmployeeName(claim.getEmployee().getFirstname() + " " + claim.getEmployee().getLastname());
         claimGetDto.setRequestReason(claim.getRequestReason());
         claimGetDto.setProjectName(claim.getProject().getName());

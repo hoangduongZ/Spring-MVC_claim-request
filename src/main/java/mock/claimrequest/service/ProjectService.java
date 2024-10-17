@@ -1,23 +1,27 @@
 package mock.claimrequest.service;
 
+
+import jakarta.validation.Valid;
+import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
+import mock.claimrequest.dto.project.ProjectDTO;
+import mock.claimrequest.dto.project.ProjectSaveDTO;
+import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.Project;
-import mock.claimrequest.repository.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import mock.claimrequest.entity.entityEnum.ProjectStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.UUID;
 
-@Service
-public class ProjectService {
+public interface ProjectService {
+    void create(@Valid ProjectSaveDTO projectSaveDTO);
+    List<ProjectDTO> list();
+    List<ProjectDTO> listByInProgressStatus(ProjectStatus projectStatus);
+    ProjectDTO getById(UUID projectId);
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    List<EmployeeProjectDTO> getEmployeeProjectsByProjectId(UUID projectId);
 
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
-    }
+    void update(@Valid ProjectDTO projectDTO);
 
-    public List<Project> getProjectsByStatus(String projectStatus) {
-        return projectRepository.findByProjectStatus(projectStatus);
-    }
+    void delete(UUID id);
 }

@@ -1,8 +1,6 @@
 package mock.claimrequest.controller;
 
 import jakarta.validation.Valid;
-import mock.claimrequest.dto.auth.AccountRegisterDTO;
-import mock.claimrequest.dto.employee.EmployeeForProjectSaveDto;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
 import mock.claimrequest.service.DepartmentService;
 import mock.claimrequest.service.EmployeeService;
@@ -33,7 +31,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/add")
-    public String postEmployeeAdd(Model model, @Valid @ModelAttribute EmployeeSaveDTO employeeSaveDTO, RedirectAttributes attributes){
+    public String postEmployeeAdd(@Valid @ModelAttribute EmployeeSaveDTO employeeSaveDTO, RedirectAttributes attributes){
         if(employeeService.saveEmployeeAlongWithAccount(employeeSaveDTO)){
             attributes.addFlashAttribute("message", "Save employee success");
         }

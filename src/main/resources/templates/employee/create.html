@@ -12,7 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100/30 w-5/6">
+<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100/10 w-5/6">
     <div th:text="${message}"></div>
     <h2 class="text-2xl font-semibold mb-6">Add employee</h2>
     <form th:action="@{/employees/add}" th:object="${employee}" method="post"
@@ -61,7 +61,7 @@
             <select id="department" name="departmentId"
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                     required>
-                <option value="">Select departments</option>
+                <option value="">-- Select departments --</option>
                 <option th:each="d : ${departments}" th:value="${d.id}"
                         th:text="${d.name}"></option>
             </select>
