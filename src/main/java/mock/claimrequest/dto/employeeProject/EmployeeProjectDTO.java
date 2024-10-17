@@ -12,8 +12,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeForProjectSaveDTO {
+public class EmployeeProjectDTO {
     private UUID employeeId;
-    private ProjectRole role;
     private String accountName;
+    private ProjectRole role;
 }

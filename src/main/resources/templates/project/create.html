@@ -16,7 +16,7 @@
         const employees = /*[[${employees}]]*/ [];
         const roles = /*[[${roles}]]*/ [];
     </script>
-    <script src="/js/create_project.js" th:inline="javascript"></script>
+    <script src="/js/project.js" th:inline="javascript"></script>
 </head>
 <body class="bg-purple-100">
 <main layout:fragment="content" class="w-full mx-auto p-6">
@@ -28,7 +28,7 @@
             </div>
         </div>
         <form th:action="@{/projects/add}" method="post" th:object="${project}" class="rounded-b px-8  pb-8 mb-4">
-            <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic">Add new project</h1>
+            <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic">New project</h1>
             <div class="mb-4">
                 <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Project Name:</label>
                 <input type="text" id="projectName" name="name" required
@@ -71,6 +71,8 @@
                 </select>
             </div>
 
+<!--            <div th:text="${employeesJSON}"></div>-->
+
             <h2 class="text-xl font-bold text-purple-600 mb-2">Select Employees</h2>
             <table id="employeeTable" class="mb-4 border border-gray-300">
                 <thead class="bg-slate-200">
@@ -83,18 +85,16 @@
                 <tbody>
                 <tr th:each="employeeProject, indexStat : ${project.employeeProjects}" class="border-b">
                     <td class="p-4">
-                        <!-- Dropdown để chọn nhân viên -->
                         <select th:field="*{employeeProjects[__${indexStat.index}__].employeeId}"
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             <option th:each="employee : ${employees}"
-                                    th:value="${employee.id}"
-                                    th:text="${employee.userName}"
-                                    th:selected="${employeeProject.employeeId == employee.id}">
+                                    th:value="${employee.employeeId}"
+                                    th:text="${employee.accountName}"
+                                    th:selected="${employeeProject.employeeId == employee.employeeId}">
                             </option>
                         </select>
                     </td>
                     <td class="p-4">
-                        <!-- Dropdown để chọn vai trò của nhân viên -->
                         <select th:field="*{employeeProjects[__${indexStat.index}__].role}"
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             <option th:each="role : ${roles}"

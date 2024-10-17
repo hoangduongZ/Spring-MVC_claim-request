@@ -55,7 +55,7 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private ProjectStatus projectStatus;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
 
     @OneToMany(mappedBy = "project")

@@ -1,25 +1,24 @@
-const selectedEmployees = new Set();
-
 function addRow() {
     const table = document.getElementById('employeeTable');
     const rowCurrent = table.rows.length;
-    if (rowCurrent > employees.length){
-        alert("Row exceed number of Employee !");
+    const maxRows = employees.length; // Giới hạn số hàng theo số nhân viên
+
+    if (rowCurrent - 1 >= maxRows) { // -1 để tính toán hàng tiêu đề
+        alert("Row exceeds the number of Employees!");
         return;
     }
 
-    const rowNum = table.rows.length - 1;
     const newRow = table.insertRow();
     newRow.classList.add("bg-white");
     newRow.innerHTML = `
-        <td class="border px-4 py-2">
-            <select name="employeeProjects[${rowNum}].employeeId" class="border rounded py-1 px-2" onchange="updateSelectedEmployees(this.value)">
+        <td class=" px-4 py-2">
+            <select name="employeeProjects[${rowCurrent - 1}].employeeId" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 <option value="">-- Select Employee --</option>
-                ${employees.map(emp => `<option value="${emp.id}">${emp.userName}</option>`).join('')}
+                ${employees.map(emp => `<option value="${emp.employeeId}">${emp.accountName}</option>`).join('')}
             </select>
         </td>
-        <td class="border px-4 py-2">
-            <select name="employeeProjects[${rowNum}].role" class="border rounded py-1 px-2">
+        <td class=" px-4 py-2">
+            <select name="employeeProjects[${rowCurrent - 1}].role" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 <option value="">-- Select Role --</option>
                 ${roles.map(role => `<option value="${role}">${role}</option>`).join('')}
             </select>

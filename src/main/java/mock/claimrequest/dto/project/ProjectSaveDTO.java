@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mock.claimrequest.dto.employeeProject.EmployeeForProjectSaveDTO;
+import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 
 import java.math.BigDecimal;
@@ -28,5 +28,5 @@ public class ProjectSaveDTO {
 
     private ProjectStatus projectStatus;
 
-    private List<EmployeeForProjectSaveDTO> employeeProjects;
+    private List<EmployeeProjectDTO> employeeProjects;
 }
