@@ -1,5 +1,5 @@
 <header th:fragment="header" class="min-h-[10vh] shadow flex justify-between items-center bg-white text-gray-500">
-    <div class="w-[8vh] h-[8vh] ml-3 rounded-full hover:shadow-md overflow-hidden">
+    <div class="w-[8vh] h-[8vh] ml-3 rounded-full hover:shadow-lg shadow border overflow-hidden">
         <img class="w-full h-full object-cover" th:src="@{/img/bee.png}" alt="Bee">
     </div>
     <div class="w-1/3 flex items-center">
@@ -24,7 +24,9 @@
                 </div>
             </div>
         </div>
-        <i class="fas fa-power-off icon text-green-500 p-3 rounded-full hover:shadow"></i>
+        <a href="/logout">
+            <i class="fas fa-power-off icon text-green-500 p-3 rounded-full hover:shadow"></i>
+        </a>
     </div>
     <script>
         function toggleDropdown() {
