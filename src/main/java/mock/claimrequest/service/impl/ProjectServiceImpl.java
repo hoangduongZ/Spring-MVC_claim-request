@@ -7,19 +7,22 @@ import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
 import mock.claimrequest.service.ProjectService;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -34,6 +37,37 @@ public class ProjectServiceImpl implements ProjectService {
         this.employeeProjectRepository = employeeProjectRepository;
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
+    }
+
+
+    @Override
+    public List<ProjectDTO> list() {
+        return projectRepository.findAll().stream().map((project) -> modelMapper.map(project, ProjectDTO.class))
+                .toList();
+    }
+
+    @Override
+    public List<ProjectDTO> listByInProgressStatus(ProjectStatus projectStatus) {
+        return projectRepository.findAllByProjectStatus(projectStatus).stream().map((project) -> modelMapper.map(project, ProjectDTO.class))
+                .toList();
+    }
+
+    @Override
+    public ProjectDTO getById(UUID projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalStateException("Project is not existed!"));
+        return modelMapper.map(project, ProjectDTO.class);
+    }
+
+    @Override
+    public List<EmployeeProjectDTO> getEmployeeProjectsByProjectId(UUID projectId) {
+        List<EmployeeProject> employeeProjects = employeeProjectRepository.findByProjectId(projectId);
+        return employeeProjects.stream().map(employeeProject -> {
+            EmployeeProjectDTO dto = new EmployeeProjectDTO();
+            dto.setEmployeeId(employeeProject.getEmployee().getId());
+            dto.setAccountName(employeeProject.getEmployee().getAccount().getUserName());
+            dto.setRole(employeeProject.getRole());
+            return dto;
+        }).toList();
     }
 
     @Override
@@ -53,78 +87,65 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectRepository.save(project);
 
-        List<EmployeeProject> employeeProjects = projectSaveDTO.getEmployeeProjects().stream()
-                .map(employeeForProjectSaveDTO -> {
-                    EmployeeProject employeeProject = new EmployeeProject();
-                    Employee employee = employeeRepository.findById(employeeForProjectSaveDTO.getEmployeeId())
-                            .orElseThrow(() -> new IllegalStateException("Employee not found with ID: " + employeeForProjectSaveDTO.getEmployeeId()));
-
-                    employeeProject.setEmployee(employee);
-                    employeeProject.setProject(project);
-                    employeeProject.setRole(employeeForProjectSaveDTO.getRole());
-                    employeeProject.setId(new EmployeeProjectId(employee.getId(), project.getId()));
-                    return employeeProject;
-                })
-                .toList();
+        List<EmployeeProject> employeeProjects = mapEmployeeProjects(project, projectSaveDTO.getEmployeeProjects());
 
         employeeProjectRepository.saveAll(employeeProjects);
-    }
-
-    @Override
-    public List<ProjectDTO> list(){
-        return projectRepository.findAll().stream().map((project)-> modelMapper.map(project, ProjectDTO.class))
-                .toList();
-    }
-
-    @Override
-    public List<ProjectDTO> listByInProgressStatus(ProjectStatus projectStatus){
-        return projectRepository.findAllByProjectStatus(projectStatus).stream().map((project)-> modelMapper.map(project, ProjectDTO.class))
-                .toList();
-    }
-
-    @Override
-    public ProjectDTO getById(UUID projectId) {
-        Project project = projectRepository.findById(projectId).orElseThrow(()-> new IllegalStateException("Project is not existed!"));
-        return modelMapper.map(project, ProjectDTO.class);
-    }
-
-    @Override
-    public List<EmployeeProjectDTO> getEmployeeProjectsByProjectId(UUID projectId) {
-        List<EmployeeProject> employeeProjects= employeeProjectRepository.findByProjectId(projectId);
-        return employeeProjects.stream().map(employeeProject -> {
-            EmployeeProjectDTO dto = new EmployeeProjectDTO();
-            dto.setEmployeeId(employeeProject.getEmployee().getId());
-            dto.setAccountName(employeeProject.getEmployee().getAccount().getUserName());
-            dto.setRole(employeeProject.getRole());
-            return dto;
-        }).toList();
     }
 
     @Override
     public void update(ProjectDTO projectDTO) {
-        Project project = projectRepository.findById(projectDTO.getId()).orElseThrow(()->
+        Project project = projectRepository.findById(projectDTO.getId()).orElseThrow(() ->
                 new IllegalStateException("Project not existed!"));
 
-        List<EmployeeProject> employeeProjects = projectDTO.getEmployeeProjects().stream()
-                .map(employeeForProjectSaveDTO -> {
-                    EmployeeProject employeeProject = new EmployeeProject();
-                    Employee employee = employeeRepository.findById(employeeForProjectSaveDTO.getEmployeeId())
-                            .orElseThrow(() -> new IllegalStateException("Employee not found with ID: " + employeeForProjectSaveDTO.getEmployeeId()));
-                    employeeProject.setEmployee(employee);
-                    employeeProject.setProject(project);
-                    employeeProject.setRole(employeeForProjectSaveDTO.getRole());
-                    employeeProject.setId(new EmployeeProjectId(employee.getId(), project.getId()));
-                    return employeeProject;
-                })
-                .toList();
+        List<EmployeeProject> employeeProjects = mapEmployeeProjects(project, projectDTO.getEmployeeProjects());
         employeeProjectRepository.saveAll(employeeProjects);
+    }
+
+    private List<EmployeeProject> mapEmployeeProjects(Project project, List<EmployeeProjectDTO> employeeProjectDTOS) {
+        if (employeeProjectDTOS == null) {
+            return new ArrayList<>();
+        }
+
+        List<EmployeeProject> existingEmployeeProjects = employeeProjectRepository.findByProjectId(project.getId());
+
+        List<EmployeeProject> newEmployeeProjects = employeeProjectDTOS.stream()
+                .map(employeeForProjectSaveDTO -> {
+                    if (employeeForProjectSaveDTO.getEmployeeId() != null) {
+                        Employee employee = employeeRepository.findById(employeeForProjectSaveDTO.getEmployeeId())
+                                .orElseThrow(() -> new IllegalStateException("Employee not found with ID: " + employeeForProjectSaveDTO.getEmployeeId()));
+
+                        employee.setEmployeeStatus(EmployeeStatus.WORKING);
+
+                        EmployeeProject employeeProject = new EmployeeProject();
+                        employeeProject.setEmployee(employee);
+                        employeeProject.setProject(project);
+                        employeeProject.setRole(employeeForProjectSaveDTO.getRole());
+                        employeeProject.setId(new EmployeeProjectId(employee.getId(), project.getId()));
+
+                        return employeeProject;
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        List<EmployeeProject> employeesToRemove = existingEmployeeProjects.stream()
+                .filter(existing -> newEmployeeProjects.stream()
+                        .noneMatch(newProject -> newProject.getEmployee().getId().equals(existing.getEmployee().getId())))
+                .collect(Collectors.toList());
+
+        if(!employeesToRemove.isEmpty()){
+            employeeProjectRepository.deleteAll(employeesToRemove);
+        }
+        return newEmployeeProjects;
     }
 
     @Override
     public void delete(UUID id) {
-        projectRepository.findById(id).orElseThrow(()->
+        projectRepository.findById(id).orElseThrow(() ->
                 new IllegalStateException("Project not existed!"));
         projectRepository.deleteById(id);
     }
+
 
 }

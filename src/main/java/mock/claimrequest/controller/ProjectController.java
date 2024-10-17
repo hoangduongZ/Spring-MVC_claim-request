@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.dto.project.ProjectDTO;
 import mock.claimrequest.dto.project.ProjectSaveDTO;
-import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.service.EmployeeService;
@@ -39,7 +38,7 @@ public class ProjectController {
 
     @GetMapping("/add")
     public String getAddProject(Model model) throws JsonProcessingException {
-        var employees = employeeService.getAll();
+        var employees = employeeService.getAllEmployeeFree();
 
         model.addAttribute("project", new ProjectSaveDTO());
         model.addAttribute("employees", employees);
@@ -72,7 +71,7 @@ public class ProjectController {
         model.addAttribute("project", project);
         model.addAttribute("employeeProjects", employeeProjects);
 
-        var employees = employeeService.getAll();
+        var employees = employeeService.getAllEmployeeFreeAndWorkingCurrentProject(projectId);
         model.addAttribute("employees", employees);
         model.addAttribute("roles", ProjectRole.values());
         return "project/edit";

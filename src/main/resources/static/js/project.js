@@ -4,7 +4,7 @@ function addRow() {
     const maxRows = employees.length; // Giới hạn số hàng theo số nhân viên
 
     if (rowCurrent - 1 >= maxRows) { // -1 để tính toán hàng tiêu đề
-        alert("Row exceeds the number of Employees!");
+        alert("No employee free!");
         return;
     }
 

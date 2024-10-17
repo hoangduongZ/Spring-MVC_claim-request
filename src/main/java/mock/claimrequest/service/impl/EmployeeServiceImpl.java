@@ -8,6 +8,7 @@ import mock.claimrequest.entity.Department;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.Role;
 import mock.claimrequest.entity.entityEnum.AccountStatus;
+import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.DepartmentRepository;
 import mock.claimrequest.repository.EmployeeRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -51,6 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setFirstname(employeeSaveDTO.getFirstname());
         employee.setLastname(employeeSaveDTO.getLastname());
         employee.setGender(employeeSaveDTO.isGender());
+        employee.setEmployeeStatus(EmployeeStatus.FREE);
 
         Account account = new Account();
         account.setEmail(employeeSaveDTO.getAccountRegisterDTO().getEmail());
@@ -74,12 +77,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeProjectDTO> getAll() {
-        return employeeRepository.findByAccountIsNotNull().stream().map(
+    public List<EmployeeProjectDTO> getAllEmployeeFree() {
+        return employeeRepository.findByEmployeeStatus(EmployeeStatus.FREE).stream().map(
+                employee -> {
+                    EmployeeProjectDTO saveDTO = new EmployeeProjectDTO();
+                    if (employee.getAccount()!=null){
+                        saveDTO.setAccountName(employee.getAccount().getUserName());
+                    }
+                    saveDTO.setEmployeeId(employee.getId());
+                    saveDTO.setEmployeeStatus(employee.getEmployeeStatus());
+                    return saveDTO;
+                }).toList();
+    }
+
+    @Override
+    public List<EmployeeProjectDTO> getAllEmployeeFreeAndWorkingCurrentProject(UUID projectId) {
+        return employeeRepository.findAllFreeOrWorkingInProject
+                (projectId,EmployeeStatus.FREE, EmployeeStatus.WORKING).stream().map(
                 employee -> {
                     EmployeeProjectDTO saveDTO = new EmployeeProjectDTO();
                     saveDTO.setAccountName(employee.getAccount().getUserName());
                     saveDTO.setEmployeeId(employee.getId());
+                    saveDTO.setEmployeeStatus(employee.getEmployeeStatus());
                     return saveDTO;
                 }).toList();
     }

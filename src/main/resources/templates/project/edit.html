@@ -3,133 +3,140 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="layouts/layout">
 <head>
-  <meta charset="UTF-8">
-  <title>Edit Project</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-  </style>
-  <script th:inline="javascript">
-    const employees = /*[[${employees}]]*/ [];
-    const roles = /*[[${roles}]]*/ [];
-  </script>
-  <script src="/js/project.js" th:inline="javascript"></script>
+    <meta charset="UTF-8">
+    <title>Edit Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    </style>
+    <script th:inline="javascript">
+        const employees = /*[[${employees}]]*/ [];
+        const roles = /*[[${roles}]]*/ [];
+    </script>
+    <script src="/js/project.js" th:inline="javascript"></script>
 </head>
 <body class="bg-purple-100">
 <main layout:fragment="content" class="w-full mx-auto p-6">
-  <div class="bg-gradient-to-b from-slate-100 to-white shadow-md rounded-2xl">
-    <div class="flex p-3 overflow-hidden">
-      <div class="drop-shadow-2xl w-8 h-8 block rounded-full bg-purple-400 hover:bg-purple-500 flex justify-center items-center"
-           onclick="history.back()">
-        <i class="fa-solid fa-chevron-left text-white"></i>
-      </div>
+    <div class="bg-gradient-to-b from-slate-100 to-white shadow-md rounded-2xl">
+        <div class="flex p-3 overflow-hidden">
+            <div class="drop-shadow-2xl w-8 h-8 block rounded-full bg-purple-400 hover:bg-purple-500 flex justify-center items-center"
+                 onclick="history.back()">
+                <i class="fa-solid fa-chevron-left text-white"></i>
+            </div>
+        </div>
+        <form th:action="@{/projects/{id}/edit(id=${project.id})}" method="post" th:object="${project}"
+              class="rounded-b px-8 pb-8 mb-4">
+            <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
+                Update project</h1>
+            <input type="hidden" name="id" th:value="${project.id}">
+            <div class="mb-4">
+                <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Project Name:</label>
+                <input type="text" id="projectName" name="name" required
+                       th:value="${project.name}"
+                       class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description:</label>
+                <textarea id="description" name="description" rows="4" required
+                          th:text="${project.description}"
+                          class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="startDate" class="block text-gray-700 text-sm font-bold mb-2">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required
+                       th:value="${project.startDate}"
+                       class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+            </div>
+
+            <div class="mb-4">
+                <label for="endDate" class="block text-gray-700 text-sm font-bold mb-2">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required
+                       th:value="${project.endDate}"
+                       class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+            </div>
+
+            <div class="mb-4">
+                <label for="budget" class="block text-gray-700 text-sm font-bold mb-2">Budget:</label>
+                <input type="number" id="budget" name="budget" min="0" required
+                       th:value="${project.budget}"
+                       class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"
+                       placeholder="Enter budget amount">
+            </div>
+
+            <div class="mb-4">
+                <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status:</label>
+                <select id="status" name="status" required
+                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+                    <option value="">-- Select Status --</option>
+                    <th:block th:each="status : ${projectStatuses}">
+                        <option th:value="${status}" th:text="${status.getName()}"
+                                th:selected="${project.projectStatus == status}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <h2 class="text-xl font-bold text-purple-600 mb-2">Select Employees</h2>
+            <table id="employeeTable" class="mb-4 border border-gray-300">
+                <thead class="bg-slate-200">
+                <tr>
+                    <th class="border px-4 py-2">Employee Name</th>
+                    <th class="border px-4 py-2">Role</th>
+                    <th class="border px-4 py-2">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="employeeProject, indexStat : ${employeeProjects}" class="border-b">
+                    <td class="p-4">
+                        <select th:field="*{employeeProjects[__${indexStat.index}__].employeeId}"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="">
+                                --Select employee--
+                            </option>
+                            <option th:each="employee : ${employees}"
+                                    th:value="${employee.employeeId}"
+                                    th:text="${employee.accountName}"
+                                    th:selected="${employeeProject.employeeId == employee.employeeId}">
+                            </option>
+                        </select>
+                    </td>
+                    <td class="p-4">
+                        <select th:field="*{employeeProjects[__${indexStat.index}__].role}"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option th:each="role : ${roles}"
+                                    th:value="${role}"
+                                    th:text="${role}"
+                                    th:selected="${employeeProject.role == role}">
+                            </option>
+                        </select>
+                    </td>
+                    <td class="border px-4 py-2 text-center">
+                        <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded"
+                                onclick="removeRow(this)">Remove
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="flex justify-end mt-2 mb-4">
+                <button type="button" onclick="addRow()"
+                        class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
+                    <span><i class="fa-solid fa-plus text-center"></i></span>
+                </button>
+            </div>
+            <hr/>
+            <div class="mt-4 flex items-center justify-between">
+                <button type="submit"
+                        class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
+                    Update Project
+                </button>
+            </div>
+        </form>
     </div>
-    <form th:action="@{/projects/{id}/edit(id=${project.id})}" method="post" th:object="${project}" class="rounded-b px-8 pb-8 mb-4">
-      <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
-       New project</h1>
-      <input type="hidden" name="id" th:value="${project.id}">
-      <div class="mb-4">
-        <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Project Name:</label>
-        <input type="text" id="projectName" name="name" required
-               th:value="${project.name}"
-               class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
-      </div>
-
-      <div class="mb-4">
-        <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description:</label>
-        <textarea id="description" name="description" rows="4" required
-                  th:text="${project.description}"
-                  class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"></textarea>
-      </div>
-
-      <div class="mb-4">
-        <label for="startDate" class="block text-gray-700 text-sm font-bold mb-2">Start Date:</label>
-        <input type="date" id="startDate" name="startDate" required
-               th:value="${project.startDate}"
-               class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
-      </div>
-
-      <div class="mb-4">
-        <label for="endDate" class="block text-gray-700 text-sm font-bold mb-2">End Date:</label>
-        <input type="date" id="endDate" name="endDate" required
-               th:value="${project.endDate}"
-               class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
-      </div>
-
-      <div class="mb-4">
-        <label for="budget" class="block text-gray-700 text-sm font-bold mb-2">Budget:</label>
-        <input type="number" id="budget" name="budget" min="0" required
-               th:value="${project.budget}"
-               class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"
-               placeholder="Enter budget amount">
-      </div>
-
-      <div class="mb-4">
-        <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status:</label>
-        <select id="status" name="status" required
-                class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
-          <option value="">-- Select Status --</option>
-          <th:block th:each="status : ${projectStatuses}">
-            <option th:value="${status}" th:text="${status.getName()}"
-                    th:selected="${project.projectStatus == status}"></option>
-          </th:block>
-        </select>
-      </div>
-
-      <h2 class="text-xl font-bold text-purple-600 mb-2">Select Employees</h2>
-      <table id="employeeTable" class="mb-4 border border-gray-300">
-        <thead class="bg-slate-200">
-        <tr>
-          <th class="border px-4 py-2">Employee Name</th>
-          <th class="border px-4 py-2">Role</th>
-          <th class="border px-4 py-2">Action</th>
-        </tr>
-        </thead>
-          <tbody>
-          <tr th:each="employeeProject, indexStat : ${employeeProjects}" class="border-b">
-              <td class="p-4">
-                  <select th:field="*{employeeProjects[__${indexStat.index}__].employeeId}"
-                          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                      <option th:each="employee : ${employees}"
-                              th:value="${employee.employeeId}"
-                              th:text="${employee.accountName}"
-                              th:selected="${employeeProject.employeeId == employee.employeeId}">
-                      </option>
-                  </select>
-              </td>
-              <td class="p-4">
-                  <select th:field="*{employeeProjects[__${indexStat.index}__].role}"
-                          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                      <option th:each="role : ${roles}"
-                              th:value="${role}"
-                              th:text="${role}"
-                              th:selected="${employeeProject.role == role}">
-                      </option>
-                  </select>
-              </td>
-              <td class="border px-4 py-2 text-center">
-                  <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button>
-              </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="flex justify-end mt-2 mb-4">
-        <button type="button" onclick="addRow()" class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
-          <span><i class="fa-solid fa-plus text-center"></i></span>
-        </button>
-      </div>
-      <hr/>
-      <div class="mt-4 flex items-center justify-between">
-        <button type="submit"
-                class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
-          Update Project
-        </button>
-      </div>
-    </form>
-  </div>
 </main>
 </body>
 </html>
