@@ -5,10 +5,12 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.Data;
+import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 
 import java.io.Serializable;
@@ -31,6 +33,10 @@ public class EmployeeProject implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private ProjectRole role;
+
+    @Enumerated(EnumType.STRING)
+    @JoinColumn(name = "status")
+    private EmpProjectStatus empProjectStatus;
 
     @Override
     public boolean equals(Object o) {

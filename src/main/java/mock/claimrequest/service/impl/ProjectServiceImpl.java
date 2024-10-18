@@ -7,6 +7,7 @@ import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.repository.EmployeeProjectRepository;
@@ -60,7 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<EmployeeProjectDTO> getEmployeeProjectsByProjectId(UUID projectId) {
-        List<EmployeeProject> employeeProjects = employeeProjectRepository.findByProjectId(projectId);
+        List<EmployeeProject> employeeProjects = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(projectId, EmpProjectStatus.IN);
         return employeeProjects.stream().map(employeeProject -> {
             EmployeeProjectDTO dto = new EmployeeProjectDTO();
             dto.setEmployeeId(employeeProject.getEmployee().getId());
@@ -103,10 +104,13 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(projectDTO.getId())
                 .orElseThrow(() -> new IllegalStateException("Project not existed!"));
 
-        if (projectDTO.getEmployeeProjects() == null) {
-            List<EmployeeProject> existingEmployeeProjects = employeeProjectRepository.findByProjectId(project.getId());
-            existingEmployeeProjects.forEach(emp -> emp.getEmployee().setEmployeeStatus(EmployeeStatus.FREE));
-            employeeProjectRepository.deleteAll(existingEmployeeProjects);
+        if (projectDTO.getEmployeeProjects() == null || projectDTO.getEmployeeProjects().isEmpty()) {
+            List<EmployeeProject> existingEmployeeProjects = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(project.getId(), EmpProjectStatus.IN);
+            existingEmployeeProjects.forEach(empProject -> {
+                empProject.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
+                empProject.setEmpProjectStatus(EmpProjectStatus.OUT);
+            });
+            employeeProjectRepository.saveAll(existingEmployeeProjects);
             return;
         }
 
@@ -130,6 +134,7 @@ public class ProjectServiceImpl implements ProjectService {
                         employeeProject.setProject(project);
                         employeeProject.setRole(employeeForProjectSaveDTO.getRole());
                         employeeProject.setId(new EmployeeProjectId(employee.getId(), project.getId()));
+                        employeeProject.setEmpProjectStatus(EmpProjectStatus.IN);
 
                         return employeeProject;
                     }
@@ -141,14 +146,24 @@ public class ProjectServiceImpl implements ProjectService {
         List<EmployeeProject> employeesToRemove = existingEmployeeProjects.stream()
                 .filter(existing -> newEmployeeProjects.stream()
                         .noneMatch(newProject -> newProject.getEmployee().getId().equals(existing.getEmployee().getId())))
-                .collect(Collectors.toList());
+                .toList();
 
-//        for (var emp: employeesToRemove){
-//            emp.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
-//        }
+        for (var emp : employeesToRemove) {
+            emp.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
+            emp.setEmpProjectStatus(EmpProjectStatus.OUT);
+            employeeProjectRepository.save(emp);
+        }
 
-        if(!employeesToRemove.isEmpty()){
-            employeeProjectRepository.deleteAll(employeesToRemove);
+        for (var newProject : newEmployeeProjects) {
+            EmployeeProject existingProject = existingEmployeeProjects.stream()
+                    .filter(existing -> existing.getEmployee().getId().equals(newProject.getEmployee().getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (existingProject != null) {
+                existingProject.setEmpProjectStatus(EmpProjectStatus.IN);
+                employeeProjectRepository.save(existingProject);
+            }
         }
         return newEmployeeProjects;
     }

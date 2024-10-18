@@ -1,11 +1,16 @@
 package mock.claimrequest.controller;
 
 import mock.claimrequest.dto.claim.ClaimGetDTO;
+import mock.claimrequest.entity.Claim;
+import mock.claimrequest.entity.ClaimDetail;
+import mock.claimrequest.entity.Employee;
+import mock.claimrequest.entity.Project;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.service.ClaimService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +29,20 @@ public class ClaimController {
         this.claimService = claimService;
     }
 
-    @GetMapping("/add")
-    public String getCreate(){
+    @GetMapping("/claims/add")
+    public String showAddClaimForm(Model model) {
+//        Claim claim = new Claim();
+//        model.addAttribute("claim", claim);
+//
+//        model.addAttribute("employees", employees);
+//        model.addAttribute("projects", projects);
+
         return "claim/create";
+    }
+
+    @PostMapping("/claims/add")
+    public String addClaim(@ModelAttribute Claim claim) {
+        return "redirect:/claims";
     }
 
     @GetMapping

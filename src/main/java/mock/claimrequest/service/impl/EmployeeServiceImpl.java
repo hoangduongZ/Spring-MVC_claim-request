@@ -8,6 +8,7 @@ import mock.claimrequest.entity.Department;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.Role;
 import mock.claimrequest.entity.entityEnum.AccountStatus;
+import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.DepartmentRepository;
@@ -92,8 +93,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<EmployeeProjectDTO> getAllEmployeeFreeAndWorkingCurrentProject(UUID projectId) {
-        return employeeRepository.findAllFreeOrWorkingInProject
-                (projectId,EmployeeStatus.FREE, EmployeeStatus.WORKING).stream().map(
+        return employeeRepository.findAllFreeOrWorkingInProject(projectId,
+                EmployeeStatus.FREE, EmployeeStatus.WORKING, EmpProjectStatus.IN).stream().map(
                 employee -> {
                     EmployeeProjectDTO saveDTO = new EmployeeProjectDTO();
                     saveDTO.setAccountName(employee.getAccount().getUserName());

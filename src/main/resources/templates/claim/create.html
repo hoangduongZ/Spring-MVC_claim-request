@@ -4,137 +4,125 @@
       layout:decorate="layouts/layout">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create New OT Request</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Add New Claim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            background-color: #f3e8ff; /* Light purple background */
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
     </style>
 </head>
-<body>
+<body class="bg-purple-100">
 <main layout:fragment="content" class="w-full mx-auto p-6">
-    <form action="@{/projects}" method="post" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
-        <h2 class="text-center text-2xl font-bold text-purple-600">Create New OT Request</h2>
+    <div class="bg-gradient-to-b from-slate-100 to-white shadow-md rounded-2xl">
+        <form th:action="@{/claims/add}" method="post" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
+            <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic">New Claim</h1>
 
-        <!-- Form fields for OT request -->
-        <div class="mt-4">
-            <label for="employee" class="block text-gray-700">Employee:</label>
-            <input type="text" id="employee" name="employee" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Current employee name" readonly>
-        </div>
-        <div class="mt-4">
-            <label for="project" class="block text-gray-700">Project:</label>
-            <input type="text" id="project" name="project" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Automatically displayed project name" readonly>
-        </div>
+            <div class="mb-4">
+                <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Claim Title:</label>
+                <input type="text" id="title" name="title" required
+                       class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+            </div>
 
-        <!-- OT time table -->
-        <div class="mt-6">
-            <h3 class="text-center text-xl font-semibold text-purple-600">Overtime Calculation</h3>
-            <table class="min-w-full bg-white border border-gray-300 mt-4">
-                <thead>
+            <div class="mb-4">
+                <label for="requestReason" class="block text-gray-700 text-sm font-bold mb-2">Request Reason:</label>
+                <textarea id="requestReason" name="requestReason" rows="4" required
+                          class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="duration" class="block text-gray-700 text-sm font-bold mb-2">Total Duration:</label>
+                <input type="number" id="duration" name="duration" readonly
+                       class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+            </div>
+
+            <h2 class="text-xl font-bold text-purple-600 mb-2">Claim Details</h2>
+            <table id="claimDetailTable" class="mb-4 border border-gray-300">
+                <thead class="bg-slate-200">
                 <tr>
-                    <th class="py-2 px-4 border text-left">Date</th>
-                    <th class="py-2 px-4 border text-left">Start Time</th>
-                    <th class="py-2 px-4 border text-left">End Time</th>
-                    <th class="py-2 px-4 border text-left">Total OT (hours)</th>
-                    <th class="py-2 px-4 border text-left">Action</th>
+                    <th class="border px-4 py-2">Start Time</th>
+                    <th class="border px-4 py-2">End Time</th>
+                    <th class="border px-4 py-2">Action</th>
                 </tr>
                 </thead>
-                <tbody id="otTableBody">
-                <!-- OT Rows will be dynamically added here -->
+                <tbody>
+                <tr th:each="claimDetail, indexStat : ${claim.claimDetails}" class="border-b">
+                    <td class="p-4">
+                        <input type="datetime-local" th:field="*{claimDetails[__${indexStat.index}__].startTime}"
+                               onchange="calculateDuration()"
+                               class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </td>
+                    <td class="p-4">
+                        <input type="datetime-local" th:field="*{claimDetails[__${indexStat.index}__].endTime}"
+                               onchange="calculateDuration()"
+                               class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </td>
+                    <td class="border px-4 py-2 text-center">
+                        <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button>
+                    </td>
+                </tr>
                 </tbody>
             </table>
-
-            <button type="button" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 mt-4" onclick="addRow()">Add OT Row</button>
-
-            <!-- Total OT -->
-            <div class="mt-4 text-right">
-                <strong>Total OT Hours: </strong>
-                <span id="totalOT">0.00</span> hours
+            <div class="flex justify-end mt-2 mb-4">
+                <button type="button" onclick="addRow()" class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white  w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
+                    <span><i class="fa-solid fa-plus text-center"></i></span>
+                </button>
             </div>
-        </div>
-
-        <div class="mt-6 text-center">
-            <button type="button" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" onclick="submitRequest()">Submit Request</button>
-            <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 ml-2" onclick="cancelRequest()">Cancel</button>
-        </div>
-    </form>
+            <hr/>
+            <div class="mt-4 flex items-center justify-between">
+                <button type="submit"
+                        class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
+                    Create Claim
+                </button>
+            </div>
+        </form>
+    </div>
 </main>
-
 <script>
-    let totalOT = 0; // Variable to track total OT hours
-
-    function calculateOT(startTime, endTime) {
-        const start = new Date(`1970-01-01T${startTime}:00`);
-        const end = new Date(`1970-01-01T${endTime}:00`);
-        const hours = (end - start) / 3600000; // Convert from milliseconds to hours
-        return hours >= 0 ? hours : 0;
-    }
-
-    function updateTotalOT() {
-        // Recalculate total OT
-        totalOT = 0;
-        const otRows = document.querySelectorAll('#otTableBody tr');
-        otRows.forEach(row => {
-            const otField = row.querySelector('input[type="text"]');
-            totalOT += parseFloat(otField.value) || 0;
-        });
-        // Update total OT display
-        document.getElementById('totalOT').textContent = totalOT.toFixed(2);
-    }
-
     function addRow() {
-        const tableBody = document.getElementById('otTableBody');
-        const newRow = document.createElement('tr');
-
+        const tableBody = document.getElementById("claimDetailTable").getElementsByTagName('tbody')[0];
+        const newRow = tableBody.insertRow();
         newRow.innerHTML = `
-            <td class="py-2 px-4 border">
-                <input type="date" class="w-full p-2 border border-gray-300 rounded" onchange="updateOT(this)">
+            <td class="p-4">
+                <input type="datetime-local" name="claimDetails[${tableBody.rows.length}].startTime"
+                       onchange="calculateDuration()"
+                       class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </td>
-            <td class="py-2 px-4 border">
-                <input type="time" class="w-full p-2 border border-gray-300 rounded" onchange="updateOT(this)">
+            <td class="p-4">
+                <input type="datetime-local" name="claimDetails[${tableBody.rows.length}].endTime"
+                       onchange="calculateDuration()"
+                       class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </td>
-            <td class="py-2 px-4 border">
-                <input type="time" class="w-full p-2 border border-gray-300 rounded" onchange="updateOT(this)">
-            </td>
-            <td class="py-2 px-4 border">
-                <input type="text" class="w-full p-2 border border-gray-300 rounded" readonly>
-            </td>
-            <td class="py-2 px-4 border text-center">
-                <button type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" onclick="removeRow(this)">Remove</button>
-            </td>
-        `;
-        tableBody.appendChild(newRow);
-    }
-
-    function updateOT(inputElement) {
-        const row = inputElement.closest('tr');
-        const startTime = row.querySelector('input[type="time"]:nth-of-type(1)').value;
-        const endTime = row.querySelector('input[type="time"]:nth-of-type(2)').value;
-        const otField = row.querySelector('input[type="text"]');
-
-        if (startTime && endTime) {
-            const otHours = calculateOT(startTime, endTime);
-            otField.value = otHours.toFixed(2);
-        }
-        updateTotalOT(); // Recalculate total OT
+            <td class="border px-4 py-2 text-center">
+                <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button>
+            </td>`;
     }
 
     function removeRow(button) {
-        const row = button.closest('tr');
-        row.remove();
-        updateTotalOT(); // Recalculate total OT after removing a row
+        const row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        calculateDuration();
     }
 
-    function submitRequest() {
-        alert('Request has been submitted!');
-        // Logic to submit the request can be added here
-    }
+    function calculateDuration() {
+        const rows = document.querySelectorAll("#claimDetailTable tbody tr");
+        let totalDuration = 0;
 
-    function cancelRequest() {
-        alert('Request has been canceled!');
-        // Logic to cancel the request can be added here
+        rows.forEach(row => {
+            const startTimeInput = row.querySelector('input[name^="claimDetails"][name$="startTime"]');
+            const endTimeInput = row.querySelector('input[name^="claimDetails"][name$="endTime"]');
+
+            const startTime = new Date(startTimeInput.value);
+            const endTime = new Date(endTimeInput.value);
+
+            if (startTime && endTime && endTime > startTime) {
+                const duration = (endTime - startTime) / (1000 * 60 * 60); // Tính duration theo giờ
+                totalDuration += duration;
+            }
+        });
+
+        document.getElementById('duration').value = totalDuration;
     }
 </script>
 </body>
