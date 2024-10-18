@@ -17,7 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClaimSaveDTO {
-    private String employeeId;
+    private String title;
     private String requestReason;
-    List<ClaimGetDTO> claimGetDTOS;
+    private String duration;
+    List<ClaimDetailDTO> claimDetailDTOS;
 }

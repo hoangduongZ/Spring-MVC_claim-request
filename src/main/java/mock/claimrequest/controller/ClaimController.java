@@ -1,6 +1,7 @@
 package mock.claimrequest.controller;
 
 import mock.claimrequest.dto.claim.ClaimGetDTO;
+import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
@@ -31,12 +32,7 @@ public class ClaimController {
 
     @GetMapping("/add")
     public String showAddClaimForm(Model model) {
-//        Claim claim = new Claim();
-//        model.addAttribute("claim", claim);
-//
-//        model.addAttribute("employees", employees);
-//        model.addAttribute("projects", projects);
-
+        model.addAttribute("claim", new ClaimSaveDTO());
         return "claim/create";
     }
 
