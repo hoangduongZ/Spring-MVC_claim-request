@@ -105,12 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElseThrow(() -> new IllegalStateException("Project not existed!"));
 
         if (projectDTO.getEmployeeProjects() == null || projectDTO.getEmployeeProjects().isEmpty()) {
-            List<EmployeeProject> existingEmployeeProjects = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(project.getId(), EmpProjectStatus.IN);
-            existingEmployeeProjects.forEach(empProject -> {
-                empProject.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
-                empProject.setEmpProjectStatus(EmpProjectStatus.OUT);
-            });
-            employeeProjectRepository.saveAll(existingEmployeeProjects);
+            handleEmployeeStatusUpdate(project);
             return;
         }
 
@@ -118,21 +113,37 @@ public class ProjectServiceImpl implements ProjectService {
         employeeProjectRepository.saveAll(employeeProjects);
     }
 
+    private void handleEmployeeStatusUpdate(Project project) {
+        List<EmployeeProject> existingEmployeeProjects = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(project.getId(), EmpProjectStatus.IN);
+        existingEmployeeProjects.forEach(empProject -> {
+            empProject.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
+            empProject.setEmpProjectStatus(EmpProjectStatus.OUT);
+        });
+        employeeProjectRepository.saveAll(existingEmployeeProjects);
+    }
+
     private List<EmployeeProject> mapEmployeeProjects(Project project, List<EmployeeProjectDTO> employeeProjectDTOS) {
         List<EmployeeProject> existingEmployeeProjects = employeeProjectRepository.findByProjectId(project.getId());
 
-        List<EmployeeProject> newEmployeeProjects = employeeProjectDTOS.stream()
-                .map(employeeForProjectSaveDTO -> {
-                    if (employeeForProjectSaveDTO.getEmployeeId() != null) {
-                        Employee employee = employeeRepository.findById(employeeForProjectSaveDTO.getEmployeeId())
-                                .orElseThrow(() -> new IllegalStateException("Employee not found with ID: " + employeeForProjectSaveDTO.getEmployeeId()));
+        List<EmployeeProject> newEmployeeProjects = createNewEmployeeProjects(project, employeeProjectDTOS);
+        updateExistingEmployeeProjects(existingEmployeeProjects, newEmployeeProjects);
+
+        return newEmployeeProjects;
+    }
+
+    private List<EmployeeProject> createNewEmployeeProjects(Project project, List<EmployeeProjectDTO> employeeProjectDTOS) {
+        return employeeProjectDTOS.stream()
+                .map(dto -> {
+                    if (dto.getEmployeeId() != null) {
+                        Employee employee = employeeRepository.findById(dto.getEmployeeId())
+                                .orElseThrow(() -> new IllegalStateException("Employee not found with ID: " + dto.getEmployeeId()));
 
                         employee.setEmployeeStatus(EmployeeStatus.WORKING);
 
                         EmployeeProject employeeProject = new EmployeeProject();
                         employeeProject.setEmployee(employee);
                         employeeProject.setProject(project);
-                        employeeProject.setRole(employeeForProjectSaveDTO.getRole());
+                        employeeProject.setRole(dto.getRole());
                         employeeProject.setId(new EmployeeProjectId(employee.getId(), project.getId()));
                         employeeProject.setEmpProjectStatus(EmpProjectStatus.IN);
 
@@ -142,7 +153,9 @@ public class ProjectServiceImpl implements ProjectService {
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
 
+    private void updateExistingEmployeeProjects(List<EmployeeProject> existingEmployeeProjects, List<EmployeeProject> newEmployeeProjects) {
         List<EmployeeProject> employeesToRemove = existingEmployeeProjects.stream()
                 .filter(existing -> newEmployeeProjects.stream()
                         .noneMatch(newProject -> newProject.getEmployee().getId().equals(existing.getEmployee().getId())))
@@ -151,7 +164,10 @@ public class ProjectServiceImpl implements ProjectService {
         for (var emp : employeesToRemove) {
             emp.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
             emp.setEmpProjectStatus(EmpProjectStatus.OUT);
-            employeeProjectRepository.save(emp);
+        }
+
+        if (!employeesToRemove.isEmpty()) {
+            employeeProjectRepository.saveAll(employeesToRemove);
         }
 
         for (var newProject : newEmployeeProjects) {
@@ -162,10 +178,10 @@ public class ProjectServiceImpl implements ProjectService {
 
             if (existingProject != null) {
                 existingProject.setEmpProjectStatus(EmpProjectStatus.IN);
-                employeeProjectRepository.save(existingProject);
             }
         }
-        return newEmployeeProjects;
+
+        employeeProjectRepository.saveAll(newEmployeeProjects);
     }
 
     @Override
