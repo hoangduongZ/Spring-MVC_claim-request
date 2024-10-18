@@ -12,6 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DepartmentDTO {
-    private UUID id;
+    private Long id;
     private String name;
 }

@@ -4,11 +4,138 @@
       layout:decorate="layouts/layout">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New OT Request</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f3e8ff; /* Light purple background */
+        }
+    </style>
 </head>
 <body>
-<main class="bg-purple-100/30 w-5/6">
-    This is create request
+<main layout:fragment="content" class="w-full mx-auto p-6">
+    <form action="@{/projects}" method="post" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+        <h2 class="text-center text-2xl font-bold text-purple-600">Create New OT Request</h2>
+
+        <!-- Form fields for OT request -->
+        <div class="mt-4">
+            <label for="employee" class="block text-gray-700">Employee:</label>
+            <input type="text" id="employee" name="employee" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Current employee name" readonly>
+        </div>
+        <div class="mt-4">
+            <label for="project" class="block text-gray-700">Project:</label>
+            <input type="text" id="project" name="project" class="mt-1 block w-full p-2 border border-gray-300 rounded" value="Automatically displayed project name" readonly>
+        </div>
+
+        <!-- OT time table -->
+        <div class="mt-6">
+            <h3 class="text-center text-xl font-semibold text-purple-600">Overtime Calculation</h3>
+            <table class="min-w-full bg-white border border-gray-300 mt-4">
+                <thead>
+                <tr>
+                    <th class="py-2 px-4 border text-left">Date</th>
+                    <th class="py-2 px-4 border text-left">Start Time</th>
+                    <th class="py-2 px-4 border text-left">End Time</th>
+                    <th class="py-2 px-4 border text-left">Total OT (hours)</th>
+                    <th class="py-2 px-4 border text-left">Action</th>
+                </tr>
+                </thead>
+                <tbody id="otTableBody">
+                <!-- OT Rows will be dynamically added here -->
+                </tbody>
+            </table>
+
+            <button type="button" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 mt-4" onclick="addRow()">Add OT Row</button>
+
+            <!-- Total OT -->
+            <div class="mt-4 text-right">
+                <strong>Total OT Hours: </strong>
+                <span id="totalOT">0.00</span> hours
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <button type="button" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" onclick="submitRequest()">Submit Request</button>
+            <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 ml-2" onclick="cancelRequest()">Cancel</button>
+        </div>
+    </form>
 </main>
+
+<script>
+    let totalOT = 0; // Variable to track total OT hours
+
+    function calculateOT(startTime, endTime) {
+        const start = new Date(`1970-01-01T${startTime}:00`);
+        const end = new Date(`1970-01-01T${endTime}:00`);
+        const hours = (end - start) / 3600000; // Convert from milliseconds to hours
+        return hours >= 0 ? hours : 0;
+    }
+
+    function updateTotalOT() {
+        // Recalculate total OT
+        totalOT = 0;
+        const otRows = document.querySelectorAll('#otTableBody tr');
+        otRows.forEach(row => {
+            const otField = row.querySelector('input[type="text"]');
+            totalOT += parseFloat(otField.value) || 0;
+        });
+        // Update total OT display
+        document.getElementById('totalOT').textContent = totalOT.toFixed(2);
+    }
+
+    function addRow() {
+        const tableBody = document.getElementById('otTableBody');
+        const newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+            <td class="py-2 px-4 border">
+                <input type="date" class="w-full p-2 border border-gray-300 rounded" onchange="updateOT(this)">
+            </td>
+            <td class="py-2 px-4 border">
+                <input type="time" class="w-full p-2 border border-gray-300 rounded" onchange="updateOT(this)">
+            </td>
+            <td class="py-2 px-4 border">
+                <input type="time" class="w-full p-2 border border-gray-300 rounded" onchange="updateOT(this)">
+            </td>
+            <td class="py-2 px-4 border">
+                <input type="text" class="w-full p-2 border border-gray-300 rounded" readonly>
+            </td>
+            <td class="py-2 px-4 border text-center">
+                <button type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" onclick="removeRow(this)">Remove</button>
+            </td>
+        `;
+        tableBody.appendChild(newRow);
+    }
+
+    function updateOT(inputElement) {
+        const row = inputElement.closest('tr');
+        const startTime = row.querySelector('input[type="time"]:nth-of-type(1)').value;
+        const endTime = row.querySelector('input[type="time"]:nth-of-type(2)').value;
+        const otField = row.querySelector('input[type="text"]');
+
+        if (startTime && endTime) {
+            const otHours = calculateOT(startTime, endTime);
+            otField.value = otHours.toFixed(2);
+        }
+        updateTotalOT(); // Recalculate total OT
+    }
+
+    function removeRow(button) {
+        const row = button.closest('tr');
+        row.remove();
+        updateTotalOT(); // Recalculate total OT after removing a row
+    }
+
+    function submitRequest() {
+        alert('Request has been submitted!');
+        // Logic to submit the request can be added here
+    }
+
+    function cancelRequest() {
+        alert('Request has been canceled!');
+        // Logic to cancel the request can be added here
+    }
+</script>
 </body>
 </html>

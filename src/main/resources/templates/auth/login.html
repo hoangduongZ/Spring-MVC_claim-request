@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .gradient-bg {
+      background: linear-gradient(to left,#9A55FF,#D78AFF);
+    }
+    .input-effect:hover,
+    .input-effect:focus {
+      border-color: #6b46c1;
+      box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.5);
+    }
+    .input-effect {
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .checkbox-effect:checked {
+      border-color: #6b46c1;
+      background-color: #6b46c1;
+    }
+    .checkbox-effect {
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .checkbox-effect:hover {
+      box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.5);
+    }
+  </style>
+</head>
+<body class="gradient-bg flex items-center justify-center h-screen">
+<div class="bg-white p-8 rounded-lg shadow-md w-96">
+  <div class="flex justify-center mb-6">
+    <img th:src="@{/img/user.png}" alt="FPT Software Logo" class="w-24">
+  </div>
+  <h2 class="text-2xl font-semibold text-center mb-4">Login</h2>
+  <p class="text-center text-gray-600 mb-6">Enter your details to login to your account:</p>
+  <form id="loginForm" method="post">
+    <div class="mb-4">
+      <label for="email" class="block text-gray-700">Email</label>
+      <input type="email" id="email" name="username" class="w-full px-4 py-2 mt-2 border rounded-md input-effect focus:outline-none" placeholder="Enter your email" >
+      <p id="emailError" class="text-red-500 text-sm mt-1"></p>
+    </div>
+    <div class="mb-4">
+      <label for="password" class="block text-gray-700">Password</label>
+      <input type="password" id="password" name="password" class="w-full px-4 py-2 mt-2 border rounded-md input-effect focus:outline-none" placeholder="Enter your password" >
+      <p id="passwordError" class="text-red-500 text-sm mt-1"></p>
+    </div>
+    <div class="flex items-center justify-between mb-4">
+      <label class="flex items-center">
+        <input type="checkbox" class="form-checkbox checkbox-effect">
+        <span class="ml-2 text-gray-700">Remember me</span>
+      </label>
+      <a href="#" class="text-blue-600 hover:underline">Forgot password?</a>
+    </div>
+    <button type="submit"  class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 focus:outline-none"> Login</button>
+  </form>
+  <p class="text-center text-gray-600 mt-6">Don't have an account yet? <a th:href="@{/register}" class="text-blue-600 hover:underline">Register now!</a></p>
+</div>
+</body>
+</html>

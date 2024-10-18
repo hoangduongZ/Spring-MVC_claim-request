@@ -1,18 +1,37 @@
 <header th:fragment="header" class="min-h-[10vh] shadow flex justify-between items-center bg-white text-gray-500">
-  <div class="">
-    <div class="logo rounded-2xl hover:shadow-md p-4 font-bold cursor-pointer">Logo</div>
-  </div>
-  <div class="w-1/3 flex items-center">
-    <i class="fa-solid fa-magnifying-glass mr-2"></i>
-    <input type="text" placeholder="Search project..." class="border-none outline-none w-full">
-  </div>
-  <div class="flex items-center mr-4 gap-2">
-    <div class="flex items-center gap-1 mr-2">
-      <div class="inline-block p-4 bg-slate-300 rounded-full"></div>
-      <span>Welcome</span>
-      <i class="fa-solid fa-chevron-down text-xs"></i>
+    <div class="w-[8vh] h-[8vh] ml-3 rounded-full hover:shadow-lg shadow border overflow-hidden">
+        <img class="w-full h-full object-cover" th:src="@{/img/bee.png}" alt="Bee">
     </div>
-    <i class="fa-regular fa-bell p-3 rounded-full hover:shadow"></i>
-    <i class="fas fa-power-off icon text-green-500 p-3 rounded-full hover:shadow"></i>
-  </div>
+    <div class="w-1/3 flex items-center">
+        <i class="fa-solid fa-magnifying-glass mr-2"></i>
+        <input type="text" placeholder="Search project..." class="border-none outline-none w-full">
+    </div>
+    <div class="flex items-center mr-4 gap-2">
+        <div class="flex items-center gap-1 mr-2">
+            <div class="inline-block w-8 h-8 bg-slate-300 rounded-full overflow-hidden">
+                <img th:src="@{/img/user.png}" class="w-full h-full object-cover" alt="user"></div>
+            <span>Welcome</span>
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+        </div>
+        <div class="relative">
+            <i class="fa-regular fa-bell p-3 rounded-full hover:shadow cursor-pointer" onclick="toggleDropdown()"></i>
+            <div id="notificationDropdown" class="absolute right-0 top-[6vh] shadow h-[300px] w-[200px] bg-white rounded-b hidden">
+                <div class="p-4">
+                    <h3 class="font-semibold text-lg">Notifications</h3>
+                    <div class="mt-2">
+                        <p>No new notifications.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="/logout">
+            <i class="fas fa-power-off icon text-green-500 p-3 rounded-full hover:shadow"></i>
+        </a>
+    </div>
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+    </script>
 </header>

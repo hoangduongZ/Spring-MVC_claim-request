@@ -1,4 +1,4 @@
-package mock.claimrequest.entity;
+package mock.claimrequest.entity.entityEnum;
 
 public enum ClaimStatus {
     PENDING("Pending"),
@@ -6,7 +6,8 @@ public enum ClaimStatus {
     RETURN("Returned"),
     REJECT("Rejected"),
     PAID("Paid"),
-    CANCEL("Cancel");
+    CANCEL("Cancel"),
+    DRAFT("Draft");
 
     private final String displayName;
 
