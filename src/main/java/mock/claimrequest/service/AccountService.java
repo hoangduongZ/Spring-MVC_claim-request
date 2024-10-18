@@ -1,5 +1,6 @@
 package mock.claimrequest.service;
 
+import mock.claimrequest.dto.account.AccountDTO;
 import mock.claimrequest.dto.auth.AccountRegisterDTO;
 
 public interface AccountService {
@@ -7,4 +8,6 @@ public interface AccountService {
 
     boolean existByEmail(String email);
     boolean existByUsername(String username);
+
+    AccountDTO getCurrentUserDetails() ;
 }

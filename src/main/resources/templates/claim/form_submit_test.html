@@ -14,16 +14,16 @@
 
 <form th:action="@{/claims/claim-test}" th:object="${claimDTO}" method="post" >
     <div >
-        <label for="request title" >Request Title</label>
-        <input type="text" id="request title" th:field="*{title}"  placeholder="1 đoạn text viets title">
+        <label for="request title1" >Request Title</label>
+        <input type="text" id="request title1" th:field="*{title}"  placeholder="1 đoạn text viets title">
     </div> 
     <div >
-        <label for="request title" >Employee ID</label>
-        <input type="text" id="request title" th:field="*{employeeId}"  placeholder="paste employe id vào đây">
+        <label for="request title2" >Employee ID</label>
+        <input type="text" id="request title2" th:field="*{employeeId}"  placeholder="paste employe id vào đây">
     </div> 
     <div >
-        <label for="request title" >Project ID</label>
-        <input type="text" id="request title" th:field="*{projectId}"  placeholder="paste project id vào đây ">
+        <label for="request title3" >Project ID</label>
+        <input type="text" id="request title3" th:field="*{projectId}"  placeholder="paste project id vào đây ">
     </div> 
 <!-- 
     <label for="project"> Chọn 1 project </label>
@@ -49,8 +49,8 @@
         <tbody id="ot-table-body">
         <tr>
            
-            <td class="py-2 px-4 border-b"><input th:field="*{startTime}" type="datetime-local" class="border rounded w-full p-1"></td>
-            <td class="py-2 px-4 border-b"><input th:field="*{endTime}" type="datetime-local" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[0].startTime}" type="datetime-local" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[0].endTime}" type="datetime-local" class="border rounded w-full p-1"></td>
            
             <td class="py-2 px-4 border-b"><button type="button" onclick="deleteOTRow(this)" class="bg-red-500 text-white py-1 px-2 rounded">Delete</button></td>
         </tr>
@@ -76,19 +76,20 @@
 
 <script>
 
+    let rowCount = 1;
 function addOTRow() {
         const tableBody = document.getElementById('ot-table-body');
         const newRow = document.createElement('tr');
 
         newRow.innerHTML = `
-            <td class="py-2 px-4 border-b"><input type="date" class="border rounded w-full p-1"></td>
-            <td class="py-2 px-4 border-b"><input type="time" class="border rounded w-full p-1"></td>
-            <td class="py-2 px-4 border-b"><input type="time" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[${rowCount}].startTime}" type="datetime-local" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[${rowCount}].endTime}" type="datetime-local" class="border rounded w-full p-1"></td>
             <td class="py-2 px-4 border-b"><input type="number" min="0" step="0.01" class="border rounded w-full p-1" disabled></td>
             <td class="py-2 px-4 border-b"><button type="button" onclick="deleteOTRow(this)" class="bg-red-500 text-white py-1 px-2 rounded">Delete</button></td>
         `;
 
         tableBody.appendChild(newRow);
+        rowCount++;
     }
 
 

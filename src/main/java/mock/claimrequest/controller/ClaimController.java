@@ -1,8 +1,12 @@
 package mock.claimrequest.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javassist.expr.NewArray;
+import mock.claimrequest.dto.claim.ClaimGetDTO;
+import mock.claimrequest.dto.test.ClaimDetailTestDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,10 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
-import mock.claimrequest.dto.claim.ClaimGetDto;
+
 import mock.claimrequest.dto.test.ClaimTestDTO;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.service.ClaimService;
+
 
 @Controller
 @RequestMapping("claims")
@@ -78,14 +83,53 @@ public class ClaimController {
 
     @GetMapping("/claim-test")
     public String showSubmitForm(Model model) {
-        model.addAttribute("claimDTO", new ClaimTestDTO());
-        return "/claim/form_submit_test" ;
-    }
+        ClaimTestDTO claimDTO = new ClaimTestDTO();
+        claimDTO.setClaimDetails(new ArrayList<>()); // Khởi tạo danh sách
 
+        // Thêm một ClaimDetailDTO vào danh sách
+        claimDTO.getClaimDetails().add(new ClaimDetailTestDTO());
+
+        model.addAttribute("claimDTO", claimDTO);
+        return "claim/form_submit_test" ;
+    }
+    //test
     @PostMapping("/claim-test")
-    public String submitClaim(@Valid @ModelAttribute("claimDTO") ClaimTestDTO claimTestDTO, BindingResult resullt) {
+    public String submitClaimer(@ModelAttribute("claimDTO") ClaimTestDTO claimTestDTO) {
         claimService.submitClaim(claimTestDTO);
         return "claim/create" ;
+
+    }
+
+    @GetMapping("/approve")
+    public String approveClaim(Model model){
+        List<ClaimTestDTO> pendingClaims = claimService.getClaimByStatusTest(ClaimStatus.PENDING);
+        List<ClaimTestDTO> approvedClaims = claimService.getClaimByStatusTest(ClaimStatus.APPROVE);
+        List<ClaimTestDTO> returnedClaims = claimService.getClaimByStatusTest(ClaimStatus.RETURN);
+        List<ClaimTestDTO> rejectedClaims = claimService.getClaimByStatusTest(ClaimStatus.REJECT);
+
+        model.addAttribute("pendingClaims", pendingClaims);
+        model.addAttribute("approvedClaims", approvedClaims);
+        model.addAttribute("returnedClaims", returnedClaims);
+        model.addAttribute("rejectedClaims", rejectedClaims);
+//        model.addAttribute("currentStatus", currentStatus);
+        return "claim/approve/approve";
+
+    }
+
+
+
+    @GetMapping("/detail")
+    public String getClaimDetailTest(Model model, @RequestParam UUID id){
+        ClaimTestDTO claim = claimService.findByIdTest(id);
+        model.addAttribute("claims",claim);
+        return "claim/approve/detail";
+
+    }
+
+    @PostMapping("/submit")
+    public String submitClaim(@RequestParam UUID id) {
+        claimService.submitClaimById(id);
+        return "redirect:/claims/approve";
 
     }
 

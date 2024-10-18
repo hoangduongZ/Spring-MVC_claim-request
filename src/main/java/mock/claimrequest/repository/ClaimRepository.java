@@ -9,4 +9,7 @@ import java.util.UUID;
 
 public interface ClaimRepository extends JpaRepository<Claim, UUID> {
     List<Claim> findAllByStatus(ClaimStatus claimStatus);
+
+
+
 }

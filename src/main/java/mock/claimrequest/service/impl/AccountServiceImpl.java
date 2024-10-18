@@ -1,5 +1,6 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.dto.account.AccountDTO;
 import mock.claimrequest.dto.auth.AccountRegisterDTO;
 import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.entityEnum.AccountStatus;
@@ -8,6 +9,9 @@ import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.RoleRepository;
 import mock.claimrequest.service.AccountService;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,5 +64,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean existByUsername(String username) {
         return accountRepository.existsByUserName(username);
+    }
+
+    @Override
+    public AccountDTO getCurrentUserDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (AccountDTO) authentication.getPrincipal();
     }
 }

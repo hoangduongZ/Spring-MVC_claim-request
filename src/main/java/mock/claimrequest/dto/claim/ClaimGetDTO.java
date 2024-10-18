@@ -15,6 +15,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class ClaimGetDTO {
     private UUID id;
     private String employeeName;

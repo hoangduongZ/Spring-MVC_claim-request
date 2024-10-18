@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layouts/layout" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Approve List</title>
+
+    <style>
+        .claim-list { display: none; } ,
+
+    </style>
+    <script>
+        function showClaims(status) {
+            const claimLists = document.querySelectorAll('.claim-list');
+            claimLists.forEach(element => element.style.display = 'none');
+            document.getElementById(status + '-claims').style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showClaims('pending'); // Hiển thị danh sách Pending mặc định
+        });
+
+
+
+
+
+
+    </script>
+</head>
+<body>
+<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100/30 w-5/6">
+
+<div class="max-w-4xl mx-auto bg-purple-100/30 p-6 rounded-lg shadow-md">
+    <div class="flex bg-white shadow rounded-t-lg overflow-hidden">
+        <a  href="#" onclick="showClaims('pending'); return false;" class="cursor-pointer group px-6 py-3 relative hover:bg-gray-200">
+            <span class="relative font-bold group-hover:text-purple-600">Pending</span>
+        </a>
+        <a  href="#" onclick="showClaims('approved'); return false;" class="cursor-pointer group px-6 py-3 relative hover:bg-gray-200">
+            <span class="relative font-bold group-hover:text-purple-600">Approved</span>
+        </a>
+        <a  href="#" onclick="showClaims('returned'); return false;" class="cursor-pointer group px-6 py-3 relative hover:bg-gray-200">
+            <span class="relative font-bold group-hover:text-purple-600">Return</span>
+        </a>
+        <a  href="#" onclick="showClaims('rejected'); return false;" class="cursor-pointer group px-6 py-3 relative hover:bg-gray-200">
+            <span class="relative font-bold group-hover:text-purple-600">Reject</span>
+        </a>
+    </div>
+
+    <div  id="pending-claims" class="claim-list">
+        <h2 class="text-xl font-semibold">Pending Claims</h2>
+        <div class="claim-items">
+            <div th:each="claim : ${pendingClaims}">
+                <div class="claim-item flex justify-between items-center p-4 border-b">
+                    <div class="claim-info flex items-center">
+                        <div class="ml-4">
+                            <h2 class="font-semibold text-lg" th:text="${claim.title}">Title</h2>
+                            <p class="text-gray-600" th:text="${claim.employeeName}">- Name: </p>
+                            <p class="text-gray-600" th:text="${claim.projectName}">- Project: </p>
+                            <p class="text-gray-600" th:text="${claim.requestReason}">- Reason: </p>
+                        </div>
+                    </div>
+                    <div class="claim-time-action flex items-center space-x-4">
+                        <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM</div>
+<!--                        <div class="claim-date text-sm text-gray-500" th:text="${claim.getFormattedCreatedTime()"></div>-->
+                        <a  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600"
+                                 th:href="@{/claims/detail(id=${claim.id})}" >Detail</a>
+
+                        <form th:action="@{/claims/submit(id=${claim.id})}" method="post">
+                            <!-- Input ẩn để gửi ID -->
+                            <input type="hidden" name="claimId" th:value="${claim.id}" />
+                            <button type="submit" class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Submit</button>
+                        </form>
+
+
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Reject</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Return</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="approved-claims" class="claim-list">
+        <h2 class="text-xl font-semibold">Approve Claims</h2>
+        <div class="claim-items">
+            <div th:each="claim : ${approvedClaims}">
+                <div class="claim-item flex justify-between items-center p-4 border-b">
+                    <div class="claim-info flex items-center">
+                        <div class="ml-4">
+                            <h2 class="font-semibold text-lg" th:text="${claim.title}">Title</h2>
+                            <p class="text-gray-600" th:text="${claim.employeeName}">- Name: </p>
+                            <p class="text-gray-600" th:text="${claim.projectName}">- Project: </p>
+                            <p class="text-gray-600" th:text="${claim.requestReason}">- Reason: </p>
+                        </div>
+                    </div>
+                    <div class="claim-time-action flex items-center space-x-4">
+<!--                        <div class="claim-date text-sm text-gray-500" th:text="${claim.getFormattedCreatedTime()"></div>-->
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Detail</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Submit</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Reject</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Return</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="returned-claims" class="claim-list">
+        <h2 class="text-xl font-semibold">Return Claims</h2>
+        <div class="claim-items">
+            <div th:each="claim : ${returnedClaims}">
+                <div class="claim-item flex justify-between items-center p-4 border-b">
+                    <div class="claim-info flex items-center">
+                        <div class="ml-4">
+                            <h2 class="font-semibold text-lg" th:text="${claim.title}">Title</h2>
+                            <p class="text-gray-600" th:text="${claim.employeeName}">- Name: </p>
+                            <p class="text-gray-600" th:text="${claim.projectName}">- Project: </p>
+                            <p class="text-gray-600" th:text="${claim.requestReason}">- Reason: </p>
+                        </div>
+                    </div>
+                    <div class="claim-time-action flex items-center space-x-4">
+                        <!--                        <div class="claim-date text-sm text-gray-500" th:text="${claim.getFormattedCreatedTime()"></div>-->
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Detail</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Submit</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Reject</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Return</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="rejected-claims" class="claim-list">
+        <h2 class="text-xl font-semibold">Rejected Claims</h2>
+        <div class="claim-items">
+            <div th:each="claim : ${rejectedClaims}">
+                <div class="claim-item flex justify-between items-center p-4 border-b">
+                    <div class="claim-info flex items-center">
+                        <div class="ml-4">
+                            <h2 class="font-semibold text-lg" th:text="${claim.title}">Title</h2>
+                            <p class="text-gray-600" th:text="${claim.employeeName}">- Name: </p>
+                            <p class="text-gray-600" th:text="${claim.projectName}">- Project: </p>
+                            <p class="text-gray-600" th:text="${claim.requestReason}">- Reason: </p>
+                        </div>
+                    </div>
+                    <div class="claim-time-action flex items-center space-x-4">
+                        <!-- <div class="claim-date text-sm text-gray-500" th:text="${claim.getFormattedCreatedTime()"></div>-->
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Detail</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Submit</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Reject</button>
+                        <button  class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600">Return</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+
+</div>
+</main>
+</body>
+</html>
