@@ -162,7 +162,11 @@ public class ProjectServiceImpl implements ProjectService {
                 .toList();
 
         for (var emp : employeesToRemove) {
-            emp.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
+            boolean isWorkingOnAnotherProject = employeeProjectRepository.existsByEmployeeIdAndEmpProjectStatus(emp.getEmployee().getId(), EmpProjectStatus.IN);
+
+            if (!isWorkingOnAnotherProject) {
+                emp.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
+            }
             emp.setEmpProjectStatus(EmpProjectStatus.OUT);
         }
 

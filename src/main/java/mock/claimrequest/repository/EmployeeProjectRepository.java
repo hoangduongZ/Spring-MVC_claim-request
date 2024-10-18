@@ -13,4 +13,6 @@ public interface EmployeeProjectRepository extends JpaRepository<EmployeeProject
     List<EmployeeProject> findByProjectIdAndEmpProjectStatus(UUID projectId, EmpProjectStatus empProjectStatus);
 
     List<EmployeeProject> findByProjectId(UUID projectId);
+
+    boolean existsByEmployeeIdAndEmpProjectStatus(UUID employeeId, EmpProjectStatus empProjectStatus);
 }

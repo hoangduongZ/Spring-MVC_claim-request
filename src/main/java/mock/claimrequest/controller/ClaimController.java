@@ -29,7 +29,7 @@ public class ClaimController {
         this.claimService = claimService;
     }
 
-    @GetMapping("/claims/add")
+    @GetMapping("/add")
     public String showAddClaimForm(Model model) {
 //        Claim claim = new Claim();
 //        model.addAttribute("claim", claim);
