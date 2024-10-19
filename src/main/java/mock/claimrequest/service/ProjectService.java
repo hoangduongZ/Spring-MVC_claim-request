@@ -27,5 +27,5 @@ public interface ProjectService {
 
     List<ProjectGetDTO> getProjectForClaim(UUID id);
 
-    void actionByStatus(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO);
+
 }

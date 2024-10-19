@@ -1,13 +1,18 @@
 package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.claim.ClaimGetDTO;
+import mock.claimrequest.dto.claim.ClaimSaveDTO;
+import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
 import mock.claimrequest.entity.Claim;
+import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
+import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
+import mock.claimrequest.repository.ClaimDetailRepository;
 import mock.claimrequest.repository.ClaimRepository;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.repository.EmployeeRepository;
@@ -16,9 +21,11 @@ import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ClaimServiceImpl implements ClaimService {
@@ -27,13 +34,15 @@ public class ClaimServiceImpl implements ClaimService {
     private final EmployeeProjectRepository employeeProjectRepository;
     private final AuthService authService;
     private final ProjectRepository projectRepository;
+    private final ClaimDetailRepository claimDetailRepository;
 
-    public ClaimServiceImpl(ClaimRepository claimRepository, EmployeeRepository employeeRepository, EmployeeProjectRepository employeeProjectRepository, AuthService authService, ProjectRepository projectRepository) {
+    public ClaimServiceImpl(ClaimRepository claimRepository, EmployeeRepository employeeRepository, EmployeeProjectRepository employeeProjectRepository, AuthService authService, ProjectRepository projectRepository, ClaimDetailRepository claimDetailRepository) {
         this.claimRepository = claimRepository;
         this.employeeRepository = employeeRepository;
         this.employeeProjectRepository = employeeProjectRepository;
         this.authService = authService;
         this.projectRepository = projectRepository;
+        this.claimDetailRepository = claimDetailRepository;
     }
 
     @Override
@@ -94,5 +103,46 @@ public class ClaimServiceImpl implements ClaimService {
         Claim claim= claimRepository.findById(id).orElseThrow(()-> new RuntimeException("Claim not exist"));
         return convertToDTO(claim);
     }
+
+    @Override
+    public void actionCreate(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO) {
+        Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
+        Project project = projectRepository.findById(claimSaveDTO.getProjectGetDTO().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
+        EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
+                ()->new IllegalStateException("EmployeeProject not existed")
+        );
+        Claim claim= new Claim();
+        claim.setProject(project);
+        claim.setTitle(claimSaveDTO.getTitle());
+        claim.setRequestReason(claimSaveDTO.getRequestReason());
+        claim.setDuration(Double.parseDouble(claimSaveDTO.getDuration()));
+        claim.setStatus(claimStatus);
+        claim.setEmployee(employee);
+        claim.setAmount(BigDecimal.valueOf(employeeProject.getRole().getSalary() * claim.getDuration()));
+        claimRepository.save(claim);
+
+        if (claimSaveDTO.getClaimDetails() != null && !claimSaveDTO.getClaimDetails().isEmpty()) {
+            List<ClaimDetail> claimDetails = claimSaveDTO.getClaimDetails().stream()
+                    .map(detailDTO -> {
+                        ClaimDetail claimDetail = new ClaimDetail();
+                        claimDetail.setClaim(claim);
+                        claimDetail.setStartTime(detailDTO.getStartTime());
+                        claimDetail.setEndTime(detailDTO.getEndTime());
+                        return claimDetail;
+                    })
+                    .collect(Collectors.toList());
+
+            claimDetailRepository.saveAll(claimDetails);
+        }
+    }
+
+    @Override
+    public void actionUpdate(ClaimStatus claimStatus, UUID id) {
+        Claim claim = claimRepository.findById(id).orElseThrow(
+                () -> new IllegalStateException("Claim is not existed!"));
+        claim.setStatus(claimStatus);
+        claimRepository.save(claim);
+    }
+
 
 }

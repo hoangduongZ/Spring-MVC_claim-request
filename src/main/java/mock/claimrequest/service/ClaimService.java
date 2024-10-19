@@ -1,6 +1,8 @@
 package mock.claimrequest.service;
 
 import mock.claimrequest.dto.claim.ClaimGetDTO;
+import mock.claimrequest.dto.claim.ClaimSaveDTO;
+import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 
@@ -14,4 +16,8 @@ public interface ClaimService {
     ClaimGetDTO findById(UUID id);
 
     Optional<ProjectRole> getEmployeeRoleInProject();
+
+    void actionCreate(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO);
+
+    void actionUpdate(ClaimStatus claimStatus, UUID id);
 }

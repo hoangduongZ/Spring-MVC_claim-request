@@ -46,22 +46,15 @@ public class ProjectServiceImpl implements ProjectService {
     private final EmployeeProjectRepository employeeProjectRepository;
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
-    private final AccountRepository accountRepository;
-    private final ClaimRepository claimRepository;
-    private final ClaimDetailRepository claimDetailRepository;
     private final AuthService authService;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AccountRepository accountRepository, ClaimRepository claimRepository, ClaimDetailRepository claimDetailRepository, AuthService authService) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AuthService authService) {
         this.projectRepository = projectRepository;
         this.employeeProjectRepository = employeeProjectRepository;
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
-        this.accountRepository = accountRepository;
-        this.claimRepository = claimRepository;
-        this.claimDetailRepository = claimDetailRepository;
         this.authService = authService;
     }
-
 
     @Override
     public List<ProjectDTO> list() {
@@ -232,37 +225,7 @@ public class ProjectServiceImpl implements ProjectService {
         }).toList();
     }
 
-    @Override
-    public void actionByStatus(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO) {
-        Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
-        Project project = projectRepository.findById(claimSaveDTO.getProjectGetDTO().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
-        EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
-                ()->new IllegalStateException("EmployeeProject not existed")
-        );
-        Claim claim= new Claim();
-        claim.setProject(project);
-        claim.setTitle(claimSaveDTO.getTitle());
-        claim.setRequestReason(claimSaveDTO.getRequestReason());
-        claim.setDuration(Double.parseDouble(claimSaveDTO.getDuration()));
-        claim.setStatus(claimStatus);
-        claim.setEmployee(employee);
-        claim.setAmount(BigDecimal.valueOf(employeeProject.getRole().getSalary() * claim.getDuration()));
-        claimRepository.save(claim);
 
-        if (claimSaveDTO.getClaimDetails() != null && !claimSaveDTO.getClaimDetails().isEmpty()) {
-            List<ClaimDetail> claimDetails = claimSaveDTO.getClaimDetails().stream()
-                    .map(detailDTO -> {
-                        ClaimDetail claimDetail = new ClaimDetail();
-                        claimDetail.setClaim(claim);
-                        claimDetail.setStartTime(detailDTO.getStartTime());
-                        claimDetail.setEndTime(detailDTO.getEndTime());
-                        return claimDetail;
-                    })
-                    .collect(Collectors.toList());
-
-            claimDetailRepository.saveAll(claimDetails);
-        }
-    }
 
 
 }
