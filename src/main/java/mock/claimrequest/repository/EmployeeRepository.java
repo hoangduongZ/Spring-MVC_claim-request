@@ -1,5 +1,6 @@
 package mock.claimrequest.repository;
 
+import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
+    Employee findByAccount(Account account);
     List<Employee> findByEmployeeStatus(EmployeeStatus employeeStatus);
 
     @Query("SELECT e FROM Employee e LEFT JOIN EmployeeProject ep ON e.id = ep.employee.id " +

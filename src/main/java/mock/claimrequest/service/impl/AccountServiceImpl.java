@@ -2,9 +2,12 @@ package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.auth.AccountRegisterDTO;
 import mock.claimrequest.entity.Account;
+import mock.claimrequest.entity.Employee;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.AccountStatus;
 import mock.claimrequest.entity.Role;
 import mock.claimrequest.repository.AccountRepository;
+import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.RoleRepository;
 import mock.claimrequest.service.AccountService;
 import org.modelmapper.ModelMapper;
@@ -20,12 +23,14 @@ public class AccountServiceImpl implements AccountService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public AccountServiceImpl(AccountRepository accountRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository, EmployeeRepository employeeRepository) {
         this.accountRepository = accountRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -39,16 +44,19 @@ public class AccountServiceImpl implements AccountService {
         account.setStatus(AccountStatus.ACTIVE);
 
         Set<Role> roles= new HashSet<>();
-        if (!roleRepository.existsByName("CLAIMER")){
+        if (!roleRepository.existsByName(AccountRole.ADMIN)){
             Role role = new Role();
-            role.setName("CLAIMER");
+            role.setName(AccountRole.ADMIN);
             roleRepository.save(role);
             roles.add(role);
         }else{
-            roles.add(roleRepository.findByName("CLAIMER"));
+            roles.add(roleRepository.findByName(AccountRole.ADMIN));
         }
         account.setRoles(roles);
         accountRepository.save(account);
+        Employee employee = new Employee();
+        employee.setAccount(account);
+        employeeRepository.save(employee);
         return account.getId() != null;
     }
 

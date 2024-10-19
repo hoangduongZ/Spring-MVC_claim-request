@@ -46,7 +46,7 @@ public class Claim {
     private String returnReason;
     @Enumerated(EnumType.STRING)
     private ClaimStatus status;
-    private long duration;
+    private double duration;
     private BigDecimal amount;
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ClaimService {
-    public List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus);
+    List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus);
     void paidClaim(UUID id);
 
     ClaimGetDTO findById(UUID id);

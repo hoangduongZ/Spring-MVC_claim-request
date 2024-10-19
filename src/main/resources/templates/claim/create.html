@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="layouts/layout">
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layouts/layout">
 <head>
     <meta charset="UTF-8">
     <title>Add New Claim</title>
@@ -16,8 +14,28 @@
 <body class="bg-purple-100">
 <main layout:fragment="content" class="w-full mx-auto p-6">
     <div class="bg-gradient-to-b from-slate-100 to-white shadow-md rounded-2xl">
-        <form th:action="@{/claims/add}" method="post" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
-            <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic">New Claim</h1>
+        <div class=" flex p-3 overflow-hidden">
+            <div class="drop-shadow-2xl w-8 h-8 block rounded-full bg-purple-400 hover:bg-purple-500 flex justify-center items-center"
+                 onclick="history.back()">
+                <i class="fa-solid fa-chevron-left text-white"></i>
+            </div>
+        </div>
+        <form th:action="@{/claims/draft}" method="post" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
+            <div class="flex justify-center">
+                <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
+                    New claim</h1>
+            </div>
+
+            <div class="mb-4">
+                <label for="project" class="block text-gray-700 text-sm font-bold mb-2">Project:</label>
+                <select id="project" name="projectGetDTO.id" required
+                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+                    <option value="">Select a project</option>
+                    <th:block th:each="project : ${projects}">
+                        <option th:value="${project.id}" th:text="${project.name}"></option>
+                    </th:block>
+                </select>
+            </div>
 
             <div class="mb-4">
                 <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Claim Title:</label>
@@ -32,8 +50,8 @@
             </div>
 
             <div class="mb-4">
-                <label for="duration" class="block text-gray-700 text-sm font-bold mb-2">Total Duration:</label>
-                <input type="number" id="duration" name="duration" readonly
+                <label for="duration" class="block text-gray-700 text-sm font-bold mb-2">Total Duration (hours):</label>
+                <input type="text" id="duration" name="duration" readonly
                        class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
@@ -65,65 +83,78 @@
                 </tbody>
             </table>
             <div class="flex justify-end mt-2 mb-4">
-                <button type="button" onclick="addRow()" class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white  w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
+                <button type="button" onclick="addRow()" class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
                     <span><i class="fa-solid fa-plus text-center"></i></span>
                 </button>
             </div>
             <hr/>
             <div class="mt-4 flex items-center justify-between">
                 <button type="submit"
+                        th:formaction="@{/claims/pending}"
                         class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
-                    Create Claim
+                    Submit Claim
+                </button>
+
+                <button type="submit"
+                        th:formaction="@{/claims/draft}"
+                        class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
+                    Draft Claim
                 </button>
             </div>
         </form>
     </div>
-</main>
-<script>
-    function addRow() {
-        const tableBody = document.getElementById("claimDetailTable").getElementsByTagName('tbody')[0];
-        const newRow = tableBody.insertRow();
-        newRow.innerHTML = `
+    <script>
+        function addRow() {
+            const tableBody = document.getElementById("claimDetailTable").getElementsByTagName('tbody')[0];
+            const newRow = tableBody.insertRow();
+            newRow.innerHTML = `
             <td class="p-4">
-                <input type="datetime-local" name="claimDetails[${tableBody.rows.length}].startTime"
+                <input type="datetime-local" name="claimDetails[${tableBody.rows.length-1}].startTime"
                        onchange="calculateDuration()"
                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </td>
             <td class="p-4">
-                <input type="datetime-local" name="claimDetails[${tableBody.rows.length}].endTime"
+                <input type="datetime-local" name="claimDetails[${tableBody.rows.length-1}].endTime"
                        onchange="calculateDuration()"
                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </td>
             <td class="border px-4 py-2 text-center">
                 <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button>
             </td>`;
-    }
+        }
 
-    function removeRow(button) {
-        const row = button.parentNode.parentNode;
-        row.parentNode.removeChild(row);
-        calculateDuration();
-    }
+        function removeRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            calculateDuration();
+        }
 
-    function calculateDuration() {
-        const rows = document.querySelectorAll("#claimDetailTable tbody tr");
-        let totalDuration = 0;
+        function calculateDuration() {
+            const rows = document.querySelectorAll("#claimDetailTable tbody tr");
+            let totalDuration = 0;
 
-        rows.forEach(row => {
-            const startTimeInput = row.querySelector('input[name^="claimDetails"][name$="startTime"]');
-            const endTimeInput = row.querySelector('input[name^="claimDetails"][name$="endTime"]');
+            rows.forEach(row => {
+                const startTimeInput = row.querySelector('input[name^="claimDetails"][name$="startTime"]');
+                const endTimeInput = row.querySelector('input[name^="claimDetails"][name$="endTime"]');
 
-            const startTime = new Date(startTimeInput.value);
-            const endTime = new Date(endTimeInput.value);
+                const startTime = new Date(startTimeInput.value);
+                const endTime = new Date(endTimeInput.value);
 
-            if (startTime && endTime && endTime > startTime) {
-                const duration = (endTime - startTime) / (1000 * 60 * 60); // Tính duration theo giờ
-                totalDuration += duration;
-            }
-        });
+                if (endTime <= startTime) {
+                    alert("End Time must be greater than Start Time.");
+                    endTimeInput.value = "";
+                    return;
+                }
 
-        document.getElementById('duration').value = totalDuration;
-    }
-</script>
+                if (startTime && endTime) {
+                    const duration = (endTime - startTime) / (1000 * 60 * 60);
+                    totalDuration += duration;
+                }
+            });
+
+            document.getElementById('duration').value = totalDuration.toFixed(2);
+        }
+    </script>
+</main>
 </body>
 </html>

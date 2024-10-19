@@ -1,23 +1,36 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.dto.project.ProjectDTO;
+import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.dto.project.ProjectSaveDTO;
+import mock.claimrequest.entity.Account;
+import mock.claimrequest.entity.Claim;
+import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
+import mock.claimrequest.repository.AccountRepository;
+import mock.claimrequest.repository.ClaimDetailRepository;
+import mock.claimrequest.repository.ClaimRepository;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
 import mock.claimrequest.service.ProjectService;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +45,18 @@ public class ProjectServiceImpl implements ProjectService {
     private final EmployeeProjectRepository employeeProjectRepository;
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+    private final AccountRepository accountRepository;
+    private final ClaimRepository claimRepository;
+    private final ClaimDetailRepository claimDetailRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AccountRepository accountRepository, ClaimRepository claimRepository, ClaimDetailRepository claimDetailRepository) {
         this.projectRepository = projectRepository;
         this.employeeProjectRepository = employeeProjectRepository;
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
+        this.accountRepository = accountRepository;
+        this.claimRepository = claimRepository;
+        this.claimDetailRepository = claimDetailRepository;
     }
 
 
@@ -193,6 +212,64 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.findById(id).orElseThrow(() ->
                 new IllegalStateException("Project not existed!"));
         projectRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ProjectGetDTO> getProjectForClaim(UUID id){
+        Employee employee = employeeRepository.findByAccount(getCurrentAccount());
+
+        if (id == null) {
+            throw new IllegalArgumentException("Id not null");
+        }
+        return projectRepository.findActiveProjectsByEmployeeId(employee.getId()).stream().map(project -> {
+            var projectDto = new ProjectGetDTO();
+            projectDto.setId(project.getId());
+            projectDto.setName(project.getName());
+            return projectDto;
+        }).toList();
+    }
+
+    @Override
+    public void actionByStatus(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO) {
+        Employee employee = employeeRepository.findByAccount(getCurrentAccount());
+        Project project = projectRepository.findById(claimSaveDTO.getProjectGetDTO().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
+        EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
+                ()->new IllegalStateException("EmployeeProject not existed")
+        );
+        Claim claim= new Claim();
+        claim.setProject(project);
+        claim.setTitle(claimSaveDTO.getTitle());
+        claim.setRequestReason(claimSaveDTO.getRequestReason());
+        claim.setDuration(Double.parseDouble(claimSaveDTO.getDuration()));
+        claim.setStatus(claimStatus);
+        claim.setEmployee(employee);
+        claim.setAmount(BigDecimal.valueOf(employeeProject.getRole().getSalary() * claim.getDuration()));
+        claimRepository.save(claim);
+
+        if (claimSaveDTO.getClaimDetails() != null && !claimSaveDTO.getClaimDetails().isEmpty()) {
+            List<ClaimDetail> claimDetails = claimSaveDTO.getClaimDetails().stream()
+                    .map(detailDTO -> {
+                        ClaimDetail claimDetail = new ClaimDetail();
+                        claimDetail.setClaim(claim);
+                        claimDetail.setStartTime(detailDTO.getStartTime());
+                        claimDetail.setEndTime(detailDTO.getEndTime());
+                        return claimDetail;
+                    })
+                    .collect(Collectors.toList());
+
+            claimDetailRepository.saveAll(claimDetails);
+        }
+    }
+
+    private Account getCurrentAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email= Objects.requireNonNull(userDetails.getUsername());
+            return accountRepository.findByEmail(email);
+        }
+        return null;
+
     }
 
 

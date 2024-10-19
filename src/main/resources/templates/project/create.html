@@ -28,7 +28,11 @@
             </div>
         </div>
         <form th:action="@{/projects/add}" method="post" th:object="${project}" class="rounded-b px-8  pb-8 mb-4">
-            <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic">New project</h1>
+            <div class="flex justify-center">
+                <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
+                    New projects</h1>
+            </div>
+
             <div class="mb-4">
                 <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Project Name:</label>
                 <input type="text" id="projectName" name="name" required

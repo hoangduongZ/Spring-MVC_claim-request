@@ -50,7 +50,7 @@ public class Employee {
     private EmployeeStatus employeeStatus;
 
     @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
+    @JoinColumn(name = "department_id")
     private Department department;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)

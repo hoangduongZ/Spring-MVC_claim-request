@@ -20,5 +20,6 @@ public class ClaimSaveDTO {
     private String title;
     private String requestReason;
     private String duration;
-    List<ClaimDetailDTO> claimDetailDTOS;
+    private ProjectGetDTO projectGetDTO;
+    List<ClaimDetailDTO> claimDetails;
 }

@@ -18,6 +18,7 @@ import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Getter
@@ -44,6 +45,9 @@ public class EmployeeProject implements Serializable {
     @Enumerated(EnumType.STRING)
     @JoinColumn(name = "status")
     private EmpProjectStatus empProjectStatus;
+
+    private LocalDate startTime;
+    private LocalDate endTime;
 
     @Override
     public boolean equals(Object o) {

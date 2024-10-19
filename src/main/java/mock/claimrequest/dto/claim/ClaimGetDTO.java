@@ -22,6 +22,7 @@ public class ClaimGetDTO {
     private String requestReason;
     private ClaimStatus status;
     private LocalDateTime createdTime;
+    private LocalDateTime updatedTime;
     private BigDecimal amount;
 
     public String getFormattedCreatedTime() {

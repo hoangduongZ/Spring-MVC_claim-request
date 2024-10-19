@@ -7,6 +7,7 @@ import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Department;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.Role;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.AccountStatus;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
@@ -63,7 +64,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         account.setStatus(AccountStatus.ACTIVE);
         account.setEmployee(employee);
         Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.findByName("CLAIMER"));
+        roles.add(roleRepository.findByName(AccountRole.CLAIMER));
         account.setRoles(roles);
         employee.setAccount(account);
 
