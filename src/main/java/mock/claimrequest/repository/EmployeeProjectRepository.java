@@ -7,6 +7,7 @@ import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface EmployeeProjectRepository extends JpaRepository<EmployeeProject, EmployeeProjectId> {
@@ -15,4 +16,8 @@ public interface EmployeeProjectRepository extends JpaRepository<EmployeeProject
     List<EmployeeProject> findByProjectId(UUID projectId);
 
     boolean existsByEmployeeIdAndEmpProjectStatus(UUID employeeId, EmpProjectStatus empProjectStatus);
+
+    EmployeeProject findByEmployeeIdAndEmpProjectStatus(UUID employeeId, EmpProjectStatus empProjectStatus);
+
+    Optional<EmployeeProject> findByEmployeeIdAndProjectId(UUID employeeId, UUID projectId);
 }

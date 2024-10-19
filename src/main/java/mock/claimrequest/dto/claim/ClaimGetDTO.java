@@ -17,6 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ClaimGetDTO {
     private UUID id;
+    private String title;
     private String employeeName;
     private String projectName;
     private String requestReason;
@@ -28,5 +29,10 @@ public class ClaimGetDTO {
     public String getFormattedCreatedTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         return createdTime.format(formatter);
+    }
+
+    public String getFormattedUpdatedTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return updatedTime.format(formatter);
     }
 }

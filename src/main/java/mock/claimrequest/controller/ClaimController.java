@@ -3,6 +3,7 @@ package mock.claimrequest.controller;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
+import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.service.ClaimService;
 import mock.claimrequest.service.ProjectService;
 import org.springframework.stereotype.Controller;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,27 +36,36 @@ public class ClaimController {
         return "claim/create";
     }
 
-    @PostMapping("/{action}")
-    public String draftClaim(@ModelAttribute ClaimSaveDTO claimSaveDTO, @PathVariable("action") String action) {
-        projectService.actionByStatus(ClaimStatus.valueOf(action.toUpperCase()), claimSaveDTO);
-        if (action.equals("draft")){
+    @PostMapping("/{status}/action")
+    public String draftClaim(@ModelAttribute ClaimSaveDTO claimSaveDTO, @PathVariable("status") String status) {
+        projectService.actionByStatus(ClaimStatus.valueOf(status.toUpperCase()), claimSaveDTO);
+        if (status.equals("draft")) {
             return "redirect:/claims/draft";
         }
-        return null;
+        return "redirect:/claims/index";
     }
 
-    @GetMapping("/{action}")
-    public String getClaims(Model model,@PathVariable String action) {
-        List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.valueOf(action.toUpperCase()));
+    @GetMapping("/draft")
+    public String getClaims(Model model) {
+        List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.DRAFT);
+        claimService.getClaimByStatus(ClaimStatus.DRAFT);
         model.addAttribute("claims", claims);
-        model.addAttribute("active", action);
+        model.addAttribute("active", "draft");
         return "claim/draft";
     }
 
-    @PostMapping("/{id}/paid")
-    public String postClaimsPaid(RedirectAttributes attributes, @PathVariable UUID id) {
-        claimService.paidClaim(id);
-        return "redirect:/claims";
+    @GetMapping("/index")
+    public String getIndexClaim(Model model, @RequestParam(defaultValue = "pending") String status) {
+        List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.valueOf(status.toUpperCase()));
+        model.addAttribute("claims", claims);
+        if (claimService.getEmployeeRoleInProject().get().equals(ProjectRole.PM)) {
+            model.addAttribute("role", "pm");
+        } else {
+            model.addAttribute("role", "normal");
+        }
+        model.addAttribute("active", "pending");
+        model.addAttribute("currentPage", "claims");
+        return "claim/index";
     }
 
     @GetMapping("/{id}/detail")
@@ -64,12 +74,5 @@ public class ClaimController {
         return "claim/detail";
     }
 
-
-
-    @PostMapping("{id}/cancel")
-    public String postClaimCancel(RedirectAttributes attributes, @PathVariable UUID id) {
-        claimService.cancelClaim(id);
-        return "claim/pending";
-    }
 
 }

@@ -22,6 +22,7 @@ import mock.claimrequest.repository.ClaimRepository;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
+import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ProjectService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
@@ -48,8 +49,9 @@ public class ProjectServiceImpl implements ProjectService {
     private final AccountRepository accountRepository;
     private final ClaimRepository claimRepository;
     private final ClaimDetailRepository claimDetailRepository;
+    private final AuthService authService;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AccountRepository accountRepository, ClaimRepository claimRepository, ClaimDetailRepository claimDetailRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AccountRepository accountRepository, ClaimRepository claimRepository, ClaimDetailRepository claimDetailRepository, AuthService authService) {
         this.projectRepository = projectRepository;
         this.employeeProjectRepository = employeeProjectRepository;
         this.employeeRepository = employeeRepository;
@@ -57,6 +59,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.accountRepository = accountRepository;
         this.claimRepository = claimRepository;
         this.claimDetailRepository = claimDetailRepository;
+        this.authService = authService;
     }
 
 
@@ -216,7 +219,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectGetDTO> getProjectForClaim(UUID id){
-        Employee employee = employeeRepository.findByAccount(getCurrentAccount());
+        Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
 
         if (id == null) {
             throw new IllegalArgumentException("Id not null");
@@ -231,7 +234,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void actionByStatus(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO) {
-        Employee employee = employeeRepository.findByAccount(getCurrentAccount());
+        Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
         Project project = projectRepository.findById(claimSaveDTO.getProjectGetDTO().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
         EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
                 ()->new IllegalStateException("EmployeeProject not existed")
@@ -259,17 +262,6 @@ public class ProjectServiceImpl implements ProjectService {
 
             claimDetailRepository.saveAll(claimDetails);
         }
-    }
-
-    private Account getCurrentAccount() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String email= Objects.requireNonNull(userDetails.getUsername());
-            return accountRepository.findByEmail(email);
-        }
-        return null;
-
     }
 
 

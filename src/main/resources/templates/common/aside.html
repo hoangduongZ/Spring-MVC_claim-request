@@ -17,7 +17,7 @@
   </div>
 
   <div class="aside-item hover:bg-slate-200">
-    <a th:href="@{/claims}"
+    <a th:href="@{/claims/index}"
        class="p-2 flex justify-between items-center w-full text-left "
     >
       <span th:class="${currentPage == 'claims'} ? 'text-purple-500 font-bold' : ''">My claims</span>
@@ -85,18 +85,10 @@
       </a>
     </div>
     <div class="aside-item hover:bg-slate-200">
-      <a th:href="@{/claims/pending}"
-         class="p-2 flex justify-between items-center w-full text-left"
-      >
-        <span th:class="${currentPage == 'pending'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Pending</span>
-      </a>
-    </div>
-    <div class="aside-item hover:bg-slate-200">
       <a th:href="@{/claims/draft}"
          class="p-2 flex justify-between items-center w-full text-left shadow-sm"
       >
         <span th:class="${currentPage == 'draft'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Draft</span>
-
       </a>
     </div>
   </div>
