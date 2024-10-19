@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface ClaimDetailRepository extends JpaRepository<ClaimDetail, Long> {
     ClaimDetail findByClaimId(UUID claimId);
+
+    ClaimDetail findAllByClaimId(UUID claimId);
 }

@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javassist.expr.NewArray;
-import mock.claimrequest.dto.claim.ClaimGetDTO;
-import mock.claimrequest.dto.test.ClaimDetailTestDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jakarta.validation.Valid;
-
+import mock.claimrequest.dto.claim.ClaimGetDTO;
+import mock.claimrequest.dto.claim.ClaimSaveDTO;
+import mock.claimrequest.dto.test.ClaimDetailTestDTO;
 import mock.claimrequest.dto.test.ClaimTestDTO;
+import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.service.ClaimService;
 
@@ -35,8 +33,14 @@ public class ClaimController {
     }
 
     @GetMapping("/add")
-    public String getCreate(){
+    public String showAddClaimForm(Model model) {
+        model.addAttribute("claim", new ClaimSaveDTO());
         return "claim/create";
+    }
+
+    @PostMapping("/claims/add")
+    public String addClaim(@ModelAttribute Claim claim) {
+        return "redirect:/claims";
     }
 
     @GetMapping
@@ -87,16 +91,26 @@ public class ClaimController {
         claimDTO.setClaimDetails(new ArrayList<>()); // Khởi tạo danh sách
 
         // Thêm một ClaimDetailDTO vào danh sách
-        claimDTO.getClaimDetails().add(new ClaimDetailTestDTO());
 
         model.addAttribute("claimDTO", claimDTO);
         return "claim/form_submit_test" ;
     }
     //test
     @PostMapping("/claim-test")
-    public String submitClaimer(@ModelAttribute("claimDTO") ClaimTestDTO claimTestDTO) {
-        claimService.submitClaim(claimTestDTO);
-        return "claim/create" ;
+    public String submitClaimer(@ModelAttribute("claimDTO") ClaimTestDTO claimTestDTO, Model model) {
+        if (claimTestDTO.getClaimDetails() == null || claimTestDTO.getClaimDetails().isEmpty()) {
+            model.addAttribute("error", "Claim details must not be empty!");
+            return "claim/form_submit_test"; // Quay lại trang nhập liệu với thông báo lỗi
+        }
+        else {
+            try {
+                claimService.submitClaim(claimTestDTO);
+            } catch (Exception e) {
+                model.addAttribute("error", "There was an error submitting your claim: " + e.getMessage());
+                return "redirect:/claims/claim-test"; // Trả lại trang form để người dùng có thể sửa chữa
+            }
+            return "claim/approve/approve";
+        }
 
     }
 
@@ -130,6 +144,15 @@ public class ClaimController {
     public String submitClaim(@RequestParam UUID id) {
         claimService.submitClaimById(id);
         return "redirect:/claims/approve";
+
+    }
+
+
+    @GetMapping("/reject")
+    public String getClaimRejectTest(Model model, @RequestParam UUID id){
+        ClaimTestDTO claim = claimService.findByIdTest(id);
+        model.addAttribute("claims",claim);
+        return "claim/approve/reject";
 
     }
 

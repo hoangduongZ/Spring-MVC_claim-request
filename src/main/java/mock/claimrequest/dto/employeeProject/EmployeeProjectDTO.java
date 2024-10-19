@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 
 import java.util.UUID;
@@ -12,8 +13,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeForProjectSaveDTO {
+public class EmployeeProjectDTO {
     private UUID employeeId;
-    private ProjectRole role;
     private String accountName;
+    private ProjectRole role;
+    private EmployeeStatus employeeStatus;
 }

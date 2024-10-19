@@ -10,6 +10,8 @@ import java.util.UUID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,9 +20,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "employee")
 public class Employee {
@@ -35,6 +44,9 @@ public class Employee {
     private boolean gender;
     private LocalDate dob;
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    private EmployeeStatus employeeStatus;
 
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)

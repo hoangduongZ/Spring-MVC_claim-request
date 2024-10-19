@@ -2,11 +2,14 @@ package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.employee.EmployeeGetDTO;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
+import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Department;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.Role;
 import mock.claimrequest.entity.entityEnum.AccountStatus;
+import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
+import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.DepartmentRepository;
 import mock.claimrequest.repository.EmployeeRepository;
@@ -51,6 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setFirstname(employeeSaveDTO.getFirstname());
         employee.setLastname(employeeSaveDTO.getLastname());
         employee.setGender(employeeSaveDTO.isGender());
+        employee.setEmployeeStatus(EmployeeStatus.FREE);
 
         Account account = new Account();
         account.setEmail(employeeSaveDTO.getAccountRegisterDTO().getEmail());
@@ -74,12 +78,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeGetDTO> getAll() {
-        return employeeRepository.findByAccountIsNotNull().stream().map(
+    public List<EmployeeProjectDTO> getAllEmployeeFree() {
+        return employeeRepository.findByEmployeeStatus(EmployeeStatus.FREE).stream().map(
                 employee -> {
-                    EmployeeGetDTO saveDTO = new EmployeeGetDTO();
-                    saveDTO.setUserName(employee.getAccount().getUserName());
-                    saveDTO.setId(employee.getId());
+                    EmployeeProjectDTO saveDTO = new EmployeeProjectDTO();
+                    if (employee.getAccount()!=null){
+                        saveDTO.setAccountName(employee.getAccount().getUserName());
+                    }
+                    saveDTO.setEmployeeId(employee.getId());
+                    saveDTO.setEmployeeStatus(employee.getEmployeeStatus());
+                    return saveDTO;
+                }).toList();
+    }
+
+    @Override
+    public List<EmployeeProjectDTO> getAllEmployeeFreeAndWorkingCurrentProject(UUID projectId) {
+        return employeeRepository.findAllFreeOrWorkingInProject(projectId,
+                EmployeeStatus.FREE, EmployeeStatus.WORKING, EmpProjectStatus.IN).stream().map(
+                employee -> {
+                    EmployeeProjectDTO saveDTO = new EmployeeProjectDTO();
+                    saveDTO.setAccountName(employee.getAccount().getUserName());
+                    saveDTO.setEmployeeId(employee.getId());
+                    saveDTO.setEmployeeStatus(employee.getEmployeeStatus());
                     return saveDTO;
                 }).toList();
     }

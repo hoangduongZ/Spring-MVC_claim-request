@@ -10,8 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,7 +28,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "projects")
 public class Project {
@@ -43,17 +52,17 @@ public class Project {
 
     private BigDecimal budget;
 
-    @Column(name = "create_time", updatable = false)
+    @CreationTimestamp
     private LocalDateTime createTime;
 
-    @Column(name = "update_time")
+    @UpdateTimestamp
     private LocalDateTime updateTime;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private ProjectStatus projectStatus;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmployeeProject> employeeProjects = new HashSet<>();
 
     @OneToMany(mappedBy = "project")

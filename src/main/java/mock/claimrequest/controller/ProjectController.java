@@ -3,9 +3,9 @@ package mock.claimrequest.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
-import mock.claimrequest.dto.employeeProject.EmployeeForProjectSaveDTO;
+import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
+import mock.claimrequest.dto.project.ProjectDTO;
 import mock.claimrequest.dto.project.ProjectSaveDTO;
-import mock.claimrequest.entity.Project;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.service.EmployeeService;
@@ -15,11 +15,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -39,19 +41,7 @@ public class ProjectController {
 
     @GetMapping("/add")
     public String getAddProject(Model model) throws JsonProcessingException {
-        //TODO remove
-//        ProjectSaveDTO  dto  = new ProjectSaveDTO();
-//        EmployeeForProjectSaveDTO SaveDTO1 = new EmployeeForProjectSaveDTO();
-//        SaveDTO1.setRole(ProjectRole.PM);
-//        SaveDTO1.setEmployeeId(UUID.randomUUID());
-//
-//        List<EmployeeForProjectSaveDTO> employeeProjects = List.of(SaveDTO1);
-//        dto.setEmployeeProjects(employeeProjects);
-//        dto.setName("Abc");
-//        dto.setBudget(new BigDecimal("10.5"));
-//        dto.setStartDate(LocalDate.now());
-
-        Object employees = employeeService.getAll();
+        var employees = employeeService.getAllEmployeeFree();
 
         model.addAttribute("project", new ProjectSaveDTO());
         model.addAttribute("employees", employees);
@@ -63,9 +53,44 @@ public class ProjectController {
         return "project/create";       
     }
 
+
     @PostMapping("/add")
     public String postAddProject(@ModelAttribute @Valid ProjectSaveDTO projectSaveDTO){
         projectService.create(projectSaveDTO);
         return "redirect:/projects/add";
     }
+
+    @GetMapping
+    public String getListProject(Model model){
+        model.addAttribute("projects", projectService.list());
+        return "project/index";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editProject(@PathVariable("id") UUID projectId, Model model) {
+        ProjectDTO project = projectService.getById(projectId);
+
+        List<EmployeeProjectDTO> employeeProjects = projectService.getEmployeeProjectsByProjectId(projectId);
+        model.addAttribute("projectStatuses", ProjectStatus.values());
+        model.addAttribute("project", project);
+        model.addAttribute("employeeProjects", employeeProjects);
+
+        var employees = employeeService.getAllEmployeeFreeAndWorkingCurrentProject(projectId);
+        model.addAttribute("employees", employees);
+        model.addAttribute("roles", ProjectRole.values());
+        return "project/edit";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String updateProject(@ModelAttribute ProjectDTO projectDTO) {
+        projectService.update(projectDTO);
+        return "redirect:/projects";
+    }
+
+    @GetMapping("/{id}/delete")
+    public String deleteProject(@PathVariable UUID id) {
+        projectService.delete(id);
+        return "redirect:/projects";
+    }
+
 }

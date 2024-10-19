@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+   >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -13,6 +13,8 @@
 
 
 <form th:action="@{/claims/claim-test}" th:object="${claimDTO}" method="post" >
+
+    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
     <div >
         <label for="request title1" >Request Title</label>
         <input type="text" id="request title1" th:field="*{title}"  placeholder="1 đoạn text viets title">
@@ -25,12 +27,7 @@
         <label for="request title3" >Project ID</label>
         <input type="text" id="request title3" th:field="*{projectId}"  placeholder="paste project id vào đây ">
     </div> 
-<!-- 
-    <label for="project"> Chọn 1 project </label>
-    <select id="project" name="project">
-        <option value="">Select project</option>
-        <option> chọn các project ở đây</option>
-    </select> -->
+
     <div >
         <label for="requestreason" >request Reason</label>
         <input type="text" id="requestreason" th:field="*{requestReason}">
@@ -47,18 +44,19 @@
         </tr>
         </thead>
         <tbody id="ot-table-body">
-        <tr>
+        <tr th:each="detail, iterStat : ${claimDTO.claimDetails}">
            
-            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[0].startTime}" type="datetime-local" class="border rounded w-full p-1"></td>
-            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[0].endTime}" type="datetime-local" class="border rounded w-full p-1"></td>
+            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[iterStat.index].startTime}" type="datetime-local" class="border rounded w-full p-1" required></td>
+            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[iterStat.index].endTime}" type="datetime-local" class="border rounded w-full p-1" required></td>
            
             <td class="py-2 px-4 border-b"><button type="button" onclick="deleteOTRow(this)" class="bg-red-500 text-white py-1 px-2 rounded">Delete</button></td>
         </tr>
+
+        </div>
+        </tbody>
         <div class="mt-4">
             <button type="button" onclick="addOTRow()" class="bg-purple-700 text-white py-2 px-4 rounded">Add OT Row</button>
         </div>
-        </div>
-        </tbody>
 
     </table>
 
@@ -75,28 +73,30 @@
 
 
 <script>
+    function addOTRow() {
+    const tableBody = document.getElementById('ot-table-body');
+    const rowCount = tableBody.rows.length;
+    const newRow = document.createElement('tr');
 
-    let rowCount = 1;
-function addOTRow() {
-        const tableBody = document.getElementById('ot-table-body');
-        const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td>
+            <input type="datetime-local" name="claimDetails[${rowCount}].startTime" required/>
+        </td>
+        <td>
+            <input type="datetime-local" name="claimDetails[${rowCount}].endTime" required/>
+        </td>
+        <td>
+            <button type="button" onclick="deleteOTRow(this)">Delete</button>
+        </td>
+    `;
 
-        newRow.innerHTML = `
-            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[${rowCount}].startTime}" type="datetime-local" class="border rounded w-full p-1"></td>
-            <td class="py-2 px-4 border-b"><input th:field="*{claimDetails[${rowCount}].endTime}" type="datetime-local" class="border rounded w-full p-1"></td>
-            <td class="py-2 px-4 border-b"><input type="number" min="0" step="0.01" class="border rounded w-full p-1" disabled></td>
-            <td class="py-2 px-4 border-b"><button type="button" onclick="deleteOTRow(this)" class="bg-red-500 text-white py-1 px-2 rounded">Delete</button></td>
-        `;
+    tableBody.appendChild(newRow);
+}
 
-        tableBody.appendChild(newRow);
-        rowCount++;
-    }
-
-
- function deleteOTRow(button) {
-     const row = button.parentElement.parentElement;
-     row.remove();
- }
+function deleteOTRow(button) {
+    const row = button.parentElement.parentElement;
+    row.remove();
+}
 </script>
 
 </body>

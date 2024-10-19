@@ -46,6 +46,8 @@ public class ClaimTestDTO {
     private UUID employeeId;
     private List<ClaimDetailTestDTO> claimDetails = new ArrayList<>();
 
+    private String rejectedReason;
+
     
     @CreationTimestamp
     private LocalDateTime createdTime;

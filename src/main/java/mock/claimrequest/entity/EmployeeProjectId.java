@@ -12,9 +12,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Embeddable
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
 public class EmployeeProjectId implements Serializable {
     private UUID employeeId;
     private UUID projectId;

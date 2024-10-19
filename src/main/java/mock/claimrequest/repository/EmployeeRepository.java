@@ -1,14 +1,23 @@
 package mock.claimrequest.repository;
 
-import java.util.UUID;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import mock.claimrequest.entity.Employee;
-
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import mock.claimrequest.entity.Employee;
+import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
+import mock.claimrequest.entity.entityEnum.EmployeeStatus;
+
 public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
-    List<Employee> findByAccountIsNotNull();
+    List<Employee> findByEmployeeStatus(EmployeeStatus employeeStatus);
+
+    @Query("SELECT e FROM Employee e LEFT JOIN EmployeeProject ep ON e.id = ep.employee.id " +
+            "WHERE (e.employeeStatus = :freeStatus OR (e.employeeStatus = :workingStatus AND ep.project.id = :projectId AND ep.empProjectStatus = :inStatus))")
+    List<Employee> findAllFreeOrWorkingInProject(@Param("projectId") UUID projectId,
+                                                 @Param("freeStatus") EmployeeStatus freeStatus,
+                                                 @Param("workingStatus") EmployeeStatus workingStatus,
+                                                 @Param("inStatus") EmpProjectStatus inStatus);
 }

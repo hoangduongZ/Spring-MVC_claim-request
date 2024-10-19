@@ -2,6 +2,7 @@ package mock.claimrequest.service.impl;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import mock.claimrequest.repository.ClaimRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
 import mock.claimrequest.service.ClaimService;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
@@ -122,6 +124,7 @@ public class ClaimServiceImpl implements ClaimService {
         Claim claim= claimRepository.findById(id).orElseThrow(()-> new RuntimeException("Claim not exist"));
         ClaimTestDTO claimTestDTO = new ClaimTestDTO();
         claimTestDTO.setEmployeeName(claim.getEmployee().getFirstname() + " " + claim.getEmployee().getLastname());
+        claimTestDTO.setRejectedReason(claim.getRejectReason());
         claimTestDTO.setRequestReason(claim.getRequestReason());
         claimTestDTO.setProjectName(claim.getProject().getName());
         claimTestDTO.setTitle(claim.getTitle());
@@ -130,17 +133,15 @@ public class ClaimServiceImpl implements ClaimService {
         claimTestDTO.setEmployeeId(claim.getEmployee().getId());
         claimTestDTO.setProjectId(claim.getProject().getId());
 
-        ClaimDetail claimDetail = claimDetailRepository.findByClaimId(claim.getId());
-
-        // Chuyển đổi ClaimDetail sang ClaimDetailTestDTO
-        claimTestDTO.setClaimDetails(claim.getClaimDetails().stream()
-                .map(detail -> {
-                    ClaimDetailTestDTO detailDTO = new ClaimDetailTestDTO();
-                    detailDTO.setStartTime(detail.getStartTime());
-                    detailDTO.setEndTime(detail.getEndTime());
-                    return detailDTO;
-                })
-                .collect(Collectors.toList())
+        claimTestDTO.setClaimDetails(
+                claim.getClaimDetails().stream()
+                        .map(detail -> {
+                            ClaimDetailTestDTO detailDTO = new ClaimDetailTestDTO();
+                            detailDTO.setStartTime(detail.getStartTime());
+                            detailDTO.setEndTime(detail.getEndTime());
+                            return detailDTO;
+                        })
+                        .collect(Collectors.toList())
         );
 
         // Tính tổng duration
@@ -150,6 +151,7 @@ public class ClaimServiceImpl implements ClaimService {
 
     }
 
+    @Transactional
     @Override
     public void submitClaim(ClaimTestDTO claimTestDTO) {
         if (claimTestDTO == null){
@@ -165,38 +167,38 @@ public class ClaimServiceImpl implements ClaimService {
             claim.setRequestReason(claimTestDTO.getRequestReason());
             claim.setStatus(ClaimStatus.PENDING);
             // if status processing, thêm vào date
-            claim.setCreatedTime(claimTestDTO.getDate());
+
             claim.setTitle(claimTestDTO.getTitle());
             claim.setProject(project); //lấy từ name trong form th:value : id , th:text : name , option
             claim.setEmployee(employee); //security :tính sau
 
-            // Tính tổng duration
-            long totalDurationHours = claimTestDTO.getClaimDetails().stream()
-                    .filter(detailDTO -> detailDTO.getStartTime() != null && detailDTO.getEndTime() != null)
-                    .mapToLong(detailDTO -> {
-                        Duration duration = Duration.between(detailDTO.getStartTime(), detailDTO.getEndTime());
-                        return duration.toHours(); // Tính duration bằng giờ
-                    })
-                    .sum();
+            // Danh sách để lưu ClaimDetail
+            List<ClaimDetail> claimDetails = new ArrayList<>();
 
-            claim.setDuration(totalDurationHours);
-            claimRepository.save(claim);
+            // Chuyển đổi ClaimDetailTestDTO sang ClaimDetail
+            for (ClaimDetailTestDTO detailDTO : claimTestDTO.getClaimDetails()) {
+                if (detailDTO.getStartTime() == null || detailDTO.getEndTime() == null) {
+                    throw new IllegalArgumentException("Start time and end time must not be null!");
+                }
+                if (detailDTO.getStartTime().isAfter(detailDTO.getEndTime())) {
+                    throw new IllegalArgumentException("Start time must be before end time!");
+                }
+                ClaimDetail claimDetail = new ClaimDetail();
+                claimDetail.setStartTime(detailDTO.getStartTime());
+                claimDetail.setEndTime(detailDTO.getEndTime());
 
-            // Lưu danh sách claimDetails
-            List<ClaimDetail> details = claimTestDTO.getClaimDetails().stream()
-                    .map(detailDTO -> {
-                        ClaimDetail detail = new ClaimDetail();
-                        detail.setStartTime(detailDTO.getStartTime());
-                        detail.setEndTime(detailDTO.getEndTime());
-                        detail.setClaim(claim); // Thiết lập quan hệ với Claim
-                        return detail;
-                    })
-                    .collect(Collectors.toList());
+                // Thiết lập quan hệ giữa ClaimDetail và Claim
+                claimDetail.setClaim(claim);
 
-            claim.setClaimDetails(details); // Thiết lập danh sách ClaimDetail
+                // Thêm ClaimDetail vào danh sách
+                claimDetails.add(claimDetail);
+            }
+            // Thiết lập danh sách ClaimDetail cho Claim
+            claim.setClaimDetails(claimDetails);
 
-            claim.setClaimDetails(details); // Thiết lập danh sách ClaimDetail
-            claimDetailRepository.saveAll(details);
+            // Lưu Claim cùng với danh sách ClaimDetail
+            claimRepository.save(claim); // Lưu Claim, tự động lưu các ClaimDetail
+            claimDetailRepository.saveAll(claimDetails);
         }
     }
 

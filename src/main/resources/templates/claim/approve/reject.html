@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="layouts/layout" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -8,6 +9,60 @@
     <title>Document</title>
 </head>
 <body>
+<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100/30 w-5/6">
 
+    <form th:object="${claims}">
+
+        <div>
+            <label for="reject reason">Reject reason</label>
+            <input type="text" id="reject reason" th:value="*{rejectedReason}" required>
+        </div>
+        <div>
+            <label for="title">Request Title</label>
+            <input type="text" id="title" th:value="*{title}" readonly>
+        </div>
+        <div>
+            <label for="employeeName">Employee Name</label>
+            <input type="text" id="employeeName" th:value="*{employeeName}" readonly>
+        </div>
+        <div>
+            <label for="projectName">Project Name</label>
+            <input type="text" id="projectName" th:value="*{projectName}" readonly>
+        </div>
+        <div>
+            <label for="requestReason">Request Reason</label>
+            <input type="text" id="requestReason" th:value="*{requestReason}" readonly>
+        </div>
+
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+            <tr class="bg-gray-200 text-gray-700">
+                <th class="py-2 px-4 border-b">Start Timeeeeee</th>
+                <th class="py-2 px-4 border-b">End Time</th>
+                <th class="py-2 px-4 border-b">Total OT (hours)</th>
+                <th class="py-2 px-4 border-b">Action</th>
+            </tr>
+            </thead>
+            <span th:text="${claims.claimDetails}"></span>
+            <tbody>
+            <tr th:each="detail, iterStat : ${claims.claimDetails}">
+                <td  class="border border-gray-300 px-4 py-2">
+                    <input readonly type="datetime-local" class="border rounded px-2 py-1"
+                           th:field="*{claimDetails[__${iterStat.index}__].startTime}" />
+                </td>
+                <td class="border border-gray-300 px-4 py-2">
+                    <input readonly type="datetime-local" class="border rounded px-2 py-1"
+                           th:field="*{claimDetails[__${iterStat.index}__].endTime}" />
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</main>
 </body>
 </html>
