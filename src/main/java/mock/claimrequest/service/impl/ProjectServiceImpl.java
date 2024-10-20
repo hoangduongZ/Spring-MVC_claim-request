@@ -95,15 +95,28 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<EmployeeProjectDTO> employeeProjectDTOS = projectSaveDTO.getEmployeeProjects();
 
-        List<EmployeeProject> employeeProjects;
-        if (employeeProjectDTOS == null) {
-            employeeProjects = new ArrayList<>();
-            employeeProjectRepository.saveAll(employeeProjects);
-        } else {
-            List<EmployeeProject> existingEmployeeProjects = employeeProjectRepository.findByProjectId(project.getId());
+        List<EmployeeProject> employeeProjects = new ArrayList<>();
+        if (employeeProjectDTOS != null) {
+            for (EmployeeProjectDTO employeeProjectDTO : employeeProjectDTOS) {
+                Employee employee = employeeRepository.findById(employeeProjectDTO.getEmployeeId())
+                        .orElseThrow(() -> new IllegalStateException("Employee not found!"));
 
+                EmployeeProject employeeProject = new EmployeeProject();
+                EmployeeProjectId employeeProjectId = new EmployeeProjectId(employee.getId(), project.getId());
+                employeeProject.setId(employeeProjectId);
+                employeeProject.setEmployee(employee);
+                employeeProject.setProject(project);
+                employeeProject.setRole(employeeProjectDTO.getRole());
+                employeeProject.setEmpProjectStatus(EmpProjectStatus.IN);
+                employeeProject.setStartDate(employeeProjectDTO.getStartDate());
+                employeeProject.setEndDate(employeeProjectDTO.getEndDate());
+                employeeProjects.add(employeeProject);
+            }
         }
 
+        if (!employeeProjects.isEmpty()) {
+            employeeProjectRepository.saveAll(employeeProjects);
+        }
     }
 
     @Override
@@ -111,35 +124,44 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(projectDTO.getId())
                 .orElseThrow(() -> new IllegalStateException("Project not existed!"));
 
+        project.setName(projectDTO.getName());
+        project.setDescription(projectDTO.getDescription());
+        project.setStartDate(projectDTO.getStartDate());
+        project.setEndDate(projectDTO.getEndDate());
+        project.setBudget(projectDTO.getBudget());
+        project.setProjectStatus(projectDTO.getStatus());
+
+        projectRepository.save(project);
+
         UUID projectId = project.getId();
+        if(projectDTO.getEmployeeProjects()!= null){
+            List<EmployeeProject> employeeProjectsRecieve = projectDTO.getEmployeeProjects().stream()
+                    .map(employeeProjectDTO -> {
+                        EmployeeProject employeeProject = new EmployeeProject();
+                        EmployeeProjectId employeeProjectId = new EmployeeProjectId(employeeProjectDTO.getEmployeeId(), projectId);
+                        Employee employee = employeeRepository.findById(employeeProjectDTO.getEmployeeId())
+                                .orElseThrow(() -> new IllegalStateException("Employee not found!"));
 
-        List<EmployeeProject> employeeProjectsRecieve = projectDTO.getEmployeeProjects().stream()
-                .map(employeeProjectDTO -> {
-                    EmployeeProject employeeProject = new EmployeeProject();
-                    EmployeeProjectId employeeProjectId = new EmployeeProjectId(employeeProjectDTO.getEmployeeId(), projectId);
-                    Employee employee = employeeRepository.findById(employeeProjectDTO.getEmployeeId())
-                            .orElseThrow(() -> new IllegalStateException("Employee not found!"));
+                        employeeProject.setId(employeeProjectId);
+                        employeeProject.setEmployee(employee);
+                        employeeProject.setProject(project);
+                        employeeProject.setRole(employeeProjectDTO.getRole());
+                        employeeProject.setEmpProjectStatus(EmpProjectStatus.IN);
+                        employeeProject.setStartDate(employeeProjectDTO.getStartDate());
+                        employeeProject.setEndDate(employeeProjectDTO.getEndDate());
+                        return employeeProject;
+                    })
+                    .toList();
 
-                    Project projectZ = projectRepository.findById(projectId)
-                            .orElseThrow(() -> new IllegalStateException("Project not found!"));
-                    employeeProject.setId(employeeProjectId);
-                    employeeProject.setEmployee(employee);
-                    employeeProject.setProject(projectZ);
-                    employeeProject.setRole(employeeProjectDTO.getRole());
-                    employeeProject.setEmpProjectStatus(EmpProjectStatus.IN);
-                    employeeProject.setStartDate(employeeProjectDTO.getStartDate());
-                    employeeProject.setEndDate(employeeProjectDTO.getEndDate());
-                    return employeeProject;
-                })
-                .toList();
+            List<EmployeeProject> employeeProjectsInDB = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(
+                    projectId, EmpProjectStatus.IN);
 
-        List<EmployeeProject> employeeProjectsInDB = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(
-                projectId, EmpProjectStatus.IN);
+            handleRemove(employeeProjectsInDB, employeeProjectsRecieve);
+            handleSave(employeeProjectsInDB, employeeProjectsRecieve);
+        }
+    }
 
-        LocalDate projectStartDate = project.getStartDate();
-        LocalDate projectEndDate = project.getEndDate();
-        LocalDate now = LocalDate.now();
-
+    private void handleRemove(List<EmployeeProject> employeeProjectsInDB, List<EmployeeProject> employeeProjectsRecieve) {
         List<EmployeeProject> toDelete = employeeProjectsInDB.stream()
                 .filter(empProjectInDB -> employeeProjectsRecieve.stream()
                         .noneMatch(empProjectRecieve -> empProjectRecieve.getId().equals(empProjectInDB.getId())))
@@ -152,8 +174,13 @@ public class ProjectServiceImpl implements ProjectService {
         if (!toDelete.isEmpty()) {
             employeeProjectRepository.deleteAll(toDelete);
         }
+    }
 
+    private void handleSave(List<EmployeeProject> employeeProjectsInDB, List<EmployeeProject> employeeProjectsRecieve) {
         List<EmployeeProject> toSave = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        LocalDate projectStartDate = employeeProjectsInDB.isEmpty() ? null : employeeProjectsInDB.get(0).getProject().getStartDate();
+        LocalDate projectEndDate = employeeProjectsInDB.isEmpty() ? null : employeeProjectsInDB.get(0).getProject().getEndDate();
 
         for (EmployeeProject empProjectRecieve : employeeProjectsRecieve) {
             EmployeeProjectId empProjectId = empProjectRecieve.getId();
@@ -164,61 +191,12 @@ public class ProjectServiceImpl implements ProjectService {
 
             if (empProjectInDBOptional.isPresent()) {
                 EmployeeProject empProjectInDB = empProjectInDBOptional.get();
-
-                boolean isUpdated = false;
-
-                if (!empProjectRecieve.getRole().equals(empProjectInDB.getRole())) {
-                    empProjectInDB.setRole(empProjectRecieve.getRole());
-                    isUpdated = true;
-                }
-
-                if (empProjectRecieve.getStartDate() != null &&
-                        !Objects.equals(empProjectRecieve.getStartDate(), empProjectInDB.getStartDate())) {
-                    empProjectInDB.setStartDate(empProjectRecieve.getStartDate());
-                    isUpdated = true;
-                }
-
-                if (empProjectRecieve.getEndDate() != null &&
-                        !Objects.equals(empProjectRecieve.getEndDate(), empProjectInDB.getEndDate())) {
-                    empProjectInDB.setEndDate(empProjectRecieve.getEndDate());
-                    isUpdated = true;
-                }
-
+                boolean isUpdated = updateEmployeeProject(empProjectRecieve, empProjectInDB, projectStartDate, projectEndDate, now);
                 if (isUpdated) {
-                    if ((empProjectRecieve.getStartDate() != null &&
-                            (empProjectRecieve.getStartDate().isBefore(projectStartDate) ||
-                                    empProjectRecieve.getStartDate().isAfter(projectEndDate))) ||
-                            (empProjectRecieve.getEndDate() != null &&
-                                    (empProjectRecieve.getEndDate().isBefore(projectStartDate) ||
-                                            empProjectRecieve.getEndDate().isAfter(projectEndDate)))) {
-                        throw new IllegalStateException("Start date or end date is out of project range!");
-                    }
-
-                    if (empProjectRecieve.getStartDate() != null &&
-                            (empProjectRecieve.getStartDate().isEqual(now) || empProjectRecieve.getStartDate().isAfter(now))) {
-                        empProjectInDB.getEmployee().setEmployeeStatus(EmployeeStatus.WORKING);
-                        empProjectInDB.setEmpProjectStatus(EmpProjectStatus.IN);
-                    }
-
-                    if (empProjectRecieve.getEndDate() != null &&
-                            empProjectRecieve.getEndDate().isEqual(now)) {
-                        empProjectInDB.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
-                        empProjectInDB.setEmpProjectStatus(EmpProjectStatus.OUT);
-                    }
-
                     toSave.add(empProjectInDB);
                 }
-
             } else {
-                if ((empProjectRecieve.getStartDate() != null &&
-                        (empProjectRecieve.getStartDate().isBefore(projectStartDate) ||
-                                empProjectRecieve.getStartDate().isAfter(projectEndDate))) ||
-                        (empProjectRecieve.getEndDate() != null &&
-                                (empProjectRecieve.getEndDate().isBefore(projectStartDate) ||
-                                        empProjectRecieve.getEndDate().isAfter(projectEndDate)))) {
-                    throw new IllegalStateException("Start date or end date is out of project range!");
-                }
-
+                validateProjectDates(empProjectRecieve, projectStartDate, projectEndDate);
                 toSave.add(empProjectRecieve);
             }
         }
@@ -227,6 +205,58 @@ public class ProjectServiceImpl implements ProjectService {
             employeeProjectRepository.saveAll(toSave);
         }
     }
+
+    private boolean updateEmployeeProject(EmployeeProject empProjectRecieve, EmployeeProject empProjectInDB,
+                                          LocalDate projectStartDate, LocalDate projectEndDate, LocalDate now) {
+        boolean isUpdated = false;
+
+        if (!empProjectRecieve.getRole().equals(empProjectInDB.getRole())) {
+            empProjectInDB.setRole(empProjectRecieve.getRole());
+            isUpdated = true;
+        }
+
+        if (empProjectRecieve.getStartDate() != null &&
+                !Objects.equals(empProjectRecieve.getStartDate(), empProjectInDB.getStartDate())) {
+            empProjectInDB.setStartDate(empProjectRecieve.getStartDate());
+            isUpdated = true;
+        }
+
+        if (empProjectRecieve.getEndDate() != null &&
+                !Objects.equals(empProjectRecieve.getEndDate(), empProjectInDB.getEndDate())) {
+            empProjectInDB.setEndDate(empProjectRecieve.getEndDate());
+            isUpdated = true;
+        }
+
+        if (isUpdated) {
+            validateProjectDates(empProjectRecieve, projectStartDate, projectEndDate);
+
+            if (empProjectRecieve.getStartDate() != null &&
+                    (empProjectRecieve.getStartDate().isEqual(now) || empProjectRecieve.getStartDate().isAfter(now))) {
+                empProjectInDB.getEmployee().setEmployeeStatus(EmployeeStatus.WORKING);
+                empProjectInDB.setEmpProjectStatus(EmpProjectStatus.IN);
+            }
+
+            if (empProjectRecieve.getEndDate() != null &&
+                    empProjectRecieve.getEndDate().isEqual(now)) {
+                empProjectInDB.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
+                empProjectInDB.setEmpProjectStatus(EmpProjectStatus.OUT);
+            }
+        }
+
+        return isUpdated;
+    }
+
+    private void validateProjectDates(EmployeeProject empProjectRecieve, LocalDate projectStartDate, LocalDate projectEndDate) {
+        if ((empProjectRecieve.getStartDate() != null &&
+                (empProjectRecieve.getStartDate().isBefore(projectStartDate) ||
+                        empProjectRecieve.getStartDate().isAfter(projectEndDate))) ||
+                (empProjectRecieve.getEndDate() != null &&
+                        (empProjectRecieve.getEndDate().isBefore(projectStartDate) ||
+                                empProjectRecieve.getEndDate().isAfter(projectEndDate)))) {
+            throw new IllegalStateException("Start date or end date is out of project range!");
+        }
+    }
+
 
     @Override
     public void delete(UUID id) {

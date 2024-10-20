@@ -28,7 +28,7 @@ public class ProjectDTO {
 
     private BigDecimal budget;
 
-    private ProjectStatus projectStatus;
+    private ProjectStatus status;
 
     private List<EmployeeProjectDTO> employeeProjects;
 }
