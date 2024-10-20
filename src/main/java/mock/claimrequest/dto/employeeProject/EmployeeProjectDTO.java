@@ -7,6 +7,10 @@ import lombok.Setter;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.UUID;
 
 @Getter
@@ -18,4 +22,6 @@ public class EmployeeProjectDTO {
     private String accountName;
     private ProjectRole role;
     private EmployeeStatus employeeStatus;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }
