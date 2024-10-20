@@ -52,11 +52,13 @@ public class AccountServiceImpl implements AccountService {
         }else{
             roles.add(roleRepository.findByName(AccountRole.ADMIN));
         }
-        account.setRoles(roles);
-        accountRepository.save(account);
         Employee employee = new Employee();
-        employee.setAccount(account);
         employeeRepository.save(employee);
+
+        account.setRoles(roles);
+        account.setEmployee(employee);
+        accountRepository.save(account);
+
         return account.getId() != null;
     }
 

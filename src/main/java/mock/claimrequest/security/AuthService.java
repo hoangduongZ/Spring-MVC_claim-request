@@ -1,6 +1,8 @@
 package mock.claimrequest.security;
 
 import mock.claimrequest.entity.Account;
+import mock.claimrequest.entity.Role;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.repository.AccountRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,6 +51,19 @@ public class AuthService implements UserDetailsService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String email= Objects.requireNonNull(userDetails.getUsername());
             return accountRepository.findByEmail(email);
+        }
+        return null;
+    }
+
+    public AccountRole getCurrentRoleAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            GrantedAuthority authority = userDetails.getAuthorities().stream().findFirst().orElse(null);
+            if (authority != null) {
+                String roleName = authority.getAuthority().replace("ROLE_", "");
+                return AccountRole.valueOf(roleName);
+            }
         }
         return null;
     }

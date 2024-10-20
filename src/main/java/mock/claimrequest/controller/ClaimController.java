@@ -4,8 +4,10 @@ import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
 import mock.claimrequest.entity.Claim;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
+import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
 import mock.claimrequest.service.ProjectService;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Controller
@@ -25,10 +28,12 @@ import java.util.UUID;
 public class ClaimController {
     private final ClaimService claimService;
     private final ProjectService projectService;
+    private final AuthService authService;
 
-    public ClaimController(ClaimService claimService, ProjectService projectService) {
+    public ClaimController(ClaimService claimService, ProjectService projectService, AuthService authService) {
         this.claimService = claimService;
         this.projectService = projectService;
+        this.authService = authService;
     }
 
     @GetMapping("/add")
@@ -86,14 +91,18 @@ public class ClaimController {
 
     @GetMapping("/index{status}")
     public String getIndexClaim(Model model, @RequestParam(defaultValue = "pending",name = "status") String status) {
-        List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.valueOf(status.toUpperCase()));
+        ClaimStatus claimStatus = ClaimStatus.valueOf(status.toUpperCase());
+
+        List<ClaimGetDTO> claims = claimService.getClaimByStatus(claimStatus);
         model.addAttribute("claims", claims);
 
-        if (claimService.getEmployeeRoleInProject().isPresent()) {
-            ProjectRole role = claimService.getEmployeeRoleInProject().get();
-            model.addAttribute("role", role == ProjectRole.PM ? "pm" : "normal");
+        AccountRole currentRole = authService.getCurrentRoleAccount();
+        if (!Objects.equals(currentRole,AccountRole.ADMIN)) {
+            claimService.getEmployeeRoleInProject().ifPresent(role -> {
+                String roleName = role == ProjectRole.PM ? "pm" : "normal";
+                model.addAttribute("role", roleName);
+            });
         }
-
         model.addAttribute("active", status.toLowerCase());
         model.addAttribute("currentPage", "claims");
         return "claim/index";

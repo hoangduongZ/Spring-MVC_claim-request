@@ -9,6 +9,7 @@ import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,17 +49,24 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     public List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus) {
-        UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
+        AccountRole currentRole = authService.getCurrentRoleAccount();
 
-        EmployeeProject employeeProject = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN);
+        if (!Objects.equals(currentRole,AccountRole.ADMIN)) {
+            UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
+            EmployeeProject employeeProject = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN);
 
-        Optional<ProjectRole> roleOpt = getEmployeeRoleInProject();
-
-        if (roleOpt.isPresent() && roleOpt.get() == ProjectRole.PM) {
-            return getClaimsByStatusAndProject(claimStatus, employeeProject.getProject().getId());
+            return getEmployeeRoleInProject()
+                    .map(role -> {
+                        if (role == ProjectRole.PM) {
+                            return getClaimsByStatusAndProject(claimStatus, employeeProject.getProject().getId());
+                        } else {
+                            return getClaimsByStatusAndEmployee(claimStatus, employeeId);
+                        }
+                    })
+                    .orElseGet(() -> getClaimsByStatusAndEmployee(claimStatus, employeeId));
         }
 
-        return getClaimsByStatusAndEmployee(claimStatus, employeeId);
+        return claimRepository.findAllByStatus(claimStatus).stream().map(this::convertToDTO).toList();
     }
 
     @Override
