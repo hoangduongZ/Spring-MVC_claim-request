@@ -1,5 +1,6 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.dto.claim.ClaimDetailDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
@@ -20,6 +21,7 @@ import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -37,14 +39,16 @@ public class ClaimServiceImpl implements ClaimService {
     private final AuthService authService;
     private final ProjectRepository projectRepository;
     private final ClaimDetailRepository claimDetailRepository;
+    private final ModelMapper modelMapper;
 
-    public ClaimServiceImpl(ClaimRepository claimRepository, EmployeeRepository employeeRepository, EmployeeProjectRepository employeeProjectRepository, AuthService authService, ProjectRepository projectRepository, ClaimDetailRepository claimDetailRepository) {
+    public ClaimServiceImpl(ClaimRepository claimRepository, EmployeeRepository employeeRepository, EmployeeProjectRepository employeeProjectRepository, AuthService authService, ProjectRepository projectRepository, ClaimDetailRepository claimDetailRepository, ModelMapper modelMapper) {
         this.claimRepository = claimRepository;
         this.employeeRepository = employeeRepository;
         this.employeeProjectRepository = employeeProjectRepository;
         this.authService = authService;
         this.projectRepository = projectRepository;
         this.claimDetailRepository = claimDetailRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -104,6 +108,12 @@ public class ClaimServiceImpl implements ClaimService {
         claimGetDto.setStatus(claim.getStatus());
         claimGetDto.setId(claim.getId());
         claimGetDto.setTitle(claim.getTitle());
+        claimGetDto.setClaimDetailDTOList(
+                claim.getClaimDetails().stream()
+                        .map(claimDetail -> modelMapper.map(claimDetail, ClaimDetailDTO.class))
+                        .toList()
+        );
+        claimGetDto.setDuration(claim.getDuration());
         return claimGetDto;
     }
 
@@ -121,6 +131,9 @@ public class ClaimServiceImpl implements ClaimService {
                 ()->new IllegalStateException("EmployeeProject not existed")
         );
         Claim claim= new Claim();
+        if (claimSaveDTO.getDuration().isEmpty()){
+            claimSaveDTO.setDuration("0");
+        }
         claim.setProject(project);
         claim.setTitle(claimSaveDTO.getTitle());
         claim.setRequestReason(claimSaveDTO.getRequestReason());
@@ -146,12 +159,16 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public void actionUpdate(ClaimStatus claimStatus, UUID id) {
+    public void updateStatus(ClaimStatus claimStatus, UUID id) {
         Claim claim = claimRepository.findById(id).orElseThrow(
                 () -> new IllegalStateException("Claim is not existed!"));
         claim.setStatus(claimStatus);
         claimRepository.save(claim);
     }
 
+    @Override
+    public void update() {
+
+    }
 
 }

@@ -12,10 +12,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100 w-5/6">
+<main layout:fragment="content" class=" w-full mx-auto p-6 bg-purple-100 w-5/6">
     <div th:text="${message}"></div>
     <form th:action="@{/employees/add}" th:object="${employee}" method="post"
-          class="bg-white shadow-md rounded-lg p-6 space-y-4">
+          class="bg-white shadow-md rounded-lg p-6 space-y-4 bg-gradient-to-b from-slate-100 to-white">
         <h2 class="text-2xl font-semibold mb-6">Add employee</h2>
 
         <div class="form-group">

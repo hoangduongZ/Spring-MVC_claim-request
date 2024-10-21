@@ -280,4 +280,11 @@ public class ProjectServiceImpl implements ProjectService {
         }).toList();
     }
 
+    @Override
+    public ProjectGetDTO getCurrentProject(Employee employee) {
+        EmployeeProject employeeProject= employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employee.getId(), EmpProjectStatus.IN);
+        Project project= projectRepository.findById(employeeProject.getProject().getId()).get();
+        return modelMapper.map(project, ProjectGetDTO.class);
+    }
+
 }

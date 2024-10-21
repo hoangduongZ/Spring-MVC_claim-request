@@ -2,7 +2,7 @@
 <html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layouts/layout">
 <head>
     <meta charset="UTF-8">
-    <title>Add New Claim</title>
+    <title>Update claim</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         table {
@@ -23,33 +23,31 @@
         <form th:action="@{/claims/draft/add}" method="post" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
             <div class="flex justify-center">
                 <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
-                    New claim</h1>
+                    Update claim</h1>
             </div>
 
             <div class="mb-4">
                 <label for="project" class="block text-gray-700 text-sm font-bold mb-2">Project:</label>
-                <input readonly type="text" id="project" th:field="*{projectGetDTO.name}" required
+                <input type="text" th:field="*{projectName}"  id="project"  required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
-            <input type="hidden" th:field="*{projectGetDTO.id}" required
-                   class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
 
             <div class="mb-4">
-                <label for="title" th:field="*{title}" class="block text-gray-700 text-sm font-bold mb-2">Claim Title:</label>
-                <input type="text" id="title" name="title" required
+                <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Claim Title:</label>
+                <input type="text" id="title" th:field="*{title}" name="title" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
             <div class="mb-4">
                 <label for="requestReason" class="block text-gray-700 text-sm font-bold mb-2">Request Reason:</label>
                 <textarea id="requestReason" name="requestReason" rows="4" required
-                          class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"></textarea>
+                         th:field="*{requestReason}" class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"></textarea>
             </div>
 
             <div class="mb-4">
                 <label for="duration" class="block text-gray-700 text-sm font-bold mb-2">Total Duration (hours):</label>
                 <input type="text" id="duration" name="duration" readonly
-                       class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+                       th:field="*{duration}" class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
             <h2 class="text-xl font-bold text-purple-600 mb-2">Claim Details</h2>
@@ -62,28 +60,26 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="claimDetail, indexStat : ${claim.claimDetails}" class="border-b">
+                <tr th:each="claimDetail, indexStat : ${claim.claimDetailDTOList}" class="border-b">
                     <td class="p-4">
-                        <input type="datetime-local" th:field="*{claimDetails[__${indexStat.index}__].startTime}"
+                        <input type="datetime-local"
+                               th:field="*{claimDetailDTOList[__${indexStat.index}__].startTime}"
                                onchange="calculateDuration()"
                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </td>
                     <td class="p-4">
-                        <input type="datetime-local" th:field="*{claimDetails[__${indexStat.index}__].endTime}"
+                        <input type="datetime-local" th:field="*{claimDetailDTOList[__${indexStat.index}__].endTime}"
                                onchange="calculateDuration()"
                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </td>
                     <td class="border px-4 py-2 text-center">
-                        <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded"
-                                onclick="removeRow(this)">Remove
-                        </button>
+                        <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button>
                     </td>
                 </tr>
                 </tbody>
             </table>
             <div class="flex justify-end mt-2 mb-4">
-                <button type="button" onclick="addRow()"
-                        class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
+                <button type="button" onclick="addRow()" class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
                     <span><i class="fa-solid fa-plus text-center"></i></span>
                 </button>
             </div>
@@ -109,12 +105,12 @@
             const newRow = tableBody.insertRow();
             newRow.innerHTML = `
             <td class="p-4">
-                <input type="datetime-local" name="claimDetails[${tableBody.rows.length - 1}].startTime"
+                <input type="datetime-local" name="claimDetails[${tableBody.rows.length-1}].startTime"
                        onchange="calculateDuration()"
                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </td>
             <td class="p-4">
-                <input type="datetime-local" name="claimDetails[${tableBody.rows.length - 1}].endTime"
+                <input type="datetime-local" name="claimDetails[${tableBody.rows.length-1}].endTime"
                        onchange="calculateDuration()"
                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </td>

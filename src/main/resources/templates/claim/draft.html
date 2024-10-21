@@ -20,7 +20,7 @@
         <div th:each="claim : ${claims} ">
           <div class="group border-b hover:shadow-md px-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
             <div class="ml-4 flex-1">
-              <a th:href="@{/claims/{id}/detail(id=${claim.id})}" class="py-4 flex items-center">
+              <a th:href="@{/claims/{id}/update(id=${claim.id})}" class="py-4 flex items-center">
                 <p class="text-sm text-gray-600 min-w-[15vw]">me, to <span th:text="${claim.projectName}"></span></p>
                 <p class="text-gray-800" th:text="${claim.title}"></p> <span class="mx-2"> - </span>
                 <p class="text-gray-500 text-sm" th:text="'reason for claim: '+ ${claim.requestReason} +', total amount of claim: '+${claim.amount} + '$'">OT project fir</p>

@@ -3,7 +3,8 @@ package mock.claimrequest.controller;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
-import mock.claimrequest.entity.Claim;
+import mock.claimrequest.dto.project.ProjectGetDTO;
+import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
@@ -38,13 +39,17 @@ public class ClaimController {
 
     @GetMapping("/add")
     public String showAddClaimForm(Model model) {
-        model.addAttribute("claim", new ClaimSaveDTO());
-        model.addAttribute("projects", projectService.getProjectForClaim(UUID.fromString("eb76b80b-364b-4ef5-a93b-96a11a47da92")));
+        Employee employee= authService.getCurrentAccount().getEmployee();
+        ProjectGetDTO project= projectService.getCurrentProject(employee);
+        ClaimSaveDTO claimSaveDTO = new ClaimSaveDTO();
+        claimSaveDTO.setProjectGetDTO(project);
+        model.addAttribute("claim", claimSaveDTO);
+//        model.addAttribute("projects", project);
         return "claim/create";
     }
 
     @PostMapping("{status}/add")
-    public String createClaim(@ModelAttribute ClaimSaveDTO claimSaveDTO, @PathVariable("status") String status) {
+    public String createClaim(@ModelAttribute("claim") ClaimSaveDTO claimSaveDTO, @PathVariable("status") String status) {
         switch (status.toLowerCase()) {
             case "draft":
             case "pending":
@@ -60,20 +65,20 @@ public class ClaimController {
     }
 
     @PostMapping("{status}/{id}")
-    public String updateClaim(@ModelAttribute ClaimUpdateStatusDTO claimUpdateStatusDTO,
+    public String updateClaimStatus(@ModelAttribute ClaimUpdateStatusDTO claimUpdateStatusDTO,
                               @PathVariable("status") String status,
                               @PathVariable("id") UUID id) {
         return switch (status.toLowerCase()) {
             case "approve" -> {
-                claimService.actionUpdate(ClaimStatus.APPROVE, id);
+                claimService.updateStatus(ClaimStatus.APPROVE, id);
                 yield "redirect:/claims/index?approve";
             }
             case "reject" -> {
-                claimService.actionUpdate(ClaimStatus.REJECT, id);
+                claimService.updateStatus(ClaimStatus.REJECT, id);
                 yield "redirect:/claims/index?reject";
             }
             case "return" -> {
-                claimService.actionUpdate(ClaimStatus.RETURN, id);
+                claimService.updateStatus(ClaimStatus.RETURN, id);
                 yield "redirect:/claims/index?return";
             }
             default -> "redirect:/claims/index";
@@ -112,6 +117,13 @@ public class ClaimController {
     public String getClaimDetail(Model model, @PathVariable UUID id) {
         model.addAttribute("claim", claimService.findById(id));
         return "claim/detail";
+    }
+
+    @GetMapping("/{id}/update")
+    public String getUpdateClaim(Model model, @PathVariable UUID id){
+        ClaimGetDTO claim = claimService.findById(id);
+        model.addAttribute("claim",claim);
+        return "claim/update";
     }
 
 
