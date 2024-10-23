@@ -14,13 +14,8 @@
     <div class="bg-orange-100 border border-orange-400 text-red-700 px-4 py-3 rounded-lg shadow-lg w-full max-w-md">
       <div class="flex justify-between items-center">
         <strong class="font-bold text-orange-700 text-lg">Warning!</strong>
-<!--        <button class="text-gray-500 hover:text-red-600 focus:outline-none" onclick="history.back()">-->
-<!--          <svg class="fill-current h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">-->
-<!--            <path d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 00-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z"/>-->
-<!--          </svg>-->
-<!--        </button>-->
+        <p class="block sm:inline mt-2 text-gray-800" th:utext="${warnMessage}"></p>
       </div>
-      <p class="block sm:inline mt-2 text-gray-800" th:text="${warnMessage}"></p>
     </div>
   </div>
 </main>

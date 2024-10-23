@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
 @RequestMapping("dashboard")
-@SessionAttributes("userName")
 public class DashboardController {
 
     @GetMapping

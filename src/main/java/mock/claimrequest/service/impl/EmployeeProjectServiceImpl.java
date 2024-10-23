@@ -1,6 +1,7 @@
 package mock.claimrequest.service.impl;
 
 import mock.claimrequest.entity.EmployeeProject;
+import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.service.EmployeeProjectService;
@@ -23,8 +24,9 @@ public class EmployeeProjectServiceImpl implements EmployeeProjectService {
         return employeeProjectRepository.findAll();
     }
 
-    public Optional<ProjectRole> getRoleInProject(UUID employeeId, UUID projectId) {
-        return employeeProjectRepository.findByEmployeeIdAndProjectId(employeeId, projectId)
-                .map(EmployeeProject::getRole);
+    @Override
+    public ProjectRole getRoleInProject(UUID employeeId, UUID projectId) {
+        EmployeeProject employeeProject= employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN);
+        return employeeProject.getRole();
     }
 }

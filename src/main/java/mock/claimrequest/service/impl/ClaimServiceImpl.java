@@ -57,6 +57,12 @@ public class ClaimServiceImpl implements ClaimService {
         AccountRole currentRole = authService.getCurrentRoleAccount();
 
         if (!Objects.equals(currentRole,AccountRole.ADMIN)) {
+            if (currentRole == AccountRole.FINANCE) {
+                return claimRepository.findAllByStatus(ClaimStatus.APPROVE).stream()
+                        .map(this::convertToDTO)
+                        .toList();
+            }
+
             UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
             EmployeeProject employeeProject = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN);
             if(employeeProject == null){

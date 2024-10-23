@@ -10,13 +10,17 @@
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .error{
+            color:red;
+        }
+    </style>
 </head>
 <body>
 <main layout:fragment="content" class=" w-full mx-auto p-6 bg-purple-100 w-5/6">
-
     <div th:text="${message}"></div>
     <form th:action="@{/employees/add}" th:object="${employee}" method="post"
-          class="bg-white shadow-md rounded-lg p-6 pt-4 space-y-4 bg-gradient-to-b from-slate-100 to-white">
+          id="employee-add" class="bg-white shadow-md rounded-lg p-6 pt-4 space-y-4 bg-gradient-to-b from-slate-100 to-white">
             <div class="drop-shadow-2xl w-8 h-8 block rounded-full bg-purple-400 hover:bg-purple-500 flex justify-center items-center"
                  onclick="history.back()">
                 <i class="fa-solid fa-chevron-left text-white"></i>
@@ -104,6 +108,8 @@
                 class="mt-4 w-full bg-purple-500 text-white font-semibold py-2 rounded-md hover:bg-purple-600">Save
         </button>
     </form>
+    <script th:src="@{/js/validate.js}"></script>
+
 </main>
 </body>
 </html>
