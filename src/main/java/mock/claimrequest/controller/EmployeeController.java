@@ -10,9 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.UUID;
 
 @Controller
 @RequestMapping("employees")
@@ -40,6 +43,22 @@ public class EmployeeController {
 
     @PostMapping("/add")
     public String postEmployeeAdd(@Valid @ModelAttribute EmployeeSaveDTO employeeSaveDTO, RedirectAttributes attributes){
+        if(employeeService.saveEmployeeAlongWithAccount(employeeSaveDTO)){
+            attributes.addFlashAttribute("message", "Save employee success");
+        }
+        return "redirect:/employees";
+    }
+
+    @GetMapping("{id}/update")
+    public String getEmployeeUpdate(Model model, @PathVariable UUID id){
+//         employeeService.findById(id);
+        model.addAttribute("employee",new EmployeeSaveDTO());
+        model.addAttribute("departments", departmentService.findAll());
+        return "employee/create";
+    }
+
+    @PostMapping("{id}/update")
+    public String postEmployeeUpdate(@Valid @ModelAttribute EmployeeSaveDTO employeeSaveDTO, RedirectAttributes attributes){
         if(employeeService.saveEmployeeAlongWithAccount(employeeSaveDTO)){
             attributes.addFlashAttribute("message", "Save employee success");
         }
