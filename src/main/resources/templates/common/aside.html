@@ -1,5 +1,5 @@
 <aside th:fragment="aside" class="sm:w-1/6 shadow bg-white min-h-[90vh] text-gray-700 overflow-hidden">
-  <div class="aside-item text-gray-700 flex p-2 cursor-pointer">
+  <div  sec:authorize="hasRole('CLAIMER')" class="aside-item text-gray-700 flex p-2 cursor-pointer">
     <a href="/claims/add" class="font-bold text-white pl-3 py-3 rounded-lg text-lg w-[50%] bg-gradient-to-l from-purple-400 to-purple-500
             hover:drop-shadow-lg transition-transform transform hover:scale-[1.02]">
       <i class="fa-solid fa-plus"></i>
@@ -30,7 +30,7 @@
       <i class="fa-solid fa-chevron-left text-xs transition"></i>
     </button>
     <div class="hidden list-item flex flex-col">
-      <a href="#!"
+      <a th:href="@{/employees}"
          class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
         <div>
           <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">

@@ -20,5 +20,5 @@ public interface ClaimService {
 
     void updateStatus(ClaimStatus claimStatus, UUID id);
 
-    void update();
+    void update(ClaimGetDTO claimGetDTO, UUID id, String status);
 }

@@ -21,4 +21,6 @@ public interface  EmployeeRepository extends JpaRepository<Employee, UUID> {
                                                  @Param("freeStatus") EmployeeStatus freeStatus,
                                                  @Param("workingStatus") EmployeeStatus workingStatus,
                                                  @Param("inStatus") EmpProjectStatus inStatus);
+
+
 }

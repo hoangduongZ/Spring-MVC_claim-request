@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
@@ -16,5 +17,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
     @Query("SELECT ep.project FROM EmployeeProject ep WHERE ep.employee.id = :employeeId AND ep.empProjectStatus = 'IN'")
     List<Project> findActiveProjectsByEmployeeId(UUID employeeId);
+
+    Optional<Project> findByName(String name);
 
 }

@@ -1,6 +1,8 @@
 package mock.claimrequest.controller;
 
 import jakarta.validation.Valid;
+import mock.claimrequest.dto.employee.EmployeeGetDTO;
+import mock.claimrequest.dto.employee.EmployeeListDTO;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
 import mock.claimrequest.service.DepartmentService;
 import mock.claimrequest.service.EmployeeService;
@@ -23,6 +25,12 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    @GetMapping
+    public String getEmployees(Model model){
+        model.addAttribute("employees",employeeService.getAll());
+        return "employee/index";
+    }
+
     @GetMapping("/add")
     public String getEmployeeAdd(Model model){
         model.addAttribute("employee",new EmployeeSaveDTO());
@@ -35,6 +43,6 @@ public class EmployeeController {
         if(employeeService.saveEmployeeAlongWithAccount(employeeSaveDTO)){
             attributes.addFlashAttribute("message", "Save employee success");
         }
-        return "redirect:/employees/add";
+        return "redirect:/employees";
     }
 }

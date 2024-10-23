@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClaimDetailDTO {
-    private long id;
+    private Long id;
     @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startTime;
     @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm")

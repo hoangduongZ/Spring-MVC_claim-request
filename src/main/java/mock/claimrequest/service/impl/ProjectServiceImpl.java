@@ -11,6 +11,7 @@ import mock.claimrequest.entity.Project;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
+import mock.claimrequest.exception.NoProjectForCurrentEmployee;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
@@ -283,6 +284,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectGetDTO getCurrentProject(Employee employee) {
         EmployeeProject employeeProject= employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employee.getId(), EmpProjectStatus.IN);
+        if (employeeProject== null){
+           return null;
+        }
         Project project= projectRepository.findById(employeeProject.getProject().getId()).get();
         return modelMapper.map(project, ProjectGetDTO.class);
     }

@@ -25,6 +25,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -58,6 +59,9 @@ public class ClaimServiceImpl implements ClaimService {
         if (!Objects.equals(currentRole,AccountRole.ADMIN)) {
             UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
             EmployeeProject employeeProject = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN);
+            if(employeeProject == null){
+                return null;
+            }
 
             return getEmployeeRoleInProject()
                     .map(role -> {
@@ -167,8 +171,38 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public void update() {
+    public void update(ClaimGetDTO claimGetDTO, UUID id, String status) {
+        Claim claim = claimRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Claim is not existed!"));
 
+        claim.setTitle(claimGetDTO.getTitle());
+        claim.setRequestReason(claimGetDTO.getRequestReason());
+        claim.setAmount(claimGetDTO.getAmount());
+        claim.setDuration(claimGetDTO.getDuration());
+
+        claim.setStatus(ClaimStatus.valueOf(status.toUpperCase()));
+
+        Project project = projectRepository.findByName(claimGetDTO.getProjectName())
+                .orElseThrow(() -> new IllegalStateException("Project not found!"));
+        claim.setProject(project);
+
+        claim.setUpdatedTime(LocalDateTime.now());
+
+        List<ClaimDetail> claimDetails = claimGetDTO.getClaimDetailDTOList().stream()
+                .map(detailDTO -> {
+                    ClaimDetail claimDetail = new ClaimDetail();
+                    claimDetail.setStartTime(detailDTO.getStartTime());
+                    claimDetail.setEndTime(detailDTO.getEndTime());
+                    claimDetail.setClaim(claim);
+                    return claimDetail;
+                }).toList();
+
+        claim.getClaimDetails().clear();
+        claim.getClaimDetails().addAll(claimDetails);
+
+        claimRepository.save(claim);
     }
+
+
 
 }
