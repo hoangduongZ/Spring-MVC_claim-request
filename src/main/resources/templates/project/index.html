@@ -5,27 +5,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
 </head>
-<body><
+<body>
 <main layout:fragment="content" class="w-full mx-auto p-6 w-5/6 bg-purple-100">
     <div class="p-6 bg-gradient-to-b from-slate-100 to-white shadow-md rounded-2xl">
         <div class="flex justify-center">
             <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
                 Projects</h1>
         </div>
+        
+   
 
-        <table th:if="${!projects.isEmpty()}" class="min-w-full bg-white border border-gray-300 rounded-lg shadow">
-            <thead>
-            <tr class="bg-gray-200 text-gray-700">
-                <th class="py-3 px-4 border-b">No.</th>
-                <th class="py-3 px-4 border-b">Name</th>
-                <th class="py-3 px-4 border-b">Start Date</th>
-                <th class="py-3 px-4 border-b">End Date</th>
-                <th class="py-3 px-4 border-b">Budget</th>
-                <th class="py-3 px-4 border-b">Status</th>
-                <th class="py-3 px-4 border-b">Action</th>
+        <!-- Project Table -->
+        <table id="projectTable">
+        <thead>
+            <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Budget</th>
+            <th>Status</th>
+            <th>Action</th>
             </tr>
-            </thead>
+        </thead>
+ 
+
+
+
+
             <tbody>
             <tr th:each="project, stat : ${projects}" class="hover:bg-gray-100">
                 <td class="py-3 px-4 border-b" th:text="${stat.index + 1}"></td>
@@ -51,8 +65,18 @@
             <div class="italic  rounded text-2xl">Project is empty !</div>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('#projectTable').DataTable({
+                "searching": true,  // Enables the search functionality
+                "paging": true,     // Enables pagination
+                "ordering": true    // Enables column sorting
+            });
+        });
+        </script>
 </main>
 
->
+
+
 </body>
 </html>
