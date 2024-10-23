@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ public class ClaimGetDTO {
     private UUID id;
     private String title;
     private String employeeName;
-    private String projectName;
+    private ProjectGetDTO project;
     private String requestReason;
     private ClaimStatus status;
     private LocalDateTime createdTime;

@@ -4,6 +4,7 @@ import mock.claimrequest.dto.claim.ClaimDetailDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
+import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
@@ -111,7 +112,8 @@ public class ClaimServiceImpl implements ClaimService {
         ClaimGetDTO claimGetDto = new ClaimGetDTO();
         claimGetDto.setEmployeeName(claim.getEmployee().getFirstname() + " " + claim.getEmployee().getLastname());
         claimGetDto.setRequestReason(claim.getRequestReason());
-        claimGetDto.setProjectName(claim.getProject().getName());
+        var projectGetDTO = modelMapper.map(claim.getProject(), ProjectGetDTO.class);
+        claimGetDto.setProject(projectGetDTO);
         claimGetDto.setCreatedTime(claim.getCreatedTime());
         claimGetDto.setUpdatedTime(claim.getUpdatedTime());
         claimGetDto.setAmount(claim.getAmount());
@@ -180,16 +182,18 @@ public class ClaimServiceImpl implements ClaimService {
     public void update(ClaimGetDTO claimGetDTO, UUID id, String status) {
         Claim claim = claimRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Claim is not existed!"));
-
+        Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
+        Project project = projectRepository.findById(claimGetDTO.getProject().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
+        EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
+                ()->new IllegalStateException("EmployeeProject not existed")
+        );
         claim.setTitle(claimGetDTO.getTitle());
         claim.setRequestReason(claimGetDTO.getRequestReason());
-        claim.setAmount(claimGetDTO.getAmount());
+        claim.setAmount(BigDecimal.valueOf(employeeProject.getRole().getSalary() * claim.getDuration()));
         claim.setDuration(claimGetDTO.getDuration());
 
         claim.setStatus(ClaimStatus.valueOf(status.toUpperCase()));
 
-        Project project = projectRepository.findByName(claimGetDTO.getProjectName())
-                .orElseThrow(() -> new IllegalStateException("Project not found!"));
         claim.setProject(project);
 
         claim.setUpdatedTime(LocalDateTime.now());
