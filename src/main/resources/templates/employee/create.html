@@ -17,7 +17,7 @@
     </style>
 </head>
 <body>
-<main layout:fragment="content" class=" w-full mx-auto p-6 bg-purple-100 w-5/6">
+<main layout:fragment="content" class=" w-full mx-auto bg-purple-100">
     <div th:text="${message}"></div>
     <form th:action="@{/employees/add}" th:object="${employee}" method="post"
           id="employee-add" class="bg-white shadow-md rounded-lg p-6 pt-4 space-y-4 bg-gradient-to-b from-slate-100 to-white">

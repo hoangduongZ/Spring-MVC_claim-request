@@ -3,7 +3,6 @@ package mock.claimrequest.service.impl;
 import mock.claimrequest.dto.claim.ClaimDetailDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
-import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
 import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
@@ -22,6 +21,8 @@ import mock.claimrequest.repository.ProjectRepository;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -52,13 +53,24 @@ public class ClaimServiceImpl implements ClaimService {
         this.modelMapper = modelMapper;
     }
 
+    public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, Pageable pageable) {
+        AccountRole currentRole = authService.getCurrentRoleAccount();
+        Employee employee = currentRole == AccountRole.ADMIN ? null : authService.getCurrentAccount().getEmployee();
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return claimRepository.findByStatusAndEmployee(status, employee, pageable).map(this::convertToDTO);
+        }
+        return claimRepository.findByStatusAndKeyword(status, keyword, employee, pageable).map(this::convertToDTO);
+    }
+
+
     @Override
     public List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus) {
         AccountRole currentRole = authService.getCurrentRoleAccount();
 
         if (!Objects.equals(currentRole,AccountRole.ADMIN)) {
             if (currentRole == AccountRole.FINANCE) {
-                return claimRepository.findAllByStatus(ClaimStatus.APPROVE).stream()
+                return claimRepository.findAllByStatus(ClaimStatus.APPROVED).stream()
                         .map(this::convertToDTO)
                         .toList();
             }

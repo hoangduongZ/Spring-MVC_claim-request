@@ -7,12 +7,29 @@
   <title>Title</title>
 </head>
 <body>
-<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100 w-5/6">
+<main layout:fragment="content" class="w-full mx-auto bg-gradient-to-b from-purple-100 to-white p-6 min-h-[90vh]">
 <!--  <h1 class="inline-block p-6 bg-white text-2xl mb-3 shadow text-purple-500 font-bold rounded-md">Draft</h1>-->
   <div class="flex flex-col gap-1 shadow-md">
     <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
-      <div class="group px-4 py-5 relative">
-        <span class="font-bold">Draft</span>
+      <div class="w-full flex items-center bg-white shadow rounded-t-2xl p-4 gap-5">
+        <div class="flex items-center">
+          <select id="filterOptions" class="px-3 py-2 border active:border-purple-500 border-purple-500 rounded-md shadow-sm focus:outline-none focus:border-purple-500">
+            <option value="claimId">Claim ID</option>
+            <option value="staffName">Staff Name</option>
+            <option value="projectName">Project Name</option>
+            <option value="projectDuration">Project Duration</option>
+            <option value="totalWorkingHours">Total Working Hours</option>
+          </select>
+        </div>
+
+        <div class="flex items-center w-1/2">
+          <div class="relative flex-grow">
+            <input id="searchInput" type="text" placeholder="Enter to search" class="border-purple-500 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" name="keyword" th:value="${keyword}">
+            <button class="absolute right-0 top-0 h-full transform bg-white border-purple-500 text-purple-500 px-4 py-2 border border-purple-500 rounded-r-md hover:text-purple-800 hover:border-purple-800">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <div  class="min-h-[70vh] bg-white">

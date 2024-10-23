@@ -4,14 +4,19 @@ import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.dto.project.ProjectDTO;
 import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.dto.project.ProjectSaveDTO;
+import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.Role;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
+import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.exception.NoProjectForCurrentEmployee;
+import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
@@ -36,13 +41,15 @@ public class ProjectServiceImpl implements ProjectService {
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
     private final AuthService authService;
+    private final AccountRepository accountRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AuthService authService) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AuthService authService, AccountRepository accountRepository) {
         this.projectRepository = projectRepository;
         this.employeeProjectRepository = employeeProjectRepository;
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
         this.authService = authService;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -112,6 +119,26 @@ public class ProjectServiceImpl implements ProjectService {
                 employeeProject.setStartDate(employeeProjectDTO.getStartDate());
                 employeeProject.setEndDate(employeeProjectDTO.getEndDate());
                 employeeProjects.add(employeeProject);
+
+                // Kiểm tra xem vai trò có phải là PM không
+                if (employeeProjectDTO.getRole() == ProjectRole.PM) {
+                    // Cập nhật vai trò của tài khoản thành APPROVER
+                    Account account = employee.getAccount(); // Giả định rằng Employee có phương thức getAccount()
+                    if (account != null) {
+                        // Tìm và thay thế vai trò CLAIMER bằng APPROVER
+                        Role claimerRole = new Role(AccountRole.CLAIMER);
+                        Role approverRole = new Role(AccountRole.APPROVER);
+
+                        // Kiểm tra nếu tài khoản có vai trò CLAIMER
+                        if (account.getRoles().contains(claimerRole)) {
+                            // Xóa vai trò CLAIMER
+                            account.getRoles().remove(claimerRole);
+                            // Thêm vai trò APPROVER
+                            account.getRoles().add(approverRole);
+                            accountRepository.save(account); // Lưu lại tài khoản đã cập nhật
+                        }
+                    }
+                }
             }
         }
 
@@ -119,6 +146,7 @@ public class ProjectServiceImpl implements ProjectService {
             employeeProjectRepository.saveAll(employeeProjects);
         }
     }
+
 
     @Override
     public void update(ProjectDTO projectDTO) {

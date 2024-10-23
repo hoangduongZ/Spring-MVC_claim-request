@@ -5,13 +5,16 @@ import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
 import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.entity.Employee;
-import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
 import mock.claimrequest.service.EmployeeProjectService;
 import mock.claimrequest.service.ProjectService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Controller
@@ -42,8 +43,8 @@ public class ClaimController {
 
     @GetMapping("/add")
     public String showAddClaimForm(Model model) {
-        Employee employee= authService.getCurrentAccount().getEmployee();
-        ProjectGetDTO project= projectService.getCurrentProject(employee);
+        Employee employee = authService.getCurrentAccount().getEmployee();
+        ProjectGetDTO project = projectService.getCurrentProject(employee);
 
         String warningMessage = getWarningMessageIfAny(employee, project);
         if (warningMessage != null) {
@@ -88,59 +89,54 @@ public class ClaimController {
 
     @PostMapping("{status}/{id}")
     public String updateClaimStatus(@ModelAttribute ClaimUpdateStatusDTO claimUpdateStatusDTO,
-                              @PathVariable("status") String status,
-                              @PathVariable("id") UUID id) {
+                                    @PathVariable("status") String status,
+                                    @PathVariable("id") UUID id) {
         return switch (status.toLowerCase()) {
             case "approve" -> {
-                claimService.updateStatus(ClaimStatus.APPROVE, id);
+                claimService.updateStatus(ClaimStatus.APPROVED, id);
                 yield "redirect:/claims/index?approve";
             }
             case "reject" -> {
-                claimService.updateStatus(ClaimStatus.REJECT, id);
+                claimService.updateStatus(ClaimStatus.REJECTED, id);
                 yield "redirect:/claims/index?reject";
             }
             case "return" -> {
-                claimService.updateStatus(ClaimStatus.RETURN, id);
+                claimService.updateStatus(ClaimStatus.RETURNED, id);
                 yield "redirect:/claims/index?return";
             }
             default -> "redirect:/claims/index";
         };
     }
 
-    @GetMapping("/draft")
-    public String getDraftClaims(Model model) {
-        List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.DRAFT);
-        model.addAttribute("currentPage", "draft");
-        if (claims == null) {
-            model.addAttribute("warnMessage", "You currently not in any project !");
-            return "warn/warn";
-        }
-        model.addAttribute("claims", claims);
-        return "claim/draft";
-    }
+    @GetMapping("/index/{status}")
+    public String getIndexClaim(
+            Model model,
+            @PathVariable(name = "status") String status,
+            @RequestParam(defaultValue = "", name = "keyword") String keyword,
+            @RequestParam(defaultValue = "id", name = "sortOption") String sortOption,
+            @PageableDefault(size = 10, sort = "updatedTime", direction = Sort.Direction.DESC) Pageable pageable) {
 
-    @GetMapping("/index{status}")
-    public String getIndexClaim(Model model, @RequestParam(defaultValue = "pending",name = "status") String status) {
         ClaimStatus claimStatus = ClaimStatus.valueOf(status.toUpperCase());
-        List<ClaimGetDTO> claims = claimService.getClaimByStatus(claimStatus);
-        model.addAttribute("currentPage", "claims");
-        if (claims == null) {
-            model.addAttribute("warnMessage", "You currently not in any project !");
-            return "warn/warn";
-        }
-        model.addAttribute("claims", claims);
+        Page<ClaimGetDTO> claimPage = claimService.getClaimByStatusAndKeyword(claimStatus, keyword, pageable);
 
-        AccountRole currentRole = authService.getCurrentRoleAccount();
-        model.addAttribute("accRole", currentRole);
-        if (!Objects.equals(currentRole,AccountRole.ADMIN) && !Objects.equals(currentRole,AccountRole.FINANCE)) {
-            claimService.getEmployeeRoleInProject().ifPresent(role -> {
-                String roleName = role == ProjectRole.PM ? "pm" : "normal";
-                model.addAttribute("role", roleName);
-            });
-        }
-        model.addAttribute("active", status.toLowerCase());
-        return "claim/index";
+        model.addAttribute("currentPage", "claims");
+//        if (claimPage.isEmpty()) {
+//            model.addAttribute("warnMessage", "You currently not in any project!");
+//            return "warn/warn";
+//        }
+
+        model.addAttribute("claims", claimPage.getContent());
+        model.addAttribute("totalPages", claimPage.getTotalPages());
+        model.addAttribute("currentPage", pageable.getPageNumber());
+        model.addAttribute("pageSize", pageable.getPageSize());
+        model.addAttribute("sortField", pageable.getSort().toString());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("active", status);
+        model.addAttribute("sortOption", sortOption);
+
+        return claimStatus == ClaimStatus.DRAFT ? "claim/draft" : "claim/index";
     }
+
 
     @GetMapping("/{id}/detail")
     public String getClaimDetail(Model model, @PathVariable UUID id) {
@@ -149,15 +145,15 @@ public class ClaimController {
     }
 
     @GetMapping("/{id}/update")
-    public String getUpdateClaim(Model model, @PathVariable UUID id){
+    public String getUpdateClaim(Model model, @PathVariable UUID id) {
         ClaimGetDTO claim = claimService.findById(id);
-        model.addAttribute("claim",claim);
+        model.addAttribute("claim", claim);
         return "claim/update";
     }
 
     @PostMapping("{status}/{id}/update")
     public String postUpdateClaim(@ModelAttribute ClaimGetDTO claim, @PathVariable("id") UUID id
-            , @PathVariable("status") String status){
+            , @PathVariable("status") String status) {
         claimService.update(claim, id, status);
         return "redirect:/claims/index";
     }

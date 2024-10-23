@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum AccountRole {
     ADMIN("Admin"),
     CLAIMER("Claimer"),
-    FINANCE("Finance Officer");
+    FINANCE("Finance Officer"),
+    APPROVER("Approver");
 
     private final String displayName;
 
