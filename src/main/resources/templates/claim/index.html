@@ -13,16 +13,15 @@
         <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
             <a sec:authorize="hasRole('CLAIMER') or hasRole('ADMIN')" th:href="@{/claims/index}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
                 <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold" >All claims</span>
-                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pending'? 'w-full':'w-0'"></span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full"></span>
             </a>
             <a sec:authorize="hasRole('CLAIMER') or hasRole('ADMIN')" th:href="@{/claims/index(status='pending')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
                 <span th:if="${role} == 'pm'" class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold" >Approve pending</span>
                 <span th:if="${role} != 'pm'" class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50  font-bold" >Pending</span>
                 <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pending'? 'w-full':'w-0'"></span>
             </a>
-            <a th:href="@{/claims/index(status='approve')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
-                <span sec:authorize="hasRole('CLAIMER') or hasRole('FINANCE')"
-                      class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold">
+            <a th:href="@{/claims/index(status='approve')}" sec:authorize="hasRole('CLAIMER') or hasRole('FINANCE')" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
+                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold">
                     <span th:text="${#authorization.expression('hasRole(''CLAIMER'')') ? 'Approved' : 'Pending pay'}"></span>
                 </span>
                 <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'approve'? 'w-full':'w-0'"></span>
