@@ -28,7 +28,7 @@
 
             <div class="mb-4">
                 <label for="project" class="block text-gray-700 text-sm font-bold mb-2">Project:</label>
-                <input type="text" th:field="*{projectName}"  id="project"  required
+                <input readonly type="text" th:field="*{projectName}"  id="project"  required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
@@ -62,6 +62,9 @@
                 <tbody>
                 <tr th:each="claimDetail, indexStat : ${claim.claimDetailDTOList}" class="border-b">
                     <td class="p-4">
+                        <input type="hidden"
+                               th:field="*{claimDetailDTOList[__${indexStat.index}__].id}"
+                               class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         <input type="datetime-local"
                                th:field="*{claimDetailDTOList[__${indexStat.index}__].startTime}"
                                onchange="calculateDuration()"
@@ -86,16 +89,17 @@
             <hr/>
             <div class="mt-4 flex items-center justify-between">
                 <button type="submit"
-                        th:formaction="@{/claims/pending/add}"
+                        th:formaction="@{/claims/PENDING/{id}/update(id=*{id})}"
                         class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
                     Submit Claim
                 </button>
 
                 <button type="submit"
-                        th:formaction="@{/claims/draft/add}"
+                        th:formaction="@{/claims/DRAFT/{id}/update(id=*{id})}"
                         class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
                     Draft Claim
                 </button>
+
             </div>
         </form>
     </div>
@@ -104,13 +108,17 @@
             const tableBody = document.getElementById("claimDetailTable").getElementsByTagName('tbody')[0];
             const newRow = tableBody.insertRow();
             newRow.innerHTML = `
+            <input type="hidden"
+                               th:field="claimDetailDTOList[${tableBody.rows.length-1}].id}"
+                               class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
             <td class="p-4">
-                <input type="datetime-local" name="claimDetails[${tableBody.rows.length-1}].startTime"
+                <input type="datetime-local" name="claimDetailDTOList[${tableBody.rows.length-1}].startTime"
                        onchange="calculateDuration()"
                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </td>
             <td class="p-4">
-                <input type="datetime-local" name="claimDetails[${tableBody.rows.length-1}].endTime"
+                <input type="datetime-local" name="claimDetailDTOList[${tableBody.rows.length-1}].endTime"
                        onchange="calculateDuration()"
                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </td>
@@ -130,8 +138,8 @@
             let totalDuration = 0;
 
             rows.forEach(row => {
-                const startTimeInput = row.querySelector('input[name^="claimDetails"][name$="startTime"]');
-                const endTimeInput = row.querySelector('input[name^="claimDetails"][name$="endTime"]');
+                const startTimeInput = row.querySelector('input[name^="claimDetailDTOList"][name$="startTime"]');
+                const endTimeInput = row.querySelector('input[name^="claimDetailDTOList"][name$="endTime"]');
 
                 const startTime = new Date(startTimeInput.value);
                 const endTime = new Date(endTimeInput.value);

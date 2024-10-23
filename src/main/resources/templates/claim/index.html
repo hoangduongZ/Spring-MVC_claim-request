@@ -11,22 +11,29 @@
 <main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100 w-5/6">
     <div class="flex flex-col gap-1 shadow-md">
         <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
-            <a th:href="@{/claims/index}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
-                <span th:if="${role} == 'pm'" class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold" >Approve pending</span>
-                <span th:if="${role} != 'pm'" class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold" >Pending</span>
-                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pendingPay'? 'w-full':'w-0'"></span>
+            <a sec:authorize="hasRole('CLAIMER') or hasRole('ADMIN')" th:href="@{/claims/index}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
+                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold" >All claims</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pending'? 'w-full':'w-0'"></span>
             </a>
-            <a th:href="@{/claims/index(status='approve')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
-                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold" >Approved</span>
-                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pendingPay'? 'w-full':'w-0'"></span>
+            <a sec:authorize="hasRole('CLAIMER') or hasRole('ADMIN')" th:href="@{/claims/index(status='pending')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
+                <span th:if="${role} == 'pm'" class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold" >Approve pending</span>
+                <span th:if="${role} != 'pm'" class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50  font-bold" >Pending</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pending'? 'w-full':'w-0'"></span>
             </a>
-            <a th:href="@{/claims/index(status='return')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
-                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold" >Return</span>
-                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pendingPay'? 'w-full':'w-0'"></span>
+            <a th:href="@{/claims/index(status='approve')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
+                <span sec:authorize="hasRole('CLAIMER') or hasRole('FINANCE')"
+                      class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold">
+                    <span th:text="${#authorization.expression('hasRole(''CLAIMER'')') ? 'Approved' : 'Pending pay'}"></span>
+                </span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'approve'? 'w-full':'w-0'"></span>
             </a>
-            <a th:href="@{/claims/index(status='reject')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-200">
-                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 group-hover:text-purple-600 font-bold" >Reject</span>
-                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'pendingPay'? 'w-full':'w-0'"></span>
+            <a sec:authorize="hasRole('CLAIMER') or hasRole('ADMIN')" th:href="@{/claims/index(status='return')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
+                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold" >Return</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'return'? 'w-full':'w-0'"></span>
+            </a>
+            <a sec:authorize="hasRole('CLAIMER') or hasRole('ADMIN')" th:href="@{/claims/index(status='reject')}" class="cursor-pointer group px-4 py-5 relative hover:bg-slate-100">
+                <span class="relative group-hover:drop-shadow-md group-hover:shadow-blue-600/50 font-bold" >Reject</span>
+                <span class="absolute left-0 right-0 bottom-0 h-1 bg-blue-500 transition-transform duration-300 group-hover:w-full" th:classappend="${active} == 'reject'? 'w-full':'w-0'"></span>
             </a>
         </div>
         <div th:if="${active}== 'pending'" class="min-h-[70vh] bg-white">

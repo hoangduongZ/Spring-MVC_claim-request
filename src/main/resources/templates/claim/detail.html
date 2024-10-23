@@ -18,48 +18,51 @@
     <div class="flex flex-col gap-4 mt-1">
         <div class="overflow-x-auto flex gap-[20vw] bg-white shadow-md border border-gray-200 p-6 pb-[10vh]">
             <div class="flex flex-col gap-4">
-                <div class="">
-                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Claim Details</h2>
-                    <p class="text-gray-600 mb-4">This is claim detail of <span class="font-bold" th:text="${claim.employeeName}"></span></p>
-                    <p class="text-gray-600 mb-4">Please find below the details of the claim submitted before do next action:</p>
-                    <div class="space-y-4 mt-4">
-                        <div class="flex">
-                            <span class="font-medium w-1/3 text-gray-700">Title:</span>
-                            <span class="text-gray-900" th:text="${claim.title}"></span>
-                        </div>
-                        <div class="flex">
-                            <span class="font-medium w-1/3 text-gray-700">Project Name:</span>
-                            <span class="text-gray-900" th:text="${claim.projectName}"></span>
-                        </div>
-                        <div class="flex">
-                            <span class="font-medium w-1/3 text-gray-700">Amount:</span>
-                            <span class="text-gray-900" th:text="${claim.amount}"></span>
-                        </div>
-                        <div class="flex">
-                            <span class="font-medium w-1/3 text-gray-700">Request Reason:</span>
-                            <span class="text-gray-900" th:text="${claim.requestReason}"></span>
-                        </div>
-                        <div class="flex">
-                            <span class="font-medium w-1/3 text-gray-700">Status:</span>
-                            <span class="text-gray-900" th:text="${claim.status}"></span>
-                        </div>
-                        <div class="flex">
-                            <span class="font-medium w-1/3 text-gray-700">Created Time:</span>
-                            <span class="text-gray-900" th:text="${claim.createdTime}"></span>
-                        </div>
-                        <div class="flex">
-                            <span class="font-medium w-1/3 text-gray-700">Updated Time:</span>
-                            <span class="text-gray-900" th:text="${claim.updatedTime}"></span>
-                        </div>
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Claim Details</h2>
+                <p class="text-gray-600 mb-4">This is claim detail of <span class="font-bold"
+                                                                            th:text="${claim.employeeName}"></span></p>
+                <p class="text-gray-600 mb-4">Please find below the details of the claim submitted before do next
+                    action:</p>
+                <div class="space-y-4 mt-4">
+                    <div class="flex">
+                        <span class="font-medium w-1/3 text-gray-700">Title:</span>
+                        <span class="text-gray-900" th:text="${claim.title}"></span>
                     </div>
-                    <p class="text-gray-600 mt-4">Thank you for your attention to this matter.</p>
+                    <div class="flex">
+                        <span class="font-medium w-1/3 text-gray-700">Project Name:</span>
+                        <span class="text-gray-900" th:text="${claim.projectName}"></span>
+                    </div>
+                    <div class="flex">
+                        <span class="font-medium w-1/3 text-gray-700">Amount:</span>
+                        <span class="text-gray-900" th:text="${claim.amount}"></span>
+                    </div>
+                    <div class="flex">
+                        <span class="font-medium w-1/3 text-gray-700">Request Reason:</span>
+                        <span class="text-gray-900" th:text="${claim.requestReason}"></span>
+                    </div>
+                    <div class="flex">
+                        <span class="font-medium w-1/3 text-gray-700">Status:</span>
+                        <span class="text-gray-900" th:text="${claim.status}"></span>
+                    </div>
+                    <div class="flex">
+                        <span class="font-medium w-1/3 text-gray-700">Created Time:</span>
+                        <span class="text-gray-900" th:text="${claim.createdTime}"></span>
+                    </div>
+                    <div class="flex">
+                        <span class="font-medium w-1/3 text-gray-700">Updated Time:</span>
+                        <span class="text-gray-900" th:text="${claim.updatedTime}"></span>
+                    </div>
                 </div>
+                <p class="text-gray-600 mt-4">Thank you for your attention to this matter.</p>
             </div>
-            <div class="flex space-x-2 mt-6">
-                <form th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">
-                    <button type="submit" class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600 transition duration-200">Verify Claim</button>
-                </form>
-            </div>
+        </div>
+        <div class="flex space-x-2 mt-6">
+            <form sec:authorize="hasRole('FINANCE')" th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">
+                <button type="submit"
+                        class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600 transition duration-200">
+                    Verify Claim
+                </button>
+            </form>
         </div>
     </div>
 </main>

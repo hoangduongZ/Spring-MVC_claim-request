@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public interface EmployeeProjectService {
     List<EmployeeProject> getAll();
-    Optional<ProjectRole> getRoleInProject(UUID employeeId, UUID projectId);
+    ProjectRole getRoleInProject(UUID employeeId, UUID projectId);
 }

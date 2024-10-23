@@ -10,6 +10,7 @@ import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
+import mock.claimrequest.service.EmployeeProjectService;
 import mock.claimrequest.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,22 +31,43 @@ public class ClaimController {
     private final ClaimService claimService;
     private final ProjectService projectService;
     private final AuthService authService;
+    private final EmployeeProjectService employeeProjectService;
 
-    public ClaimController(ClaimService claimService, ProjectService projectService, AuthService authService) {
+    public ClaimController(ClaimService claimService, ProjectService projectService, AuthService authService, EmployeeProjectService employeeProjectService) {
         this.claimService = claimService;
         this.projectService = projectService;
         this.authService = authService;
+        this.employeeProjectService = employeeProjectService;
     }
 
     @GetMapping("/add")
     public String showAddClaimForm(Model model) {
         Employee employee= authService.getCurrentAccount().getEmployee();
         ProjectGetDTO project= projectService.getCurrentProject(employee);
+
+        String warningMessage = getWarningMessageIfAny(employee, project);
+        if (warningMessage != null) {
+            model.addAttribute("warnMessage", warningMessage);
+            return "warn/warn";
+        }
+
         ClaimSaveDTO claimSaveDTO = new ClaimSaveDTO();
         claimSaveDTO.setProjectGetDTO(project);
         model.addAttribute("claim", claimSaveDTO);
-//        model.addAttribute("projects", project);
         return "claim/create";
+    }
+
+    private String getWarningMessageIfAny(Employee employee, ProjectGetDTO project) {
+        if (project == null) {
+            return "No project found for the current employee. Please contact ADMIN for details!";
+        }
+
+        ProjectRole role = employeeProjectService.getRoleInProject(employee.getId(), project.getId());
+        if (role == ProjectRole.PM) {
+            return "You are the <strong>PM</strong> of <strong>" + project.getName() + "</strong> and cannot create a claim!";
+        }
+
+        return null;
     }
 
     @PostMapping("{status}/add")
@@ -86,30 +108,37 @@ public class ClaimController {
     }
 
     @GetMapping("/draft")
-    public String getClaims(Model model) {
+    public String getDraftClaims(Model model) {
         List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.DRAFT);
-        claimService.getClaimByStatus(ClaimStatus.DRAFT);
+        model.addAttribute("currentPage", "draft");
+        if (claims == null) {
+            model.addAttribute("warnMessage", "You currently not in any project !");
+            return "warn/warn";
+        }
         model.addAttribute("claims", claims);
-        model.addAttribute("active", "draft");
         return "claim/draft";
     }
 
     @GetMapping("/index{status}")
     public String getIndexClaim(Model model, @RequestParam(defaultValue = "pending",name = "status") String status) {
         ClaimStatus claimStatus = ClaimStatus.valueOf(status.toUpperCase());
-
         List<ClaimGetDTO> claims = claimService.getClaimByStatus(claimStatus);
+        model.addAttribute("currentPage", "claims");
+        if (claims == null) {
+            model.addAttribute("warnMessage", "You currently not in any project !");
+            return "warn/warn";
+        }
         model.addAttribute("claims", claims);
 
         AccountRole currentRole = authService.getCurrentRoleAccount();
-        if (!Objects.equals(currentRole,AccountRole.ADMIN)) {
+        model.addAttribute("accRole", currentRole);
+        if (!Objects.equals(currentRole,AccountRole.ADMIN) && !Objects.equals(currentRole,AccountRole.FINANCE)) {
             claimService.getEmployeeRoleInProject().ifPresent(role -> {
                 String roleName = role == ProjectRole.PM ? "pm" : "normal";
                 model.addAttribute("role", roleName);
             });
         }
         model.addAttribute("active", status.toLowerCase());
-        model.addAttribute("currentPage", "claims");
         return "claim/index";
     }
 
@@ -124,6 +153,13 @@ public class ClaimController {
         ClaimGetDTO claim = claimService.findById(id);
         model.addAttribute("claim",claim);
         return "claim/update";
+    }
+
+    @PostMapping("{status}/{id}/update")
+    public String postUpdateClaim(@ModelAttribute ClaimGetDTO claim, @PathVariable("id") UUID id
+            , @PathVariable("status") String status){
+        claimService.update(claim, id, status);
+        return "redirect:/claims/index";
     }
 
 

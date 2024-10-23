@@ -1,6 +1,9 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.dto.auth.AccountGetDTO;
+import mock.claimrequest.dto.department.DepartmentDTO;
 import mock.claimrequest.dto.employee.EmployeeGetDTO;
+import mock.claimrequest.dto.employee.EmployeeListDTO;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
 import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.entity.Account;
@@ -63,8 +66,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         account.setUserName(employeeSaveDTO.getAccountRegisterDTO().getUserName());
         account.setStatus(AccountStatus.ACTIVE);
         account.setEmployee(employee);
+
+        AccountRole roleName = employeeSaveDTO.getAccountRole();
+        Role role = roleRepository.findByName(roleName)
+                .orElseGet(() -> {
+                    Role newRole = new Role();
+                    newRole.setName(roleName);
+                    return roleRepository.save(newRole);
+                });
+
         Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.findByName(AccountRole.CLAIMER));
+        roles.add(role);
         account.setRoles(roles);
         employee.setAccount(account);
 
@@ -103,6 +115,31 @@ public class EmployeeServiceImpl implements EmployeeService {
                     saveDTO.setEmployeeStatus(employee.getEmployeeStatus());
                     return saveDTO;
                 }).toList();
+    }
+
+    @Override
+    public List<EmployeeListDTO> getAll() {
+        List<Account> nonAdminAccounts = accountRepository.findAllNonAdminAccounts();
+
+        return nonAdminAccounts.stream().map(account -> {
+            Employee employee = account.getEmployee();
+            EmployeeListDTO employeeListDTO = new EmployeeListDTO();
+
+            employeeListDTO.setFullName(employee.getFirstname() + " " + employee.getLastname());
+
+            Set<Role> roles = account.getRoles();
+            AccountGetDTO accountGetDTO = new AccountGetDTO();
+            accountGetDTO.setRoles(roles);
+            accountGetDTO.setUserName(account.getUserName());
+            accountGetDTO.setEmail(account.getEmail());
+            accountGetDTO.setId(account.getId());
+            employeeListDTO.setAccount(accountGetDTO);
+
+            DepartmentDTO departmentDTO = modelMapper.map(employee.getDepartment(), DepartmentDTO.class);
+            employeeListDTO.setDepartment(departmentDTO);
+
+            return employeeListDTO;
+        }).toList();
     }
 
 
