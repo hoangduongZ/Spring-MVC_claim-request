@@ -60,8 +60,7 @@
             </form>
         </div>
 
-
-        <div class="min-h-[70vh] bg-white">
+        <div th:if="${!claims.isEmpty()}" class="min-h-[70vh] bg-white">
             <div class="overflow-x-auto border-t pb-6">
                 <form id="exportForm" th:action="@{/api/claims/export}" method="post">
                     <div th:each="claim, statIndex : ${claims}">
@@ -121,7 +120,10 @@
                 </form>
             </div>
         </div>
-        <div class="flex justify-end gap-3 items-center p-4">
+        <div th:if="${claims.isEmpty()}" class="shadow-md min-h-[70vh] bg-white rounded-md p-4 flex items-center justify-center">
+            <p class="p-4 shadow-md rounded-md">Empty claim !</p>
+        </div>
+        <div th:if="${!claims.isEmpty()}" class="flex justify-end gap-3 items-center p-4">
             <!-- Page Information -->
             <div class="text-center">
                 <span th:text="(${currentPage + 1})+'-' +${totalPages}+ ' of ' + ${totalPages}"></span>
@@ -134,8 +136,8 @@
                     <i class="fas fa-chevron-left"></i>
                 </a>
                 <span th:if="${currentPage == 0}" class="text-gray-400 cursor-not-allowed">
-            <i class="fas fa-chevron-left"></i>
-        </span>
+                    <i class="fas fa-chevron-left"></i>
+                </span>
             </div>
             <!-- Next Page Button -->
             <div>
@@ -146,9 +148,8 @@
                 </a>
                 <span th:if="${currentPage >= totalPages - 1}" class="text-gray-400 cursor-not-allowed">
              <i class="fas fa-chevron-right"></i>
-        </span>
+                </span>
             </div>
-
         </div>
 
 
