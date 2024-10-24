@@ -4,10 +4,12 @@ import jakarta.validation.Valid;
 import mock.claimrequest.dto.employee.EmployeeGetDTO;
 import mock.claimrequest.dto.employee.EmployeeListDTO;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
+import mock.claimrequest.dto.employee.EmployeeUpdateDTO;
 import mock.claimrequest.service.DepartmentService;
 import mock.claimrequest.service.EmployeeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,17 +53,31 @@ public class EmployeeController {
 
     @GetMapping("{id}/update")
     public String getEmployeeUpdate(Model model, @PathVariable UUID id){
-//         employeeService.findById(id);
-        model.addAttribute("employee",new EmployeeSaveDTO());
+        EmployeeUpdateDTO employeeUpdateDTO = employeeService.findById(id);
+        model.addAttribute("employee", employeeUpdateDTO);
         model.addAttribute("departments", departmentService.findAll());
-        return "employee/create";
+        return "employee/update";
     }
 
     @PostMapping("{id}/update")
-    public String postEmployeeUpdate(@Valid @ModelAttribute EmployeeSaveDTO employeeSaveDTO, RedirectAttributes attributes){
-        if(employeeService.saveEmployeeAlongWithAccount(employeeSaveDTO)){
-            attributes.addFlashAttribute("message", "Save employee success");
+    public String postEmployeeUpdate(@PathVariable UUID id,
+                                     @Valid @ModelAttribute("employee") EmployeeUpdateDTO employeeUpdateDTO,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes attributes,
+                                     Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("departments", departmentService.findAll());
+            return "employee/create";
         }
+
+        try {
+            employeeService.updateEmployee(id, employeeUpdateDTO);
+            attributes.addFlashAttribute("successMessage", "Employee updated successfully!");
+        } catch (Exception e) {
+            attributes.addFlashAttribute("errorMessage", "Error updating employee: " + e.getMessage());
+            return "redirect:/employees/{id}/update";
+        }
+
         return "redirect:/employees";
     }
 }
