@@ -14,6 +14,12 @@
                 Projects</h1>
         </div>
 
+        <div class="mb-4">
+            <a th:href="@{/projects/add}" id="addEmployeeBtn" class="hover:bg-green-600 bg-green-500 text-white px-4 py-2 rounded mb-4">
+                <i class="fas fa-plus"></i> Add Project
+            </a>
+        </div>
+
         <table th:if="${!projects.isEmpty()}" class="min-w-full bg-white border border-gray-300 rounded-lg shadow">
             <thead>
             <tr class="bg-gray-200 text-gray-700">

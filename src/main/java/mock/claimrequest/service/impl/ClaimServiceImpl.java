@@ -3,6 +3,8 @@ package mock.claimrequest.service.impl;
 import mock.claimrequest.dto.claim.ClaimDetailDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
+import mock.claimrequest.dto.project.ProjectDTO;
+import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
@@ -26,7 +28,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,14 +57,27 @@ public class ClaimServiceImpl implements ClaimService {
         this.modelMapper = modelMapper;
     }
 
-    public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, Pageable pageable) {
+    public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         AccountRole currentRole = authService.getCurrentRoleAccount();
         Employee employee = currentRole == AccountRole.ADMIN ? null : authService.getCurrentAccount().getEmployee();
 
-        if (keyword == null || keyword.trim().isEmpty()) {
+        if (currentRole == AccountRole.FINANCE) {
+            if (status == ClaimStatus.APPROVED) {
+                return claimRepository.findByStatus(ClaimStatus.APPROVED, pageable).map(this::convertToDTO);
+            } else if (status == ClaimStatus.PAID) {
+                return claimRepository.findByStatus(ClaimStatus.PAID, pageable).map(this::convertToDTO);
+            } else {
+                return Page.empty();
+            }
+        }
+
+
+        if ((keyword == null || keyword.trim().isEmpty()) && (startDate == null || endDate == null)) {
             return claimRepository.findByStatusAndEmployee(status, employee, pageable).map(this::convertToDTO);
         }
-        return claimRepository.findByStatusAndKeyword(status, keyword, employee, pageable).map(this::convertToDTO);
+
+        return claimRepository.findByStatusKeywordAndDateRange(status, keyword, employee, startDate, endDate, pageable)
+                .map(this::convertToDTO);
     }
 
 
@@ -135,6 +152,8 @@ public class ClaimServiceImpl implements ClaimService {
                         .map(claimDetail -> modelMapper.map(claimDetail, ClaimDetailDTO.class))
                         .toList()
         );
+        ProjectDTO project = modelMapper.map(claim.getProject(),ProjectDTO.class);
+        claimGetDto.setProject(project);
         claimGetDto.setDuration(claim.getDuration());
         return claimGetDto;
     }
@@ -192,28 +211,30 @@ public class ClaimServiceImpl implements ClaimService {
     public void update(ClaimGetDTO claimGetDTO, UUID id, String status) {
         Claim claim = claimRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Claim is not existed!"));
-
+        Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
+        Project project = projectRepository.findById(claimGetDTO.getProject().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
+        EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
+                ()->new IllegalStateException("EmployeeProject not existed")
+        );
         claim.setTitle(claimGetDTO.getTitle());
         claim.setRequestReason(claimGetDTO.getRequestReason());
-        claim.setAmount(claimGetDTO.getAmount());
+        claim.setAmount(BigDecimal.valueOf(employeeProject.getRole().getSalary() * claim.getDuration()));
         claim.setDuration(claimGetDTO.getDuration());
 
         claim.setStatus(ClaimStatus.valueOf(status.toUpperCase()));
-
-        Project project = projectRepository.findByName(claimGetDTO.getProjectName())
-                .orElseThrow(() -> new IllegalStateException("Project not found!"));
-        claim.setProject(project);
-
         claim.setUpdatedTime(LocalDateTime.now());
 
-        List<ClaimDetail> claimDetails = claimGetDTO.getClaimDetailDTOList().stream()
-                .map(detailDTO -> {
-                    ClaimDetail claimDetail = new ClaimDetail();
-                    claimDetail.setStartTime(detailDTO.getStartTime());
-                    claimDetail.setEndTime(detailDTO.getEndTime());
-                    claimDetail.setClaim(claim);
-                    return claimDetail;
-                }).toList();
+        List<ClaimDetail> claimDetails = new ArrayList<>();
+        if (claimGetDTO.getClaimDetailDTOList()!= null){
+            claimDetails = claimGetDTO.getClaimDetailDTOList().stream()
+                    .map(detailDTO -> {
+                        ClaimDetail claimDetail = new ClaimDetail();
+                        claimDetail.setStartTime(detailDTO.getStartTime());
+                        claimDetail.setEndTime(detailDTO.getEndTime());
+                        claimDetail.setClaim(claim);
+                        return claimDetail;
+                    }).toList();
+        }
 
         claim.getClaimDetails().clear();
         claim.getClaimDetails().addAll(claimDetails);

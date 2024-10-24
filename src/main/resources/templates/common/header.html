@@ -1,12 +1,17 @@
 <header th:fragment="header" class="shadow-md min-h-[10vh] shadow flex justify-between items-center bg-white text-gray-500">
     <div class="relative flex items-center gap-4">
+        <style>
+            .menu li:hover > .sub-menu {
+                display: block;
+            }
+        </style>
 
         <!-- Logo -->
         <div class="w-[8vh] h-[8vh] ml-3 mr-10 rounded-full hover:shadow-lg shadow border overflow-hidden">
             <img class="w-full h-full object-cover" th:src="@{/img/bee.png}" alt="Bee">
         </div>
 
-        <div class="text-gray-700 flex p-2 cursor-pointer bg-white rounded">
+        <div sec:authorize="hasRole('CLAIMER')" class="text-gray-700 flex cursor-pointer bg-white rounded">
             <a th:href="@{/claims/add}" class="font-bold text-white p-3 rounded-lg text-lg bg-gradient-to-l from-purple-400 to-purple-500
         hover:drop-shadow-lg transition-transform transform hover:scale-[1.02]">
                 <i class="fa-solid fa-plus"></i>
@@ -15,35 +20,38 @@
         </div>
 
         <!-- Navigation Links -->
-        <ul class="menu flex items-center gap-4">
-            <li class="relative inline-block p-4 hover:bg-slate-100">
+        <ul class="menu flex items-center">
+            <li class="relative inline-block p-4 hover:bg-slate-100 border-x" sec:authorize="hasAnyRole('CLAIMER', 'ADMIN')">
                 <a href="#!" class="text-gray-800 ">My claims</a>
                 <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 min-w-[200px] z-10">
                     <li class="relative"><a th:href="@{/claims/index/{status}(status='draft')}" class=" block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Draft</a></li>
                     <li class="relative"><a th:href="@{/claims/index/{status}(status='pending')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Pending Approval</a></li>
                     <li class="relative"><a th:href="@{/claims/index/{status}(status='approved')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved</a></li>
                     <li class="relative"><a th:href="@{/claims/index/{status}(status='paid')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Paid</a></li>
-                    <li class="relative"><a th:href="@{/claims/index/{status}(status='rejected')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Rejected or Cancelled</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='rejected')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Rejected</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='canceled')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Cancelled</a></li>
                 </ul>
             </li>
 
-            <li class="relative inline-block p-4 hover:bg-slate-100">
+            <li sec:authorize="hasAnyRole('APPROVER', 'ADMIN')" class="relative inline-block p-4 hover:bg-slate-100 border-r">
                 <a href="#!" class="text-gray-800 ">Claims for Approval</a>
                 <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 min-w-[200px] z-10">
-                    <li class="relative"><a href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">For My Vetting</a></li>
-                    <li class="relative"><a href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved or Paid</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='pending')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">For My Vetting</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='approved')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved or Paid</a></li>
                 </ul>
             </li>
 
-            <li class="relative inline-block p-4 hover:bg-slate-100">
+            <li sec:authorize="hasAnyRole('ADMIN','FINANCE')" class="relative inline-block p-4 hover:bg-slate-100 border-r">
                 <a href="#!" class="text-gray-800 ">Claims For Finance</a>
                 <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 min-w-[200px] z-10">
-                    <li class="relative"><a href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved</a></li>
-                    <li class="relative"><a href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Paid</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='approved')}"
+                                            class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved</a>
+                    </li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='paid')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Paid</a></li>
                 </ul>
             </li>
 
-            <li class="relative inline-block p-4 hover:bg-slate-100">
+            <li sec:authorize="hasRole('ADMIN')" class="relative inline-block p-4 hover:bg-slate-100 border-r">
                 <a href="#!" class="text-gray-800 ">Configuration</a>
                 <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 w-[200px] z-10">
                     <li class="relative"><a th:href="@{/employees}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Staff information</a></li>
@@ -51,7 +59,10 @@
                     <li class="relative"><a th:href="@{/departments}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Department information</a></li>
                 </ul>
             </li>
+
+
         </ul>
+
     </div>
 
     <!-- User Profile, Notifications, and Logout -->
@@ -86,22 +97,6 @@
     </div>
 
     <script>
-        function toggleMyClaimsDropdown() {
-            document.getElementById('myClaimsDropdown').classList.toggle('hidden');
-        }
-
-        function toggleClaimsForApprovalDropdown() {
-            document.getElementById('claimsForApprovalDropdown').classList.toggle('hidden');
-        }
-
-        function toggleClaimsForFinanceDropdown() {
-            document.getElementById('claimsForFinanceDropdown').classList.toggle('hidden');
-        }
-
-        function toggleConfigurationDropdown() {
-            document.getElementById('configurationDropdown').classList.toggle('hidden');
-        }
-
         function toggleNotificationDropdown() {
             document.getElementById('notificationDropdown').classList.toggle('hidden');
         }

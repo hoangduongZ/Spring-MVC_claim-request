@@ -49,8 +49,12 @@
                         <span class="text-gray-900" th:text="${claim.createdTime}"></span>
                     </div>
                     <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Updated Time:</span>
-                        <span class="text-gray-900" th:text="${claim.updatedTime}"></span>
+                        <span class="font-medium w-1/3 text-gray-700">Project Start:</span>
+                        <span class="text-gray-900" th:text="${claim.project.startDate}"></span>
+                    </div>
+                    <div class="flex">
+                        <span class="font-medium w-1/3 text-gray-700">Project End:</span>
+                        <span class="text-gray-900" th:text="${claim.project.endDate}"></span>
                     </div>
                 </div>
                 <p class="text-gray-600 mt-4">Thank you for your attention to this matter.</p>

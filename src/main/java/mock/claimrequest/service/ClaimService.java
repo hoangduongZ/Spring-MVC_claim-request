@@ -7,12 +7,13 @@ import mock.claimrequest.entity.entityEnum.ProjectRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface ClaimService {
-    Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, Pageable pageable);
+    Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus);
 

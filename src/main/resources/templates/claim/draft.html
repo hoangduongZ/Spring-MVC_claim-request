@@ -3,61 +3,121 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="layouts/layout">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
 </head>
 <body>
 <main layout:fragment="content" class="w-full mx-auto bg-gradient-to-b from-purple-100 to-white p-6 min-h-[90vh]">
-<!--  <h1 class="inline-block p-6 bg-white text-2xl mb-3 shadow text-purple-500 font-bold rounded-md">Draft</h1>-->
-  <div class="flex flex-col gap-1 shadow-md">
-    <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
-      <div class="w-full flex items-center bg-white shadow rounded-t-2xl p-4 gap-5">
-        <div class="flex items-center">
-          <select id="filterOptions" class="px-3 py-2 border active:border-purple-500 border-purple-500 rounded-md shadow-sm focus:outline-none focus:border-purple-500">
-            <option value="claimId">Claim ID</option>
-            <option value="staffName">Staff Name</option>
-            <option value="projectName">Project Name</option>
-            <option value="projectDuration">Project Duration</option>
-            <option value="totalWorkingHours">Total Working Hours</option>
-          </select>
-        </div>
+    <!--  <h1 class="inline-block p-6 bg-white text-2xl mb-3 shadow text-purple-500 font-bold rounded-md">Draft</h1>-->
+    <div class="flex flex-col gap-1 shadow-md">
+        <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
+            <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
+                <form th:action="@{/claims/index/{active}(active=${active})}" method="get" class="w-full flex items-center bg-white shadow rounded-t-2xl p-4 gap-5">
 
-        <div class="flex items-center w-1/2">
-          <div class="relative flex-grow">
-            <input id="searchInput" type="text" placeholder="Enter to search" class="border-purple-500 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" name="keyword" th:value="${keyword}">
-            <button class="absolute right-0 top-0 h-full transform bg-white border-purple-500 text-purple-500 px-4 py-2 border border-purple-500 rounded-r-md hover:text-purple-800 hover:border-purple-800">
-              <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div  class="min-h-[70vh] bg-white">
-      <div class="overflow-x-auto border-t pb-6">
-        <div th:each="claim : ${claims} ">
-          <div class="group border-b hover:shadow-md px-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
-            <div class="ml-4 flex-1">
-              <a th:href="@{/claims/{id}/update(id=${claim.id})}" class="py-4 flex items-center">
-                <p class="text-sm text-gray-600 min-w-[15vw]">me, to <span th:text="${claim.projectName}"></span></p>
-                <p class="text-gray-800" th:text="${claim.title}"></p> <span class="mx-2"> - </span>
-                <p class="text-gray-500 text-sm" th:text="'reason for claim: '+ ${claim.requestReason} +', total amount of claim: '+${claim.amount} + '$'">OT project fir</p>
-              </a>
-            </div>
-            <div class="flex gap-10 justify-between items-center py-4">
-              <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM</div>
-              <div class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
-                <form th:action="@{/claims/{id}/cancel(id=${claim.id})}" method="post">
-                  <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Cancel
-                  </button>
+                    <!-- Sort options -->
+                    <select id="sortOptions" class="px-3 py-2 border active:border-purple-500 border-purple-500 rounded-md shadow-sm focus:outline-none focus:border-purple-500" name="sortOption">
+                        <option value="">--Choose--</option>
+                        <option value="employeeName" th:selected="${sortOption == 'employeeName'}">Staff Name</option>
+                        <option value="projectName" th:selected="${sortOption == 'projectName'}">Project Name</option>
+                        <option value="duration" th:selected="${sortOption == 'duration'}">Working hour</option>
+                    </select>
+
+                    <!-- Search input -->
+                    <div class="flex items-center w-1/2">
+                        <div class="relative flex-grow">
+                            <input id="searchInput" type="text" placeholder="Enter to search" class="border-purple-500 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" name="keyword" th:value="${keyword}">
+                            <button type="submit" class="absolute right-0 top-0 h-full transform bg-white border-purple-500 text-purple-500 px-4 py-2 border border-purple-500 rounded-r-md hover:text-purple-800 hover:border-purple-800">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- From date -->
+                    <div class="flex items-center">
+                        <label for="fromDate" class="mr-2">From:</label>
+                        <input id="fromDate" type="date" class="border-purple-500 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" name="startDate" th:value="${startDate}">
+                    </div>
+
+                    <!-- To date -->
+                    <div class="flex items-center">
+                        <label for="toDate" class="mr-2">To:</label>
+                        <input id="toDate" type="date" class="border-purple-500 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" name="endDate" th:value="${endDate}">
+                    </div>
                 </form>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-  </div>
+        </div>
+        <div class="min-h-[70vh] bg-white">
+            <div class="overflow-x-auto border-t pb-6">
+                <div th:each="claim : ${claims} ">
+                    <div class="group border-b hover:shadow-md px-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
+                        <div class="ml-4 flex-1">
+                            <a th:href="@{/claims/{id}/detail(id=${claim.id})}"
+                               th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                               class="py-4 flex items-center">
+                                <p class="text-sm text-gray-600 min-w-[15vw]">me, to <span th:text="${claim.project.name}"></span></p>
+                                <p class="text-gray-800" th:text="${claim.title}"></p> <span class="mx-2"> - </span>
+                                <p class="text-gray-500 text-sm"
+                                   th:text="'reason for claim: '+ ${claim.requestReason} +', total amount of claim: '+${claim.amount} + '$'">
+                                    OT project fir</p>
+                            </a>
+
+                            <a th:href="@{/claims/{id}/update(id=${claim.id})}"
+                               th:if="${#authorization.expression('hasRole(''CLAIMER'')')}"
+                               class="py-4 flex items-center">
+                                <p class="text-sm text-gray-600 min-w-[15vw]">me, to <span th:text="${claim.project.name}"></span></p>
+                                <p class="text-gray-800" th:text="${claim.title}"></p> <span class="mx-2"> - </span>
+                                <p class="text-gray-500 text-sm"
+                                   th:text="'reason for claim: '+ ${claim.requestReason} +', total amount of claim: '+${claim.amount} + '$'">
+                                    OT project fir</p>
+                            </a>
+
+                        </div>
+                        <div class="flex gap-10 justify-between items-center py-4">
+                            <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM
+                            </div>
+                            <div sec:authorize="hasRole('CLAIMER')" class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
+                                <form th:action="@{/claims/cancel/{id}(id=${claim.id})}" method="post">
+                                    <button type="submit"
+                                            class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Cancel
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3 items-center p-4">
+            <!-- Page Information -->
+            <div class="text-center">
+                <span th:text="(${currentPage + 1})+'-' +${totalPages}+ ' of ' + ${totalPages}"></span>
+            </div>
+            <!-- Previous Page Button -->
+            <div>
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/claims/index/{status}(status=${active}, keyword=${keyword}, sortOption=${sortOption}, startDate=${startDate}, endDate=${endDate}, page=${currentPage - 1})}"
+                   class="text-blue-500 hover:underline">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <span th:if="${currentPage == 0}" class="text-gray-400 cursor-not-allowed">
+            <i class="fas fa-chevron-left"></i>
+        </span>
+            </div>
+            <!-- Next Page Button -->
+            <div>
+                <a th:if="${currentPage < totalPages - 1}"
+                   th:href="@{/claims/index/{status}(status=${active}, keyword=${keyword}, sortOption=${sortOption}, startDate=${startDate}, endDate=${endDate}, page=${currentPage + 1})}"
+                   class="text-blue-500 hover:underline">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <span th:if="${currentPage >= totalPages - 1}" class="text-gray-400 cursor-not-allowed">
+             <i class="fas fa-chevron-right"></i>
+        </span>
+            </div>
+
+        </div>
+    </div>
 </main>
 </body>
 </html>
