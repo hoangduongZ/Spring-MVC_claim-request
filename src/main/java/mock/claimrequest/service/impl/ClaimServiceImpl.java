@@ -1,6 +1,7 @@
 package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.claim.ClaimDetailDTO;
+import mock.claimrequest.dto.claim.ClaimExportDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.project.ProjectDTO;
@@ -22,11 +23,17 @@ import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -242,6 +249,35 @@ public class ClaimServiceImpl implements ClaimService {
         claimRepository.save(claim);
     }
 
+    public ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException {
+        List<Claim> claims = claimRepository.findAllById(claimIds);
 
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Claims");
 
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("ID");
+        headerRow.createCell(1).setCellValue("Employee Name");
+        headerRow.createCell(2).setCellValue("Project Name");
+        headerRow.createCell(3).setCellValue("Title");
+        headerRow.createCell(4).setCellValue("Reason");
+        headerRow.createCell(5).setCellValue("Amount");
+
+        int rowIndex = 1;
+        for (Claim claim : claims) {
+            Row row = sheet.createRow(rowIndex++);
+            row.createCell(0).setCellValue(claim.getId().toString());
+            row.createCell(1).setCellValue(claim.getEmployee().getAccount().getUserName());
+            row.createCell(2).setCellValue(claim.getProject().getName());
+            row.createCell(3).setCellValue(claim.getTitle());
+            row.createCell(4).setCellValue(claim.getRequestReason());
+            row.createCell(5).setCellValue(claim.getAmount().toString());
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        return outputStream;
+    }
 }

@@ -60,7 +60,7 @@
                 <p class="text-gray-600 mt-4">Thank you for your attention to this matter.</p>
             </div>
             <div class="flex space-x-2 mt-6">
-                <form sec:authorize="hasRole('FINANCE')" th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">
+                <form th:if="${claim.status.name() != 'PAID'}" sec:authorize="hasRole('FINANCE')" th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">
                     <button type="submit"
                             class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600 transition duration-200">
                         Verify Claim
