@@ -4,11 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import mock.claimrequest.dto.project.ProjectDTO;
+import mock.claimrequest.dto.project.ProjectGetDTO;
+import mock.claimrequest.dto.project.ProjectSaveDTO;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -25,6 +29,9 @@ public class ClaimGetDTO {
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
     private BigDecimal amount;
+    private ProjectDTO project;
+    private double duration;
+    private List<ClaimDetailDTO> claimDetailDTOList;
 
     public String getFormattedCreatedTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");

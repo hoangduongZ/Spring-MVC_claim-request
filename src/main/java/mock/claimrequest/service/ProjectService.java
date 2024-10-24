@@ -2,12 +2,11 @@ package mock.claimrequest.service;
 
 
 import jakarta.validation.Valid;
-import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.dto.project.ProjectDTO;
 import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.dto.project.ProjectSaveDTO;
-import mock.claimrequest.entity.entityEnum.ClaimStatus;
+import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 
 import java.util.List;
@@ -27,5 +26,5 @@ public interface ProjectService {
 
     List<ProjectGetDTO> getProjectForClaim(UUID id);
 
-
+    ProjectGetDTO getCurrentProject(Employee employee);
 }

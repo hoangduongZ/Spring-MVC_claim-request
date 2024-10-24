@@ -50,13 +50,15 @@ public class AccountServiceImpl implements AccountService {
             roleRepository.save(role);
             roles.add(role);
         }else{
-            roles.add(roleRepository.findByName(AccountRole.ADMIN));
+            roles.add(roleRepository.findByName(AccountRole.ADMIN).get());
         }
-        account.setRoles(roles);
-        accountRepository.save(account);
         Employee employee = new Employee();
-        employee.setAccount(account);
         employeeRepository.save(employee);
+
+        account.setRoles(roles);
+        account.setEmployee(employee);
+        accountRepository.save(account);
+
         return account.getId() != null;
     }
 

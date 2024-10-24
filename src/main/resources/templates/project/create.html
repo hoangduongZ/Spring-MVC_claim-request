@@ -27,55 +27,43 @@
                 <i class="fa-solid fa-chevron-left text-white"></i>
             </div>
         </div>
-        <form th:action="@{/projects/add}" method="post" th:object="${project}" class="rounded-b px-8  pb-8 mb-4">
+        <form th:action="@{/projects/add}" method="post" th:object="${project}" class="rounded-b px-8  pb-8 mb-4"
+        id="project-add">
             <div class="flex justify-center">
                 <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
                     New projects</h1>
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Project Name:</label>
                 <input type="text" id="projectName" name="name" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description:</label>
                 <textarea id="description" name="description" rows="4" required
                           class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"></textarea>
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="startDate" class="block text-gray-700 text-sm font-bold mb-2">Start Date:</label>
                 <input type="date" id="startDate" name="startDate" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="endDate" class="block text-gray-700 text-sm font-bold mb-2">End Date:</label>
                 <input type="date" id="endDate" name="endDate" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="budget" class="block text-gray-700 text-sm font-bold mb-2">Budget:</label>
                 <input type="number" id="budget" name="budget" min="0" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"
                        placeholder="Enter budget amount">
             </div>
-
-            <div class="mb-4">
-                <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status:</label>
-                <select id="status" name="status" required
-                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
-                    <option value="">-- Select Status --</option>
-                    <th:block th:each="status : ${projectStatuses}">
-                        <option th:value="${status}" th:text="${status.getName()}"></option>
-                    </th:block>
-                </select>
-            </div>
-
-<!--            <div th:text="${employeesJSON}"></div>-->
 
             <h2 class="text-xl font-bold text-purple-600 mb-2">Select Employees</h2>
             <table id="employeeTable" class="mb-4 border border-gray-300">
@@ -83,7 +71,9 @@
                 <tr>
                     <th class="border px-4 py-2">Employee Name</th>
                     <th class="border px-4 py-2">Role</th>
-                    <th class="border px-4 py-2">Action</th>
+                    <th class="border px-4 py-2">Start</th>
+                    <th class="border px-4 py-2">End</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -108,9 +98,18 @@
                             </option>
                         </select>
                     </td>
+                    <td class="px-4 py-2">
+                        <input type="date" id="startJoin" th:field="*{employeeProjects[__${indexStat.index}__].startDate}" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </td>
 
-                    <td class="border px-4 py-2 text-center">
-                        <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button>
+                    <td class="px-4 py-2">
+                        <input type="date" id="endJoin" th:field="*{employeeProjects[__${indexStat.index}__].endDate}" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </td>
+
+                    <td class="px-4 py-2 flex justify-center items-center">
+                        <button type="button" onclick="removeRow(this)" class="flex justify-center items-center w-8 h-8 text-xl font-bold text-white bg-red-500 shadow rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
                     </td>
                 </tr>
                 </tbody>

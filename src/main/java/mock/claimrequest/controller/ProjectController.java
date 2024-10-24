@@ -46,7 +46,7 @@ public class ProjectController {
         model.addAttribute("project", new ProjectSaveDTO());
         model.addAttribute("employees", employees);
         model.addAttribute("roles", ProjectRole.values());
-        model.addAttribute("projectStatuses", ProjectStatus.values());
+//        model.addAttribute("projectStatuses", ProjectStatus.values());
         String json = objectMapper.writeValueAsString(employees);
 
         model.addAttribute("employeesJSON", json);
@@ -57,7 +57,7 @@ public class ProjectController {
     @PostMapping("/add")
     public String postAddProject(@ModelAttribute @Valid ProjectSaveDTO projectSaveDTO){
         projectService.create(projectSaveDTO);
-        return "redirect:/projects/add";
+        return "redirect:/projects";
     }
 
     @GetMapping
@@ -72,6 +72,7 @@ public class ProjectController {
 
         List<EmployeeProjectDTO> employeeProjects = projectService.getEmployeeProjectsByProjectId(projectId);
         model.addAttribute("projectStatuses", ProjectStatus.values());
+
         model.addAttribute("project", project);
         model.addAttribute("employeeProjects", employeeProjects);
 

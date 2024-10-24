@@ -7,11 +7,17 @@
     <title>Title</title>
 </head>
 <body><
-<main layout:fragment="content" class="w-full mx-auto p-6 w-5/6 bg-purple-100">
-    <div class="p-6 bg-gradient-to-b from-slate-100 to-white shadow-md rounded-2xl">
+<main layout:fragment="content" class="w-full mx-auto ">
+    <div class="p-6 bg-gradient-to-b from-purple-100 to-white min-h-[90vh] shadow-md rounded-2xl">
         <div class="flex justify-center">
             <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
                 Projects</h1>
+        </div>
+
+        <div class="mb-4">
+            <a th:href="@{/projects/add}" id="addEmployeeBtn" class="hover:bg-green-600 bg-green-500 text-white px-4 py-2 rounded mb-4">
+                <i class="fas fa-plus"></i> Add Project
+            </a>
         </div>
 
         <table th:if="${!projects.isEmpty()}" class="min-w-full bg-white border border-gray-300 rounded-lg shadow">
@@ -35,14 +41,14 @@
                 <td class="py-3 px-4 border-b" th:text="${project.budget}"></td>
                 <td class="py-3 px-4 border-b">
                     <div class="text-sm inline p-1 rounded">
-                        <span th:text="${project.projectStatus.getName()}"></span>
+                        <span th:text="${project.status.getName()}"></span>
                     </div>
                 </td>
                 <td class="py-3 px-4 border-b flex space-x-2">
                     <a th:href="@{projects/{id}/edit(id=${project.id})}"
-                       class="p-2 rounded bg-sky-500 text-white">Edit</a>
-                    <a th:href="@{projects/{id}/delete(id=${project.id})}"
-                       class="p-2 rounded bg-red-400 text-white">Delete</a>
+                       class="p-2 rounded bg-sky-500 text-white">Update</a>
+<!--                    <a th:href="@{projects/{id}/delete(id=${project.id})}"-->
+<!--                       class="p-2 rounded bg-red-400 text-white">Delete</a>-->
                 </td>
             </tr>
             </tbody>

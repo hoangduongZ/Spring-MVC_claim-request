@@ -1,27 +1,87 @@
-<header th:fragment="header" class="min-h-[10vh] shadow flex justify-between items-center bg-white text-gray-500">
-    <div class="w-[8vh] h-[8vh] ml-3 rounded-full hover:shadow-lg shadow border overflow-hidden">
-        <img class="w-full h-full object-cover" th:src="@{/img/bee.png}" alt="Bee">
+<header th:fragment="header" class="shadow-md min-h-[10vh] shadow flex justify-between items-center bg-white text-gray-500">
+    <div class="relative flex items-center gap-4">
+        <style>
+            .menu li:hover > .sub-menu {
+                display: block;
+            }
+        </style>
+
+        <!-- Logo -->
+        <div class="w-[8vh] h-[8vh] ml-3 mr-10 rounded-full hover:shadow-lg shadow border overflow-hidden">
+            <img class="w-full h-full object-cover" th:src="@{/img/bee.png}" alt="Bee">
+        </div>
+
+        <div sec:authorize="hasRole('CLAIMER')" class="text-gray-700 flex cursor-pointer bg-white rounded">
+            <a th:href="@{/claims/add}" class="font-bold text-white p-3 rounded-lg text-lg bg-gradient-to-l from-purple-400 to-purple-500
+        hover:drop-shadow-lg transition-transform transform hover:scale-[1.02]">
+                <i class="fa-solid fa-plus"></i>
+                <span>Claim</span>
+            </a>
+        </div>
+
+        <!-- Navigation Links -->
+        <ul class="menu flex items-center">
+            <li class="relative inline-block p-4 hover:bg-slate-100 border-x" sec:authorize="hasAnyRole('CLAIMER', 'ADMIN')">
+                <a href="#!" class="text-gray-800 ">My claims</a>
+                <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 min-w-[200px] z-10">
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='draft')}" class=" block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Draft</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='pending')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Pending Approval</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='approved')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='paid')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Paid</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='rejected')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Rejected</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='canceled')}" href="#" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Cancelled</a></li>
+                </ul>
+            </li>
+
+            <li sec:authorize="hasAnyRole('APPROVER', 'ADMIN')" class="relative inline-block p-4 hover:bg-slate-100 border-r">
+                <a href="#!" class="text-gray-800 ">Claims for Approval</a>
+                <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 min-w-[200px] z-10">
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='pending')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">For My Vetting</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='approved')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved or Paid</a></li>
+                </ul>
+            </li>
+
+            <li sec:authorize="hasAnyRole('ADMIN','FINANCE')" class="relative inline-block p-4 hover:bg-slate-100 border-r">
+                <a href="#!" class="text-gray-800 ">Claims For Finance</a>
+                <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 min-w-[200px] z-10">
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='approved')}"
+                                            class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved</a>
+                    </li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='paid')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Paid</a></li>
+                </ul>
+            </li>
+
+            <li sec:authorize="hasRole('ADMIN')" class="relative inline-block p-4 hover:bg-slate-100 border-r">
+                <a href="#!" class="text-gray-800 ">Configuration</a>
+                <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 w-[200px] z-10">
+                    <li class="relative"><a th:href="@{/employees}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Staff information</a></li>
+                    <li class="relative"><a th:href="@{/projects}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Project information</a></li>
+                    <li class="relative"><a th:href="@{/departments}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Department information</a></li>
+                </ul>
+            </li>
+
+
+        </ul>
+
     </div>
-    <div class="w-1/3 flex items-center">
-        <i class="fa-solid fa-magnifying-glass mr-2"></i>
-        <input type="text" placeholder="Search project..." class="border-none outline-none w-full">
-    </div>
+
+    <!-- User Profile, Notifications, and Logout -->
     <div class="flex items-center mr-4 gap-2">
         <div class="flex items-center gap-1 mr-2 cursor-pointer" onclick="toggleProfileDropdown()">
             <div class="inline-block w-8 h-8 bg-slate-300 rounded-full overflow-hidden">
                 <img th:src="@{/img/user.png}" class="w-full h-full object-cover" alt="user">
             </div>
-            <span>Welcome</span>
+            <span><span id="userName"></span></span>
             <i class="fa-solid fa-chevron-down text-xs"></i>
         </div>
-        <div id="profileDropdown" class="absolute right-[8vw] top-[8vh] shadow h-auto w-[150px] bg-white rounded hidden">
-            <div class=>
+        <div id="profileDropdown" class="absolute right-[8vw] top-[8vh] shadow h-auto w-[200px] bg-white rounded hidden">
+            <div>
                 <a href="/edit-profile" class="block px-2 py-2 hover:bg-gray-200">My profile</a>
                 <a href="/change-password" class="block px-2 py-2 hover:bg-gray-200">Change password</a>
             </div>
         </div>
         <div class="relative">
-            <i class="fa-regular fa-bell p-3 rounded-full hover:shadow cursor-pointer" onclick="toggleDropdown()"></i>
+            <i class="fa-regular fa-bell p-3 rounded-full hover:shadow cursor-pointer" onclick="toggleNotificationDropdown()"></i>
             <div id="notificationDropdown" class="absolute right-0 top-[6vh] shadow h-[300px] w-[200px] bg-white rounded-b hidden">
                 <div class="p-4">
                     <h3 class="font-semibold text-lg">Notifications</h3>
@@ -35,15 +95,14 @@
             <i class="fas fa-power-off icon text-green-500 p-3 rounded-full hover:shadow"></i>
         </a>
     </div>
+
     <script>
-        function toggleDropdown() {
-            const dropdown = document.getElementById('notificationDropdown');
-            dropdown.classList.toggle('hidden');
+        function toggleNotificationDropdown() {
+            document.getElementById('notificationDropdown').classList.toggle('hidden');
         }
 
         function toggleProfileDropdown() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('hidden');
+            document.getElementById('profileDropdown').classList.toggle('hidden');
         }
     </script>
 </header>

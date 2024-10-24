@@ -1,21 +1,18 @@
 package mock.claimrequest.service.impl;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
+import mock.claimrequest.dto.claim.ClaimDetailDTO;
+import mock.claimrequest.dto.claim.ClaimExportDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
+import mock.claimrequest.dto.project.ProjectDTO;
+import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
@@ -26,6 +23,26 @@ import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ClaimServiceImpl implements ClaimService {
@@ -35,29 +52,71 @@ public class ClaimServiceImpl implements ClaimService {
     private final AuthService authService;
     private final ProjectRepository projectRepository;
     private final ClaimDetailRepository claimDetailRepository;
+    private final ModelMapper modelMapper;
 
-    public ClaimServiceImpl(ClaimRepository claimRepository, EmployeeRepository employeeRepository, EmployeeProjectRepository employeeProjectRepository, AuthService authService, ProjectRepository projectRepository, ClaimDetailRepository claimDetailRepository) {
+    public ClaimServiceImpl(ClaimRepository claimRepository, EmployeeRepository employeeRepository, EmployeeProjectRepository employeeProjectRepository, AuthService authService, ProjectRepository projectRepository, ClaimDetailRepository claimDetailRepository, ModelMapper modelMapper) {
         this.claimRepository = claimRepository;
         this.employeeRepository = employeeRepository;
         this.employeeProjectRepository = employeeProjectRepository;
         this.authService = authService;
         this.projectRepository = projectRepository;
         this.claimDetailRepository = claimDetailRepository;
+        this.modelMapper = modelMapper;
     }
+
+    public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        AccountRole currentRole = authService.getCurrentRoleAccount();
+        Employee employee = currentRole == AccountRole.ADMIN ? null : authService.getCurrentAccount().getEmployee();
+
+        if (currentRole == AccountRole.FINANCE) {
+            if (status == ClaimStatus.APPROVED) {
+                return claimRepository.findByStatus(ClaimStatus.APPROVED, pageable).map(this::convertToDTO);
+            } else if (status == ClaimStatus.PAID) {
+                return claimRepository.findByStatus(ClaimStatus.PAID, pageable).map(this::convertToDTO);
+            } else {
+                return Page.empty();
+            }
+        }
+
+
+        if ((keyword == null || keyword.trim().isEmpty()) && (startDate == null || endDate == null)) {
+            return claimRepository.findByStatusAndEmployee(status, employee, pageable).map(this::convertToDTO);
+        }
+
+        return claimRepository.findByStatusKeywordAndDateRange(status, keyword, employee, startDate, endDate, pageable)
+                .map(this::convertToDTO);
+    }
+
 
     @Override
     public List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus) {
-        UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
+        AccountRole currentRole = authService.getCurrentRoleAccount();
 
-        EmployeeProject employeeProject = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN);
+        if (!Objects.equals(currentRole,AccountRole.ADMIN)) {
+            if (currentRole == AccountRole.FINANCE) {
+                return claimRepository.findAllByStatus(ClaimStatus.APPROVED).stream()
+                        .map(this::convertToDTO)
+                        .toList();
+            }
 
-        Optional<ProjectRole> roleOpt = getEmployeeRoleInProject();
+            UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
+            EmployeeProject employeeProject = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN);
+            if(employeeProject == null){
+                return null;
+            }
 
-        if (roleOpt.isPresent() && roleOpt.get() == ProjectRole.PM) {
-            return getClaimsByStatusAndProject(claimStatus, employeeProject.getProject().getId());
+            return getEmployeeRoleInProject()
+                    .map(role -> {
+                        if (role == ProjectRole.PM) {
+                            return getClaimsByStatusAndProject(claimStatus, employeeProject.getProject().getId());
+                        } else {
+                            return getClaimsByStatusAndEmployee(claimStatus, employeeId);
+                        }
+                    })
+                    .orElseGet(() -> getClaimsByStatusAndEmployee(claimStatus, employeeId));
         }
 
-        return getClaimsByStatusAndEmployee(claimStatus, employeeId);
+        return claimRepository.findAllByStatus(claimStatus).stream().map(this::convertToDTO).toList();
     }
 
     @Override
@@ -95,6 +154,14 @@ public class ClaimServiceImpl implements ClaimService {
         claimGetDto.setStatus(claim.getStatus());
         claimGetDto.setId(claim.getId());
         claimGetDto.setTitle(claim.getTitle());
+        claimGetDto.setClaimDetailDTOList(
+                claim.getClaimDetails().stream()
+                        .map(claimDetail -> modelMapper.map(claimDetail, ClaimDetailDTO.class))
+                        .toList()
+        );
+        ProjectDTO project = modelMapper.map(claim.getProject(),ProjectDTO.class);
+        claimGetDto.setProject(project);
+        claimGetDto.setDuration(claim.getDuration());
         return claimGetDto;
     }
 
@@ -112,6 +179,9 @@ public class ClaimServiceImpl implements ClaimService {
                 ()->new IllegalStateException("EmployeeProject not existed")
         );
         Claim claim= new Claim();
+        if (claimSaveDTO.getDuration().isEmpty()){
+            claimSaveDTO.setDuration("0");
+        }
         claim.setProject(project);
         claim.setTitle(claimSaveDTO.getTitle());
         claim.setRequestReason(claimSaveDTO.getRequestReason());
@@ -137,12 +207,77 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public void actionUpdate(ClaimStatus claimStatus, UUID id) {
+    public void updateStatus(ClaimStatus claimStatus, UUID id) {
         Claim claim = claimRepository.findById(id).orElseThrow(
                 () -> new IllegalStateException("Claim is not existed!"));
         claim.setStatus(claimStatus);
         claimRepository.save(claim);
     }
 
+    @Override
+    public void update(ClaimGetDTO claimGetDTO, UUID id, String status) {
+        Claim claim = claimRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Claim is not existed!"));
+        Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
+        Project project = projectRepository.findById(claimGetDTO.getProject().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
+        EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
+                ()->new IllegalStateException("EmployeeProject not existed")
+        );
+        claim.setTitle(claimGetDTO.getTitle());
+        claim.setRequestReason(claimGetDTO.getRequestReason());
+        claim.setAmount(BigDecimal.valueOf(employeeProject.getRole().getSalary() * claim.getDuration()));
+        claim.setDuration(claimGetDTO.getDuration());
 
+        claim.setStatus(ClaimStatus.valueOf(status.toUpperCase()));
+        claim.setUpdatedTime(LocalDateTime.now());
+
+        List<ClaimDetail> claimDetails = new ArrayList<>();
+        if (claimGetDTO.getClaimDetailDTOList()!= null){
+            claimDetails = claimGetDTO.getClaimDetailDTOList().stream()
+                    .map(detailDTO -> {
+                        ClaimDetail claimDetail = new ClaimDetail();
+                        claimDetail.setStartTime(detailDTO.getStartTime());
+                        claimDetail.setEndTime(detailDTO.getEndTime());
+                        claimDetail.setClaim(claim);
+                        return claimDetail;
+                    }).toList();
+        }
+
+        claim.getClaimDetails().clear();
+        claim.getClaimDetails().addAll(claimDetails);
+
+        claimRepository.save(claim);
+    }
+
+    public ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException {
+        List<Claim> claims = claimRepository.findAllById(claimIds);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Claims");
+
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("ID");
+        headerRow.createCell(1).setCellValue("Employee Name");
+        headerRow.createCell(2).setCellValue("Project Name");
+        headerRow.createCell(3).setCellValue("Title");
+        headerRow.createCell(4).setCellValue("Reason");
+        headerRow.createCell(5).setCellValue("Amount");
+
+        int rowIndex = 1;
+        for (Claim claim : claims) {
+            Row row = sheet.createRow(rowIndex++);
+            row.createCell(0).setCellValue(claim.getId().toString());
+            row.createCell(1).setCellValue(claim.getEmployee().getAccount().getUserName());
+            row.createCell(2).setCellValue(claim.getProject().getName());
+            row.createCell(3).setCellValue(claim.getTitle());
+            row.createCell(4).setCellValue(claim.getRequestReason());
+            row.createCell(5).setCellValue(claim.getAmount().toString());
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        return outputStream;
+    }
 }

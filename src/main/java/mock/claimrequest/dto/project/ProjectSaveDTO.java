@@ -26,7 +26,5 @@ public class ProjectSaveDTO {
 
     private BigDecimal budget;
 
-    private ProjectStatus projectStatus;
-
     private List<EmployeeProjectDTO> employeeProjects;
 }

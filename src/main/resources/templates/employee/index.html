@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layouts/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<main layout:fragment="content" class="w-full mx-auto bg-purple-100">
+    <div class="bg-gradient-to-b from-purple-100 to-white min-h-[90vh] p-4 rounded-md shadow-md">
+        <div class="flex justify-center">
+            <h1 class="inline-block p-4 bg-white text-2xl mb-3 drop-shadow-md text-purple-500 font-bold italic rounded-md">Employees</h1>
+        </div>
+
+        <div class="mb-4">
+            <a href="employees/add" id="addEmployeeBtn" class="hover:bg-green-600 bg-green-500 text-white px-4 py-2 rounded mb-4">
+                <i class="fas fa-plus"></i> Add Employee
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                <thead>
+                <tr class="bg-gray-200 ">
+                    <th class="py-2 px-4 border-b">Full Name</th>
+                    <th class="py-2 px-4 border-b">Username</th>
+                    <th class="py-2 px-4 border-b">Department</th>
+                    <th class="py-2 px-4 border-b">Account role</th>
+                    <th class="py-2 px-4 border-b">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="employee : ${employees}">
+                    <td class="py-2 px-4 border-b" th:text="${employee.fullName}"></td>
+                    <td class="py-2 px-4 border-b" th:text="${employee.account.userName}"></td>
+                    <td class="py-2 px-4 border-b" th:text="${employee.department.name}"></td>
+                    <td class="py-2 px-4 border-b" >
+                        <div th:each="role: ${employee.account.roles}" th:text="${role.name}"></div>
+                    </td>
+                    <td class="py-2 px-4 border-b flex space-x-2">
+                        <a th:href="@{/employees/{id}/update(id=${employee.id})}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Update</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

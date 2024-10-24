@@ -46,19 +46,18 @@ public class EmployeeProject implements Serializable {
     @JoinColumn(name = "status")
     private EmpProjectStatus empProjectStatus;
 
-    private LocalDate startTime;
-    private LocalDate endTime;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EmployeeProject)) return false;
-        EmployeeProject that = (EmployeeProject) o;
-        return id != null && id.equals(that.getId());
+        if (!(o instanceof EmployeeProject that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(employee, that.employee) && Objects.equals(project, that.project) && role == that.role && empProjectStatus == that.empProjectStatus && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, employee, project, role, empProjectStatus, startDate, endDate);
     }
 }

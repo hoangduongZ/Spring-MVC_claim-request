@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
-public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
+public interface  EmployeeRepository extends JpaRepository<Employee, UUID> {
     Employee findByAccount(Account account);
     List<Employee> findByEmployeeStatus(EmployeeStatus employeeStatus);
 
@@ -21,4 +21,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
                                                  @Param("freeStatus") EmployeeStatus freeStatus,
                                                  @Param("workingStatus") EmployeeStatus workingStatus,
                                                  @Param("inStatus") EmpProjectStatus inStatus);
+
+
 }
