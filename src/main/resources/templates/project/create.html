@@ -27,37 +27,38 @@
                 <i class="fa-solid fa-chevron-left text-white"></i>
             </div>
         </div>
-        <form th:action="@{/projects/add}" method="post" th:object="${project}" class="rounded-b px-8  pb-8 mb-4">
+        <form th:action="@{/projects/add}" method="post" th:object="${project}" class="rounded-b px-8  pb-8 mb-4"
+        id="project-add">
             <div class="flex justify-center">
                 <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
                     New projects</h1>
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Project Name:</label>
                 <input type="text" id="projectName" name="name" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description:</label>
                 <textarea id="description" name="description" rows="4" required
                           class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"></textarea>
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="startDate" class="block text-gray-700 text-sm font-bold mb-2">Start Date:</label>
                 <input type="date" id="startDate" name="startDate" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="endDate" class="block text-gray-700 text-sm font-bold mb-2">End Date:</label>
                 <input type="date" id="endDate" name="endDate" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
 
-            <div class="mb-4">
+            <div class="form-group mb-4">
                 <label for="budget" class="block text-gray-700 text-sm font-bold mb-2">Budget:</label>
                 <input type="number" id="budget" name="budget" min="0" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"

@@ -8,8 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100">
-    <div class="bg-gradient-to-b from-slate-100 to-white p-4 min-h-[80vh] rounded-md shadow-md">
+<main layout:fragment="content" class="w-full mx-auto bg-purple-100">
+    <div class="bg-gradient-to-b from-purple-100 to-white min-h-[90vh] p-4 rounded-md shadow-md">
         <div class="flex justify-center">
             <h1 class="inline-block p-4 bg-white text-2xl mb-3 drop-shadow-md text-purple-500 font-bold italic rounded-md">Employees</h1>
         </div>
@@ -23,24 +23,28 @@
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                 <thead>
-                <tr class="bg-purple-500 text-white">
-                    <th class="py-2 px-4 border-b">Full Name</th>
-                    <th class="py-2 px-4 border-b">Username</th>
-                    <th class="py-2 px-4 border-b">Department</th>
-                    <th class="py-2 px-4 border-b">Account role</th>
-                    <th class="py-2 px-4 border-b">Actions</th>
+                <tr class="bg-gray-700 text-white ">
+                    <th class="py-3 px-4 border-b">Full Name</th>
+                    <th class="py-3 px-4 border-b">Username</th>
+                    <th class="py-3 px-4 border-b">Department</th>
+                    <th class="py-3 px-4 border-b">Account role</th>
+                    <th class="py-3 px-4 border-b">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="employee : ${employees}">
-                    <td class="py-2 px-4 border-b" th:text="${employee.fullName}"></td>
-                    <td class="py-2 px-4 border-b" th:text="${employee.account.userName}"></td>
-                    <td class="py-2 px-4 border-b" th:text="${employee.department.name}"></td>
-                    <td class="py-2 px-4 border-b" >
+                    <td class="py-3 px-4 border-b" th:text="${employee.fullName}"></td>
+                    <td class="py-3 px-4 border-b" th:text="${employee.account.userName}"></td>
+                    <td class="py-3 px-4 border-b" th:text="${employee.department.name}"></td>
+                    <td class="py-3 px-4 border-b" >
                         <div th:each="role: ${employee.account.roles}" th:text="${role.name}"></div>
                     </td>
-                    <td class="py-2 px-4 border-b flex space-x-2">
-                        <a th:href="@{/employees/edit/{id}(id=${employee.account.id})}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Update</a>
+                    <td class="py-3 px-4 border-b flex space-x-2">
+                        <a th:href="@{/employees/{id}/update(id=${employee.id})}"
+                           class="inline-flex items-center p-1 text-blue-600 bg-blue-100 border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300">
+                            <i class="fas fa-eye mr-2"></i>
+                            View Detail
+                        </a>
                     </td>
                 </tr>
                 </tbody>

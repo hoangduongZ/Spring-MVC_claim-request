@@ -37,6 +37,7 @@ public class Claim {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable =false)
     private String title;
     private LocalDateTime date;
     @Column(name = "request_reason")

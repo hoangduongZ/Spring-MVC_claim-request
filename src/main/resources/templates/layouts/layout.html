@@ -27,14 +27,20 @@
                 console.error('There was a problem with the fetch operation:', error);
             });
     </script>
+    <style>
+        .error{
+            color:red;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{common/header::header}"></div>
 <div class="flex">
-    <div th:replace="~{common/aside::aside}"></div>
+<!--    <div th:replace="~{common/aside::aside}"></div>-->
     <main layout:fragment="content">
     </main>
 </div>
+<script th:src="@{/js/validate.js}"></script>
 <script>
     const asides = document.querySelectorAll(".aside-item button");
     asides.forEach(e => {

@@ -1,95 +1,94 @@
 <aside th:fragment="aside" class="sm:w-1/6 shadow bg-white min-h-[90vh] text-gray-700 overflow-hidden">
-    <div class="aside-item text-gray-700 flex p-2 cursor-pointer">
-        <a href="/claims/add" class="font-bold text-white pl-3 py-3 rounded-lg text-lg w-[50%] bg-gradient-to-l from-purple-400 to-purple-500
+    <div class="text-gray-700 flex p-2 cursor-pointer">
+        <a th:href="@{/claims/add}" class="font-bold text-white pl-3 py-3 rounded-lg text-lg w-[50%] bg-gradient-to-l from-purple-400 to-purple-500
             hover:drop-shadow-lg transition-transform transform hover:scale-[1.02]">
             <i class="fa-solid fa-plus"></i>
             <span>Claim</span>
         </a>
     </div>
-    <!--  transition-transform transform hover:scale-105-->
 
-    <div class="aside-item hover:bg-slate-200">
-        <a th:href="@{/dashboard}"
-           class="p-2 flex justify-between items-center w-full text-left"
-        >
-            <span th:class="${currentPage == 'dashboard'} ? 'text-purple-500 font-bold' : ''">Dashboard</span>
-        </a>
-    </div>
+<!--    <div class="aside-item hover:bg-slate-200">-->
+<!--        <a th:href="@{/dashboard}"-->
+<!--           class="p-2 flex justify-between items-center w-full text-left"-->
+<!--        >-->
+<!--            <span th:class="${currentPage == 'dashboard'} ? 'text-purple-500 font-bold' : ''">Dashboard</span>-->
+<!--        </a>-->
+<!--    </div>-->
 
-    <div class="aside-item hover:bg-slate-200">
-        <a th:href="@{/claims/index}"
-           class="p-2 flex justify-between items-center w-full text-left "
-        >
-            <span th:class="${currentPage == 'claims'} ? 'text-purple-500 font-bold' : ''">My claims</span>
-        </a>
-    </div>
+<!--    <div class="aside-item hover:bg-slate-200">-->
+<!--        <a th:href="@{/claims/index}"-->
+<!--           class="p-2 flex justify-between items-center w-full text-left "-->
+<!--        >-->
+<!--            <span th:class="${currentPage == 'claims'} ? 'text-purple-500 font-bold' : ''">My claims</span>-->
+<!--        </a>-->
+<!--    </div>-->
 
-    <div class="aside-item ">
-        <button class="p-2 flex justify-between items-center w-full text-left  hover:bg-slate-200">
-            <span>Employee</span>
-            <i class="fa-solid fa-chevron-left text-xs transition"></i>
-        </button>
-        <div class="hidden list-item flex flex-col">
-            <a href="#!"
-               class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-                <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-                    <span class="group-hover:ml-2 duration-300">List</span>
-                </div>
-                <i class="fa-solid fa-table-list"></i>
-            </a>
-            <a th:href="@{/employees/add}"
-               class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-                <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-                    <span class="group-hover:ml-2 duration-300">Create</span>
-                </div>
-                <i class="fa-regular fa-square-plus"></i>
-            </a>
-        </div>
-    </div>
+<!--    <div class="aside-item" sec:authorize="hasRole('ADMIN')">-->
+<!--        <button class="p-2 flex justify-between items-center w-full text-left  hover:bg-slate-200">-->
+<!--            <span>Employee</span>-->
+<!--            <i class="fa-solid fa-chevron-left text-xs transition"></i>-->
+<!--        </button>-->
+<!--        <div class="hidden list-item flex flex-col">-->
+<!--            <a th:href="@{/employees}"-->
+<!--               class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">-->
+<!--                <div>-->
+<!--          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">-->
+<!--            <i class="text-xs fa-solid fa-arrow-right"></i></span>-->
+<!--                    <span class="group-hover:ml-2 duration-300">List</span>-->
+<!--                </div>-->
+<!--                <i class="fa-solid fa-table-list"></i>-->
+<!--            </a>-->
+<!--            <a th:href="@{/employees/add}"-->
+<!--               class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">-->
+<!--                <div>-->
+<!--          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">-->
+<!--            <i class="text-xs fa-solid fa-arrow-right"></i></span>-->
+<!--                    <span class="group-hover:ml-2 duration-300">Create</span>-->
+<!--                </div>-->
+<!--                <i class="fa-regular fa-square-plus"></i>-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    </div>-->
 
-    <div class="aside-item">
-        <button class="p-2 flex justify-between items-center w-full text-left hover:bg-slate-200">
-            <span>Project</span>
-            <i class="fa-solid fa-chevron-left text-xs transition"></i>
-        </button>
-        <div class="hidden list-item flex flex-col">
-            <a th:href="@{/projects}"
-               class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-                <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-                    <span class="group-hover:ml-2 duration-300">List</span>
-                </div>
-                <i class="fa-solid fa-table-list"></i>
-            </a>
-            <a th:href="@{/projects/add}"
-               class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">
-                <div>
-          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">
-            <i class="text-xs fa-solid fa-arrow-right"></i></span>
-                    <span class="group-hover:ml-2 duration-300">Add</span>
-                </div>
-                <i class="fa-regular fa-square-plus"></i>
-            </a>
-        </div>
-        <!-- New Project Section -->
-        <div class="aside-item hover:bg-slate-200" sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/departments}"
-               class="p-2 flex justify-between items-center w-full text-left"
-            >
-                <span th:class="${currentPage == 'departments'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Department</span>
-            </a>
-        </div>
-        <div class="aside-item hover:bg-slate-200" sec:authorize="hasRole('CLAIMER')">
-            <a th:href="@{/claims/draft}"
-               class="p-2 flex justify-between items-center w-full text-left shadow-sm"
-            >
-                <span th:class="${currentPage == 'draft'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Draft</span>
-            </a>
-        </div>
-    </div>
+<!--    <div class="aside-item" sec:authorize="hasRole('ADMIN')">-->
+<!--        <button class="p-2 flex justify-between items-center w-full text-left hover:bg-slate-200">-->
+<!--            <span>Project</span>-->
+<!--            <i class="fa-solid fa-chevron-left text-xs transition"></i>-->
+<!--        </button>-->
+<!--        <div class="hidden list-item flex flex-col">-->
+<!--            <a th:href="@{/projects}"-->
+<!--               class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">-->
+<!--                <div>-->
+<!--          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">-->
+<!--            <i class="text-xs fa-solid fa-arrow-right"></i></span>-->
+<!--                    <span class="group-hover:ml-2 duration-300">List</span>-->
+<!--                </div>-->
+<!--                <i class="fa-solid fa-table-list"></i>-->
+<!--            </a>-->
+<!--            <a th:href="@{/projects/add}"-->
+<!--               class="px-2 shadow-sm group block relative py-2 hover:text-purple-500 hover:shadow-md transition flex items-center justify-between">-->
+<!--                <div>-->
+<!--          <span class="opacity-0 inline-block transition-opacity duration-300 group-hover:opacity-100">-->
+<!--            <i class="text-xs fa-solid fa-arrow-right"></i></span>-->
+<!--                    <span class="group-hover:ml-2 duration-300">Add</span>-->
+<!--                </div>-->
+<!--                <i class="fa-regular fa-square-plus"></i>-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    &lt;!&ndash; New Project Section &ndash;&gt;-->
+<!--    <div class="aside-item hover:bg-slate-200" sec:authorize="hasRole('ADMIN')">-->
+<!--        <a th:href="@{/departments}"-->
+<!--           class="p-2 flex justify-between items-center w-full text-left"-->
+<!--        >-->
+<!--            <span th:class="${currentPage == 'departments'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Department</span>-->
+<!--        </a>-->
+<!--    </div>-->
+<!--    <div class="aside-item hover:bg-slate-200" sec:authorize="hasRole('CLAIMER')">-->
+<!--        <a th:href="@{/claims/draft}"-->
+<!--           class="p-2 flex justify-between items-center w-full text-left shadow-sm"-->
+<!--        >-->
+<!--            <span th:class="${currentPage == 'draft'} ? 'text-purple-500 font-bold' : 'text-gray-500'">Draft</span>-->
+<!--        </a>-->
+<!--    </div>-->
 </aside>

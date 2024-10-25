@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import mock.claimrequest.dto.auth.AccountGetDTO;
+import mock.claimrequest.dto.project.ProjectDTO;
+import mock.claimrequest.dto.project.ProjectGetDTO;
+import mock.claimrequest.dto.project.ProjectSaveDTO;
+import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 
 import java.math.BigDecimal;
@@ -26,6 +31,8 @@ public class ClaimGetDTO {
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
     private BigDecimal amount;
+    private ProjectDTO project;
+    private Account account;
     private double duration;
     private List<ClaimDetailDTO> claimDetailDTOList;
 

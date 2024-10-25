@@ -33,7 +33,7 @@ function addRow() {
     <input type="date" id="endJoin" name="employeeProjects[${rowCurrent - 1}].endDate" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
 </td>
 
-<td class="px-4 py-2 flex justify-center items-center">
+<td class="px-4 py-2">
     <button type="button" onclick="removeRow(this)" class="flex justify-center items-center w-8 h-8 text-xl font-bold text-white bg-red-500 shadow rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
         <i class="fa-solid fa-minus"></i>
     </button>

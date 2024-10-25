@@ -57,7 +57,7 @@ public class ProjectController {
     @PostMapping("/add")
     public String postAddProject(@ModelAttribute @Valid ProjectSaveDTO projectSaveDTO){
         projectService.create(projectSaveDTO);
-        return "redirect:/projects/add";
+        return "redirect:/projects";
     }
 
     @GetMapping

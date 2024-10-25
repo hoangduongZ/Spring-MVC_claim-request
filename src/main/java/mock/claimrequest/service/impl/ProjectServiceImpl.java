@@ -4,17 +4,23 @@ import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.dto.project.ProjectDTO;
 import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.dto.project.ProjectSaveDTO;
+import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
+import mock.claimrequest.entity.Role;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
+import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.exception.NoProjectForCurrentEmployee;
+import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
+import mock.claimrequest.repository.RoleRepository;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ProjectService;
 import org.modelmapper.ModelMapper;
@@ -36,13 +42,17 @@ public class ProjectServiceImpl implements ProjectService {
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
     private final AuthService authService;
+    private final AccountRepository accountRepository;
+    private final RoleRepository roleRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AuthService authService) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeProjectRepository employeeProjectRepository, EmployeeRepository employeeRepository, ModelMapper modelMapper, AuthService authService, AccountRepository accountRepository, RoleRepository roleRepository) {
         this.projectRepository = projectRepository;
         this.employeeProjectRepository = employeeProjectRepository;
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
         this.authService = authService;
+        this.accountRepository = accountRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -112,6 +122,7 @@ public class ProjectServiceImpl implements ProjectService {
                 employeeProject.setStartDate(employeeProjectDTO.getStartDate());
                 employeeProject.setEndDate(employeeProjectDTO.getEndDate());
                 employeeProjects.add(employeeProject);
+                updateAccountRoleIfPM(employeeProjectDTO, employee);
             }
         }
 
@@ -119,6 +130,38 @@ public class ProjectServiceImpl implements ProjectService {
             employeeProjectRepository.saveAll(employeeProjects);
         }
     }
+
+    private void updateAccountRoleIfPM(EmployeeProjectDTO employeeProjectDTO, Employee employee) {
+        Account account = employee.getAccount();
+        if (account != null) {
+            if (employeeProjectDTO.getRole() == ProjectRole.PM) {
+                Role claimerRole = account.getRoles().stream()
+                        .filter(role -> role.getName() == AccountRole.CLAIMER)
+                        .findFirst()
+                        .orElse(null);
+
+                if (claimerRole != null) {
+                    account.getRoles().remove(claimerRole);
+                    account.getRoles().add(roleRepository.findByName(AccountRole.APPROVER).get());
+                    accountRepository.save(account);
+                }
+            } else {
+                Role approverRole = account.getRoles().stream()
+                        .filter(role -> role.getName() == AccountRole.APPROVER)
+                        .findFirst()
+                        .orElse(null);
+
+                if (approverRole != null) {
+                    account.getRoles().remove(approverRole);
+                    account.getRoles().add(roleRepository.findByName(AccountRole.CLAIMER).get());
+                    accountRepository.save(account);
+                }
+            }
+        }
+    }
+
+
+
 
     @Override
     public void update(ProjectDTO projectDTO) {
@@ -133,8 +176,29 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectStatus(projectDTO.getStatus());
 
         projectRepository.save(project);
-
         UUID projectId = project.getId();
+
+
+        if (projectDTO.getEmployeeProjects() == null) {
+            List<EmployeeProject> employeeProjectsInDB = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(
+                    projectId, EmpProjectStatus.IN);
+
+            employeeProjectsInDB.forEach(employeeProject -> {
+                Employee employee = employeeProject.getEmployee();
+
+                if (employeeProject.getRole().equals(ProjectRole.PM)) {
+                    employee.getAccount().getRoles().clear();
+                    Role role= roleRepository.findByName(AccountRole.CLAIMER).get();
+                    employee.getAccount().getRoles().add(role);
+                }
+
+                employee.setEmployeeStatus(EmployeeStatus.FREE);
+                employeeRepository.save(employee);
+            });
+
+            employeeProjectRepository.deleteAll(employeeProjectsInDB);
+        }
+
         if(projectDTO.getEmployeeProjects()!= null){
             List<EmployeeProject> employeeProjectsRecieve = projectDTO.getEmployeeProjects().stream()
                     .map(employeeProjectDTO -> {
@@ -150,6 +214,8 @@ public class ProjectServiceImpl implements ProjectService {
                         employeeProject.setEmpProjectStatus(EmpProjectStatus.IN);
                         employeeProject.setStartDate(employeeProjectDTO.getStartDate());
                         employeeProject.setEndDate(employeeProjectDTO.getEndDate());
+                        updateAccountRoleIfPM(employeeProjectDTO, employee);
+                        employee.setEmployeeStatus(EmployeeStatus.WORKING);
                         return employeeProject;
                     })
                     .toList();
@@ -170,12 +236,28 @@ public class ProjectServiceImpl implements ProjectService {
 
         toDelete.forEach(employeeProject -> {
             employeeProject.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
+            resetAccountRoleToClaimer(employeeProject.getEmployee());
         });
 
         if (!toDelete.isEmpty()) {
             employeeProjectRepository.deleteAll(toDelete);
         }
     }
+
+    private void resetAccountRoleToClaimer(Employee employee) {
+        Account account = employee.getAccount();
+        if (account != null) {
+            Role approverRole = new Role(AccountRole.APPROVER);
+
+            if (account.getRoles().contains(approverRole)) {
+                account.getRoles().remove(approverRole);
+                Role claimerRole = new Role(AccountRole.CLAIMER);
+                account.getRoles().add(claimerRole);
+                accountRepository.save(account);
+            }
+        }
+    }
+
 
     private void handleSave(List<EmployeeProject> employeeProjectsInDB, List<EmployeeProject> employeeProjectsRecieve) {
         List<EmployeeProject> toSave = new ArrayList<>();
@@ -222,8 +304,7 @@ public class ProjectServiceImpl implements ProjectService {
             isUpdated = true;
         }
 
-        if (empProjectRecieve.getEndDate() != null &&
-                !Objects.equals(empProjectRecieve.getEndDate(), empProjectInDB.getEndDate())) {
+        if (empProjectInDB.getEndDate() == null || !Objects.equals(empProjectRecieve.getEndDate(), empProjectInDB.getEndDate())) {
             empProjectInDB.setEndDate(empProjectRecieve.getEndDate());
             isUpdated = true;
         }

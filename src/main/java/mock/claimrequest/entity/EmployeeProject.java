@@ -1,6 +1,7 @@
 package mock.claimrequest.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,7 +47,9 @@ public class EmployeeProject implements Serializable {
     @JoinColumn(name = "status")
     private EmpProjectStatus empProjectStatus;
 
+    @Column(nullable = false)
     private LocalDate startDate;
+    @Column(nullable = false)
     private LocalDate endDate;
 
     @Override
