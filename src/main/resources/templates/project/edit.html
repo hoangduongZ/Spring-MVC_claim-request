@@ -29,8 +29,11 @@
         </div>
         <form th:action="@{/projects/{id}/edit(id=${project.id})}" method="post" th:object="${project}"
              id="project-update" class="rounded-b px-8 pb-8 mb-4">
-            <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
-                Update project</h1>
+            <div class="flex justify-center">
+                <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
+                    Update project</h1>
+            </div>
+
             <input type="hidden" name="id" th:value="${project.id}">
             <div class="mb-4">
                 <label for="projectName" class="block text-gray-700 text-sm font-bold mb-2">Project Name:</label>

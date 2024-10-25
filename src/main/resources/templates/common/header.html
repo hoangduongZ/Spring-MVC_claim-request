@@ -1,4 +1,4 @@
-<header th:fragment="header" class="shadow-md min-h-[10vh] shadow flex justify-between items-center bg-white text-gray-500">
+<header th:fragment="header" class="border-b z-20 shadow-md min-h-[10vh] shadow flex justify-between items-center bg-white text-gray-500">
     <div class="relative flex items-center gap-4">
         <style>
             .menu li:hover > .sub-menu {
@@ -21,7 +21,10 @@
 
         <!-- Navigation Links -->
         <ul class="menu flex items-center">
-            <li class="relative inline-block p-4 hover:bg-slate-100 border-x" sec:authorize="hasAnyRole('CLAIMER', 'ADMIN')">
+            <li class="relative inline-block  border-r">
+                <a href="/dashboard" class="text-gray-800 p-4 hover:bg-slate-100 border-x font-bold">Home</a>
+            </li>
+            <li class="relative inline-block p-4 hover:bg-slate-100 border-r" sec:authorize="hasAnyRole('CLAIMER', 'ADMIN')">
                 <a href="#!" class="text-gray-800 ">My claims</a>
                 <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 min-w-[200px] z-10">
                     <li class="relative"><a th:href="@{/claims/index/{status}(status='draft')}" class=" block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Draft</a></li>

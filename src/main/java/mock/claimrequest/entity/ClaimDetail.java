@@ -27,11 +27,11 @@ public class ClaimDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "start_time")
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
-    @Column(name = "end_time")
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
     @ManyToOne
-    @JoinColumn(name = "claim_id")
+    @JoinColumn(name = "claim_id" ,nullable = false)
     private Claim claim;
 }
