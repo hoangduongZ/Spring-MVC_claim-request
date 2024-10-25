@@ -38,22 +38,17 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "first_name", nullable = false)
     private String firstname;
-    @Column(name = "last_name", nullable = false)
     private String lastname;
-    @Column(nullable = false)
     private boolean gender;
-    @Column(nullable = false)
     private LocalDate dob;
-    @Column(nullable = false)
     private String address;
 
     @Enumerated(EnumType.STRING)
     private EmployeeStatus employeeStatus;
 
     @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
+    @JoinColumn(name = "department_id")
     private Department department;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
