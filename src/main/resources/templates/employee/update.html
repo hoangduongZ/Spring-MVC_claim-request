@@ -104,10 +104,12 @@
                 <option value="FINANCE" th:selected="${employee.role.name() == 'FINANCE'}">FINANCE</option>
             </select>
         </div>
-
-        <button type="submit"
-                class="mt-4 w-full bg-purple-500 text-white font-semibold py-2 rounded-md hover:bg-purple-600">Save
-        </button>
+        <div class="flex gap-2">
+            <button type="submit"
+                    class="py-2 px-4 bg-green-500 text-white font-semibold py-2 rounded-md hover:bg-green-600">Save
+            </button>
+            <a href="/employees" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Cancel</a>
+        </div>
     </form>
     <script th:src="@{/js/validate.js}"></script>
 </main>

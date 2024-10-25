@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Claims Request</title>
     <script th:src="@{/js/paid.js}"></script>
+    <script th:src="@{/js/claim.js}"></script>
 </head>
 <body>
 <main layout:fragment="content" class="w-full mx-auto bg-gradient-to-b from-purple-100 to-white p-6">
@@ -64,7 +65,7 @@
             <div class="overflow-x-auto border-t pb-6">
                 <form id="exportForm" th:action="@{/api/claims/export}" method="post">
                     <div th:each="claim, statIndex : ${claims}">
-                        <input type="hidden" th:value="${claim.id}" name="claimIds" />
+                        <input sec:authorize="hasRole('FINANCE')" th:if="${status} == 'PAID'" type="hidden" th:value="${claim.id}" name="claimIds" />
                         <div class="group border-b hover:shadow-md px-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
                             <div class="ml-4 flex-1 flex items-center">
                                 <input onchange="checkCheckboxes()" type="checkbox" th:id="'claimCheckbox_' + ${claim.id}" class="mr-4 w-4 h-4"/>
@@ -81,6 +82,7 @@
                                 <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM
                                 </div>
                                 <div class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
+                                    <form action=""></form>
                                     <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
                                           th:action="@{/claims/approved/{id}(id=${claim.id})}" method="post">
                                         <button type="submit"

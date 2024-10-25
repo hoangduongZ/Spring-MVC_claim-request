@@ -40,7 +40,11 @@
                         <div th:each="role: ${employee.account.roles}" th:text="${role.name}"></div>
                     </td>
                     <td class="py-3 px-4 border-b flex space-x-2">
-                        <a th:href="@{/employees/{id}/update(id=${employee.id})}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Update</a>
+                        <a th:href="@{/employees/{id}/update(id=${employee.id})}"
+                           class="inline-flex items-center p-1 text-blue-600 bg-blue-100 border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300">
+                            <i class="fas fa-eye mr-2"></i>
+                            View Detail
+                        </a>
                     </td>
                 </tr>
                 </tbody>

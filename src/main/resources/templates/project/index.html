@@ -15,7 +15,8 @@
         </div>
 
         <div class="mb-4">
-            <a th:href="@{/projects/add}" id="addEmployeeBtn" class="hover:bg-green-600 bg-green-500 text-white px-4 py-2 rounded mb-4">
+            <a th:href="@{/projects/add}" id="addEmployeeBtn"
+               class="hover:bg-green-600 bg-green-500 text-white px-4 py-2 rounded mb-4">
                 <i class="fas fa-plus"></i> Add Project
             </a>
         </div>
@@ -46,9 +47,10 @@
                 </td>
                 <td class="py-3 px-4 border-b flex space-x-2">
                     <a th:href="@{projects/{id}/edit(id=${project.id})}"
-                       class="p-2 rounded bg-blue-500 text-white">Update</a>
-<!--                    <a th:href="@{projects/{id}/delete(id=${project.id})}"-->
-<!--                       class="p-2 rounded bg-red-400 text-white">Delete</a>-->
+                       class="inline-flex items-center p-1 text-blue-600 bg-blue-100 border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300">
+                        <i class="fas fa-eye mr-2"></i>
+                        View Detail
+                    </a>
                 </td>
             </tr>
             </tbody>

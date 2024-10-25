@@ -77,7 +77,9 @@ public class ClaimServiceImpl implements ClaimService {
                 return Page.empty();
             }
         }
-
+        if (currentRole == AccountRole.APPROVER){
+            return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
+        }
 
         if ((keyword == null || keyword.trim().isEmpty()) && (startDate == null || endDate == null)) {
             return claimRepository.findByStatusAndEmployee(status, employee, pageable).map(this::convertToDTO);
