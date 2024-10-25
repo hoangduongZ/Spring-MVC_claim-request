@@ -176,8 +176,19 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectStatus(projectDTO.getStatus());
 
         projectRepository.save(project);
-
         UUID projectId = project.getId();
+
+
+        if (projectDTO.getEmployeeProjects()== null){
+            List<EmployeeProject> employeeProjectsInDB = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(
+                    projectId, EmpProjectStatus.IN);
+            employeeProjectsInDB.forEach(employeeProject -> {
+                Employee employee = employeeProject.getEmployee();
+                employee.setEmployeeStatus(EmployeeStatus.FREE);
+                employeeRepository.save(employee);
+            });
+            employeeProjectRepository.deleteAll(employeeProjectsInDB);
+        }
         if(projectDTO.getEmployeeProjects()!= null){
             List<EmployeeProject> employeeProjectsRecieve = projectDTO.getEmployeeProjects().stream()
                     .map(employeeProjectDTO -> {
@@ -283,8 +294,7 @@ public class ProjectServiceImpl implements ProjectService {
             isUpdated = true;
         }
 
-        if (empProjectRecieve.getEndDate() != null &&
-                !Objects.equals(empProjectRecieve.getEndDate(), empProjectInDB.getEndDate())) {
+        if (empProjectInDB.getEndDate() == null || !Objects.equals(empProjectRecieve.getEndDate(), empProjectInDB.getEndDate())) {
             empProjectInDB.setEndDate(empProjectRecieve.getEndDate());
             isUpdated = true;
         }

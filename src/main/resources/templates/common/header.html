@@ -40,7 +40,8 @@
                 <a href="#!" class="text-gray-800 ">Claims for Approval</a>
                 <ul class="sub-menu shadow absolute hidden bg-white top-12 left-0 min-w-[200px] z-10">
                     <li class="relative"><a th:href="@{/claims/index/{status}(status='pending')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">For My Vetting</a></li>
-                    <li class="relative"><a th:href="@{/claims/index/{status}(status='approved')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved or Paid</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='approved')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Approved</a></li>
+                    <li class="relative"><a th:href="@{/claims/index/{status}(status='paid')}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Paid</a></li>
                 </ul>
             </li>
 

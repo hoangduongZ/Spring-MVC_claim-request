@@ -69,7 +69,7 @@
                             <div class="ml-4 flex-1 flex items-center">
                                 <input onchange="checkCheckboxes()" type="checkbox" th:id="'claimCheckbox_' + ${claim.id}" class="mr-4 w-4 h-4"/>
                                 <a th:href="@{/claims/{id}/detail(id=${claim.id})}" class="py-4 flex items-center">
-                                    <p class="text-sm text-gray-600 min-w-[15vw]" th:text="${claim.employeeName}"><span
+                                    <p class="text-sm text-gray-600 min-w-[15vw]" th:text="${claim.account.userName}"><span
                                             th:text="${claim.projectName}"></span></p>
                                     <p class="text-gray-800" th:text="${claim.title}"></p>
                                     <span class="mx-2"> - </span>
@@ -81,26 +81,26 @@
                                 <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM
                                 </div>
                                 <div class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
-                                    <form sec:authorize="hasRole('APPROVER')"
+                                    <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
                                           th:action="@{/claims/approved/{id}(id=${claim.id})}" method="post">
                                         <button type="submit"
                                                 class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve
                                         </button>
                                     </form>
-                                    <form sec:authorize="hasRole('APPROVER')"
+                                    <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
                                           th:action="@{/claims/returned/{id}(id=${claim.id})}" method="post">
                                         <button type="submit"
                                                 class="bg-sky-500 text-white rounded px-2 py-1 hover:bg-sky-600">Return
                                         </button>
                                     </form>
-                                    <form sec:authorize="hasRole('APPROVER')"
+                                    <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
                                           th:action="@{/claims/rejected/{id}(id=${claim.id})}" method="post">
                                         <button type="submit"
                                                 class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject
                                         </button>
                                     </form>
                                     <form sec:authorize="hasRole('FINANCE')"
-                                          th:if="${claim.status.name() != 'PAID'}"
+                                          th:if="${status == 'approved'}"
                                           th:action="@{/claims/paid/{id}(id=${claim.id})}" method="post">
                                         <button type="submit"
                                                 class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Paid

@@ -36,10 +36,10 @@ public class EmployeeProjectDTO {
     private EmployeeStatus employeeStatus;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "Start date cannot be in the past.")
+//    @FutureOrPresent(message = "Start date cannot be in the past.")
     private LocalDate startDate;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Future(message = "End date must be in the future.")
+//    @Future(message = "End date must be in the future.")
     private LocalDate endDate;
 }

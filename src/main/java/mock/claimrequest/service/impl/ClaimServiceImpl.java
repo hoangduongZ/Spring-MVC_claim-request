@@ -159,6 +159,7 @@ public class ClaimServiceImpl implements ClaimService {
                         .map(claimDetail -> modelMapper.map(claimDetail, ClaimDetailDTO.class))
                         .toList()
         );
+        claimGetDto.setAccount(claim.getEmployee().getAccount());
         ProjectDTO project = modelMapper.map(claim.getProject(),ProjectDTO.class);
         claimGetDto.setProject(project);
         claimGetDto.setDuration(claim.getDuration());
