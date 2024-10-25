@@ -23,23 +23,23 @@
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                 <thead>
-                <tr class="bg-gray-200 ">
-                    <th class="py-2 px-4 border-b">Full Name</th>
-                    <th class="py-2 px-4 border-b">Username</th>
-                    <th class="py-2 px-4 border-b">Department</th>
-                    <th class="py-2 px-4 border-b">Account role</th>
-                    <th class="py-2 px-4 border-b">Actions</th>
+                <tr class="bg-gray-700 text-white ">
+                    <th class="py-3 px-4 border-b">Full Name</th>
+                    <th class="py-3 px-4 border-b">Username</th>
+                    <th class="py-3 px-4 border-b">Department</th>
+                    <th class="py-3 px-4 border-b">Account role</th>
+                    <th class="py-3 px-4 border-b">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="employee : ${employees}">
-                    <td class="py-2 px-4 border-b" th:text="${employee.fullName}"></td>
-                    <td class="py-2 px-4 border-b" th:text="${employee.account.userName}"></td>
-                    <td class="py-2 px-4 border-b" th:text="${employee.department.name}"></td>
-                    <td class="py-2 px-4 border-b" >
+                    <td class="py-3 px-4 border-b" th:text="${employee.fullName}"></td>
+                    <td class="py-3 px-4 border-b" th:text="${employee.account.userName}"></td>
+                    <td class="py-3 px-4 border-b" th:text="${employee.department.name}"></td>
+                    <td class="py-3 px-4 border-b" >
                         <div th:each="role: ${employee.account.roles}" th:text="${role.name}"></div>
                     </td>
-                    <td class="py-2 px-4 border-b flex space-x-2">
+                    <td class="py-3 px-4 border-b flex space-x-2">
                         <a th:href="@{/employees/{id}/update(id=${employee.id})}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Update</a>
                     </td>
                 </tr>

@@ -246,7 +246,7 @@ $(document).ready(function () {
             endDate: {
                 required: true,
                 date: true,
-                greaterThanStartDate: true // Custom rule
+                greaterThanStartDate: true
             },
             budget: {
                 required: true,

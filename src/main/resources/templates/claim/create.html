@@ -25,6 +25,9 @@
                 <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
                     New claim</h1>
             </div>
+            <div th:if="${#fields.hasErrors('*')}" class="bg-red-200 text-red-600 p-2 rounded">
+                <p>There were errors in your submission. Please correct them and try again.</p>
+            </div>
 
             <div class="mb-4">
                 <label for="project" class="block text-gray-700 text-sm font-bold mb-2">Project:</label>
@@ -38,18 +41,27 @@
                 <label for="title" th:field="*{title}" class="block text-gray-700 text-sm font-bold mb-2">Claim Title:</label>
                 <input type="text" id="title" name="title" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+                <div th:if="${#fields.hasErrors('title')}" class="text-red-600">
+                    <span th:errors="*{title}">Title Error</span>
+                </div>
             </div>
 
             <div class="mb-4">
                 <label for="requestReason" class="block text-gray-700 text-sm font-bold mb-2">Request Reason:</label>
                 <textarea id="requestReason" name="requestReason" rows="4" required
                           class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500"></textarea>
+                <div th:if="${#fields.hasErrors('requestReason')}" class="text-red-600">
+                    <span th:errors="*{requestReason}">Request Reason Error</span>
+                </div>
             </div>
 
             <div class="mb-4">
                 <label for="duration" class="block text-gray-700 text-sm font-bold mb-2">Total Duration (hours):</label>
                 <input type="text" id="duration" name="duration" readonly
                        class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+                <div th:if="${#fields.hasErrors('duration')}" class="text-red-600">
+                    <span th:errors="*{duration}">Duration Error</span>
+                </div>
             </div>
 
             <h2 class="text-xl font-bold text-purple-600 mb-2">Claim Details</h2>
