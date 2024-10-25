@@ -16,4 +16,5 @@ public interface ClaimRepository extends JpaRepository<Claim, UUID> {
     List<Claim> findAllByStatusAndEmployee(ClaimStatus status, Employee employee);
 
     List<Claim> findAllByStatusAndProject(ClaimStatus claimStatus, Project project);
+    List<Claim> findByStatusOrderByCreatedTimeDesc(ClaimStatus status);
 }

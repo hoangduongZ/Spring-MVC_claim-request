@@ -85,7 +85,7 @@ public class ClaimController {
         }
         return "redirect:/claims/index";
     }
-
+    
     @PostMapping("{status}/{id}")
     public String updateClaimStatus(@ModelAttribute ClaimUpdateStatusDTO claimUpdateStatusDTO,
                               @PathVariable("status") String status,
@@ -118,12 +118,26 @@ public class ClaimController {
         model.addAttribute("claims", claims);
         return "claim/draft";
     }
+//     @GetMapping("/draft")
+// public String getDraftClaims(Model model) {
+//     List<ClaimGetDTO> claims = claimService.getClaimByStatus(ClaimStatus.DRAFT);
+//     model.addAttribute("currentPage", "draft");
+//     if (claims == null || claims.isEmpty()) {
+//         model.addAttribute("warnMessage", "No draft claims available.");
+//         return "claim/draft"; // Return the draft view even if there are no claims
+//     }
+//     model.addAttribute("claims", claims); // Add claims to the model
+//     return "claim/draft";
+// }
+
+    
+
 
     @GetMapping("/index{status}")
     public String getIndexClaim(Model model, @RequestParam(defaultValue = "pending",name = "status") String status) {
         ClaimStatus claimStatus = ClaimStatus.valueOf(status.toUpperCase());
         List<ClaimGetDTO> claims = claimService.getClaimByStatus(claimStatus);
-        model.addAttribute("currentPage", "claims");
+       model.addAttribute("currentPage", "claims");
         if (claims == null) {
             model.addAttribute("warnMessage", "You currently not in any project !");
             return "warn/warn";
@@ -161,6 +175,7 @@ public class ClaimController {
         claimService.update(claim, id, status);
         return "redirect:/claims/index";
     }
+
 
 
 }

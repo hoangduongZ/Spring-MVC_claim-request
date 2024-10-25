@@ -4,32 +4,32 @@
       layout:decorate="layouts/layout">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Draft</title>
 </head>
 <body>
 <main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100 w-5/6">
-<!--  <h1 class="inline-block p-6 bg-white text-2xl mb-3 shadow text-purple-500 font-bold rounded-md">Draft</h1>-->
   <div class="flex flex-col gap-1 shadow-md">
     <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
       <div class="group px-4 py-5 relative">
-        <span class="font-bold">Draft</span>
+        <span class="font-bold text-center">DRAFT</span>
       </div>
     </div>
     <div  class="min-h-[70vh] bg-white">
-      <div th:if="${active}== 'draft'" class="overflow-x-auto border-t pb-6">
-        <div th:each="claim : ${claims} ">
+      <div class="overflow-x-auto border-t pb-6">
+          <div th:each="claim : ${claims}">
           <div class="group border-b hover:shadow-md px-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
             <div class="ml-4 flex-1">
               <a th:href="@{/claims/{id}/update(id=${claim.id})}" class="py-4 flex items-center">
                 <p class="text-sm text-gray-600 min-w-[15vw]">me, to <span th:text="${claim.projectName}"></span></p>
                 <p class="text-gray-800" th:text="${claim.title}"></p> <span class="mx-2"> - </span>
-                <p class="text-gray-500 text-sm" th:text="'reason for claim: '+ ${claim.requestReason} +', total amount of claim: '+${claim.amount} + '$'">OT project fir</p>
+                <p class="text-gray-500 text-sm" th:text="'reason for claim: ' + ${claim.requestReason} + ', total amount of claim: ' + ${claim.amount} + '$'">OT project fir</p>
+
               </a>
             </div>
             <div class="flex gap-10 justify-between items-center py-4">
               <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM</div>
               <div class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
-                <form th:action="@{/claims/{id}/cancel(id=${claim.id})}" method="post">
+                  <form th:action="@{/claims/{id}/cancel(id=${claim.id})}" method="post">
                   <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Cancel
                   </button>
                 </form>
@@ -44,3 +44,5 @@
 </main>
 </body>
 </html>
+
+

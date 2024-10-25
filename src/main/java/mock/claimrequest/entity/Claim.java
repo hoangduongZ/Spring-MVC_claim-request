@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -63,5 +64,9 @@ public class Claim {
     private LocalDateTime createdTime;
     @UpdateTimestamp
     private LocalDateTime updatedTime;
+    @PrePersist
+    protected void onCreate() {
+        this.createdTime = LocalDateTime.now();
+    }
 
 }
