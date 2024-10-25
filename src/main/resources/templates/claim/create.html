@@ -14,7 +14,7 @@
 <body class="bg-purple-100">
 <main layout:fragment="content" class="w-full mx-auto p-6">
     <div class="bg-gradient-to-b from-slate-100 to-white shadow-md rounded-2xl">
-        <div class=" flex p-3 overflow-hidden">
+        <div class="flex p-3 overflow-hidden">
             <div class="drop-shadow-2xl w-8 h-8 block rounded-full bg-purple-400 hover:bg-purple-500 flex justify-center items-center"
                  onclick="history.back()">
                 <i class="fa-solid fa-chevron-left text-white"></i>
@@ -22,7 +22,7 @@
         </div>
         <form th:action="@{/claims/draft/add}" method="post" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
             <div class="flex justify-center">
-                <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow ">
+                <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow">
                     New claim</h1>
             </div>
             <div th:if="${#fields.hasErrors('*')}" class="bg-red-200 text-red-600 p-2 rounded">
@@ -34,8 +34,21 @@
                 <input readonly type="text" id="project" th:field="*{projectGetDTO.name}" required
                        class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
             </div>
-            <input type="hidden" th:field="*{projectGetDTO.id}" required
-                   class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+            <input type="hidden" th:field="*{projectGetDTO.id}" required>
+
+            <!-- Project Start Date -->
+            <div class="mb-4">
+                <label for="projectStartDate" class="block text-gray-700 text-sm font-bold mb-2">Project Start Date:</label>
+                <input readonly type="date" id="projectStartDate" th:field="*{projectGetDTO.startDate}" required
+                       class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+            </div>
+
+            <!-- Project End Date -->
+            <div class="mb-4">
+                <label for="projectEndDate" class="block text-gray-700 text-sm font-bold mb-2">Project End Date:</label>
+                <input readonly type="date" id="projectEndDate" th:field="*{projectGetDTO.endDate}" required
+                       class="shadow appearance-none border border-purple-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-purple-500">
+            </div>
 
             <div class="mb-4">
                 <label for="title" th:field="*{title}" class="block text-gray-700 text-sm font-bold mb-2">Claim Title:</label>
