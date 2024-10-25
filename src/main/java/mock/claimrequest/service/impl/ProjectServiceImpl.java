@@ -178,7 +178,6 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(project);
         UUID projectId = project.getId();
 
-
         if (projectDTO.getEmployeeProjects() == null) {
             List<EmployeeProject> employeeProjectsInDB = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(
                     projectId, EmpProjectStatus.IN);
@@ -262,8 +261,8 @@ public class ProjectServiceImpl implements ProjectService {
     private void handleSave(List<EmployeeProject> employeeProjectsInDB, List<EmployeeProject> employeeProjectsRecieve) {
         List<EmployeeProject> toSave = new ArrayList<>();
         LocalDate now = LocalDate.now();
-        LocalDate projectStartDate = employeeProjectsInDB.isEmpty() ? null : employeeProjectsInDB.get(0).getProject().getStartDate();
-        LocalDate projectEndDate = employeeProjectsInDB.isEmpty() ? null : employeeProjectsInDB.get(0).getProject().getEndDate();
+        LocalDate projectStartDate = employeeProjectsRecieve.isEmpty() ? null : employeeProjectsRecieve.get(0).getProject().getStartDate();
+        LocalDate projectEndDate = employeeProjectsRecieve.isEmpty() ? null : employeeProjectsRecieve.get(0).getProject().getEndDate();
 
         for (EmployeeProject empProjectRecieve : employeeProjectsRecieve) {
             EmployeeProjectId empProjectId = empProjectRecieve.getId();
