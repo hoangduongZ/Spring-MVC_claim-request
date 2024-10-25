@@ -27,8 +27,6 @@ public class EmployeeProjectDTO {
     @NotNull(message = "Employee ID is required.")
     private UUID employeeId;
 
-    @NotBlank(message = "Account name is required.")
-    @Size(min = 3, max = 50, message = "Account name must be between 3 and 50 characters.")
     private String accountName;
 
     private ProjectRole role;

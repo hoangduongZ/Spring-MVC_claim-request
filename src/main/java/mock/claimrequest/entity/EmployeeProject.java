@@ -47,9 +47,7 @@ public class EmployeeProject implements Serializable {
     @JoinColumn(name = "status")
     private EmpProjectStatus empProjectStatus;
 
-    @Column(nullable = false)
     private LocalDate startDate;
-    @Column(nullable = false)
     private LocalDate endDate;
 
     @Override
