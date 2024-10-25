@@ -179,16 +179,26 @@ public class ProjectServiceImpl implements ProjectService {
         UUID projectId = project.getId();
 
 
-        if (projectDTO.getEmployeeProjects()== null){
+        if (projectDTO.getEmployeeProjects() == null) {
             List<EmployeeProject> employeeProjectsInDB = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(
                     projectId, EmpProjectStatus.IN);
+
             employeeProjectsInDB.forEach(employeeProject -> {
                 Employee employee = employeeProject.getEmployee();
+
+                if (employeeProject.getRole().equals(ProjectRole.PM)) {
+                    employee.getAccount().getRoles().clear();
+                    Role role= roleRepository.findByName(AccountRole.CLAIMER).get();
+                    employee.getAccount().getRoles().add(role);
+                }
+
                 employee.setEmployeeStatus(EmployeeStatus.FREE);
                 employeeRepository.save(employee);
             });
+
             employeeProjectRepository.deleteAll(employeeProjectsInDB);
         }
+
         if(projectDTO.getEmployeeProjects()!= null){
             List<EmployeeProject> employeeProjectsRecieve = projectDTO.getEmployeeProjects().stream()
                     .map(employeeProjectDTO -> {

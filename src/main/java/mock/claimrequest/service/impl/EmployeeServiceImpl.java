@@ -61,8 +61,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setFirstname(employeeSaveDTO.getFirstname());
         employee.setLastname(employeeSaveDTO.getLastname());
         employee.setGender(employeeSaveDTO.isGender());
-        employee.setEmployeeStatus(EmployeeStatus.FREE);
-
+        if(employeeSaveDTO.getAccountRole().equals(AccountRole.FINANCE) ||employeeSaveDTO.getAccountRole().equals(AccountRole.ADMIN)){
+            employee.setEmployeeStatus(null);
+        }else{
+            employee.setEmployeeStatus(EmployeeStatus.FREE);
+        }
         Account account = new Account();
         account.setEmail(employeeSaveDTO.getAccountRegisterDTO().getEmail());
         account.setPassword(passwordEncoder.encode(employeeSaveDTO.getAccountRegisterDTO().getPassword()));
@@ -177,6 +180,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setAddress(employeeUpdateDTO.getAddress());
         employee.setDob(employeeUpdateDTO.getDob());
         employee.setGender(employeeUpdateDTO.isGender());
+
+        if(employeeUpdateDTO.getRole().equals(AccountRole.FINANCE) || employeeUpdateDTO.getRole().equals(AccountRole.ADMIN)){
+            employee.setEmployeeStatus(null);
+        }else{
+            employee.setEmployeeStatus(EmployeeStatus.FREE);
+        }
+
 
         if (employeeUpdateDTO.getDepartment() != null) {
             Department department = modelMapper.map(employeeUpdateDTO.getDepartment(), Department.class);
