@@ -86,9 +86,9 @@ public class ClaimController {
                 }
                 break;
             default:
-                return "redirect:/claims/index";
+                return "redirect:/claims/index/pending";
         }
-        return "redirect:/claims/index";
+        return "redirect:/claims/index/pending";
     }
 
     @PostMapping("{status}/{id}")
