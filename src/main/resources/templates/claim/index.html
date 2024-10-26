@@ -11,6 +11,7 @@
 </head>
 <body>
 <main layout:fragment="content" class="w-full mx-auto bg-gradient-to-b from-purple-100 to-white p-6">
+
     <div class="flex flex-col gap-1">
         <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
             <form th:action="@{/claims/index/{active}(active=${active})}" method="get"

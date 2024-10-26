@@ -15,7 +15,7 @@ import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
-import mock.claimrequest.exception.NoProjectForCurrentEmployee;
+import mock.claimrequest.exception.TimeActiveEmployeeProjectNotValidException;
 import mock.claimrequest.repository.AccountRepository;
 import mock.claimrequest.repository.EmployeeProjectRepository;
 import mock.claimrequest.repository.EmployeeRepository;
@@ -349,7 +349,7 @@ public class ProjectServiceImpl implements ProjectService {
                 (empProjectRecieve.getEndDate() != null &&
                         (empProjectRecieve.getEndDate().isBefore(projectStartDate) ||
                                 empProjectRecieve.getEndDate().isAfter(projectEndDate)))) {
-            throw new IllegalStateException("Start date or end date is out of project range!");
+            throw new TimeActiveEmployeeProjectNotValidException();
         }
     }
 

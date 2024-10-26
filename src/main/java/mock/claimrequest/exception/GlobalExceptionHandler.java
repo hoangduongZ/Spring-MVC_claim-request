@@ -29,4 +29,10 @@ public class GlobalExceptionHandler {
         attributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/claims/add";
     }
+
+    @ExceptionHandler(TimeActiveEmployeeProjectNotValidException.class)
+    public String handleTimeActiveEmployeeProjectNotValidException(TimeActiveEmployeeProjectNotValidException ex, RedirectAttributes attributes) {
+        attributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/projects";
+    }
 }

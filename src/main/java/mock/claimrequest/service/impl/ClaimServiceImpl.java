@@ -310,7 +310,7 @@ public class ClaimServiceImpl implements ClaimService {
         // Tạo tiêu đề chính
         Row titleRow = sheet.createRow(0);
         Cell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue("DANH SÁCH YÊU CẦU CLAIM REQUEST");
+        titleCell.setCellValue("CLAIM REQUEST");
         titleCell.setCellStyle(titleStyle);
 
         // Hợp nhất các ô để tiêu đề kéo dài toàn bộ bảng
@@ -319,7 +319,7 @@ public class ClaimServiceImpl implements ClaimService {
         // Thêm dòng thông tin chi tiết (nếu cần)
         Row subtitleRow = sheet.createRow(1);
         Cell subtitleCell = subtitleRow.createCell(0);
-        subtitleCell.setCellValue("Dự kiến cấp vào: " + "tháng" + " " + "năm" + "2024");
+        subtitleCell.setCellValue("List");
         subtitleCell.setCellStyle(titleStyle);
 
         // Hợp nhất các ô cho dòng thông tin chi tiết
