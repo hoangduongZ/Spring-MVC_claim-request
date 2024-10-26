@@ -11,6 +11,25 @@
 </head>
 <body>
 <main layout:fragment="content" class="w-full mx-auto bg-gradient-to-b from-purple-100 to-white p-6">
+    <div id="actionModal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <div class="bg-white p-6 rounded-md shadow-lg w-1/3">
+            <h2 id="modalTitle" class="text-lg font-semibold mb-4">Confirm Action</h2>
+            <form id="modalForm" method="post">
+                <p id="modalMessage">Are you sure you want to proceed with this action? Please provide a reason:</p>
+
+                <div class="mt-4" id="reason-block">
+                    <label for="reason" class="block text-sm font-medium text-gray-700">Reason:</label>
+                    <textarea id="reason" rows="4" class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                </div>
+
+                <div class="flex justify-end mt-4 gap-3">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <div class="flex flex-col gap-1">
         <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
@@ -95,15 +114,15 @@
                                     <form th:if="${status == 'approved'}" sec:authorize="hasRole('FINANCE')" action=""></form>
                                     <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
                                           th:action="@{/claims/approved/{id}(id=${claim.id})}" method="post">
-                                        <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>
+                                        <button data-type="approved" th:data-id="${claim.id}" type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>
                                     </form>
                                     <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
                                           th:action="@{/claims/returned/{id}(id=${claim.id})}" method="post">
-                                        <button type="submit" class="bg-sky-500 text-white rounded px-2 py-1 hover:bg-sky-600">Return</button>
+                                        <button data-type="returned" th:data-id="${claim.id}" type="submit" class="bg-sky-500 text-white rounded px-2 py-1 hover:bg-sky-600">Return</button>
                                     </form>
                                     <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
                                           th:action="@{/claims/rejected/{id}(id=${claim.id})}" method="post">
-                                        <button type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject</button>
+                                        <button data-type="rejected" th:data-id="${claim.id}" type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject</button>
                                     </form>
                                     <form sec:authorize="hasRole('FINANCE')"
                                           th:if="${status == 'approved'}"

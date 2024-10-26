@@ -1,5 +1,6 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
@@ -29,4 +30,12 @@ public class EmployeeProjectServiceImpl implements EmployeeProjectService {
         EmployeeProject employeeProject= employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN);
         return employeeProject.getRole();
     }
+
+    @Override
+    public Employee findProjectManager(UUID projectId){
+        EmployeeProject employeeProject= employeeProjectRepository.
+                findByRoleAndProjectIdAndEmpProjectStatus(ProjectRole.PM, projectId, EmpProjectStatus.IN);
+        return employeeProject.getEmployee();
+    }
+
 }

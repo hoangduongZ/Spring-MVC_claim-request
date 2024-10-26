@@ -4,6 +4,7 @@ import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.EmployeeProjectId;
 import mock.claimrequest.entity.Project;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
+import mock.claimrequest.entity.entityEnum.ProjectRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface EmployeeProjectRepository extends JpaRepository<EmployeeProject
     EmployeeProject findByEmployeeIdAndEmpProjectStatus(UUID employeeId, EmpProjectStatus empProjectStatus);
 
     Optional<EmployeeProject> findByEmployeeIdAndProjectId(UUID employeeId, UUID projectId);
+
+    EmployeeProject findByRoleAndProjectIdAndEmpProjectStatus(ProjectRole projectRole, UUID projectId, EmpProjectStatus empProjectStatus);
 }

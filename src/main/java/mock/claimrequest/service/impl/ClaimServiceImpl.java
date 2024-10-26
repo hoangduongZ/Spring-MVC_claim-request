@@ -1,11 +1,10 @@
 package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.claim.ClaimDetailDTO;
-import mock.claimrequest.dto.claim.ClaimExportDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
+import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
 import mock.claimrequest.dto.project.ProjectDTO;
-import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
@@ -208,7 +207,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public void actionCreate(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO) {
+    public Claim actionCreate(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO) {
         Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
         Project project = projectRepository.findById(claimSaveDTO.getProjectGetDTO().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
         EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
@@ -244,13 +243,19 @@ public class ClaimServiceImpl implements ClaimService {
 
             claimDetailRepository.saveAll(claimDetails);
         }
+        return claim;
     }
 
     @Override
-    public void updateStatus(ClaimStatus claimStatus, UUID id) {
+    public void updateStatus(ClaimStatus claimStatus, UUID id, ClaimUpdateStatusDTO claimUpdateStatusDTO) {
         Claim claim = claimRepository.findById(id).orElseThrow(
                 () -> new IllegalStateException("Claim is not existed!"));
         claim.setStatus(claimStatus);
+        if (claimStatus.equals(ClaimStatus.DRAFT)){
+            claim.setReturnReason(claimUpdateStatusDTO.getReturnReason());
+        }else if(claimStatus.equals(ClaimStatus.REJECTED)){
+            claim.setRejectReason(claimUpdateStatusDTO.getRejectReason());
+        }
         claimRepository.save(claim);
     }
 

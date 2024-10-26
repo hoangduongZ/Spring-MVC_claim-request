@@ -2,6 +2,8 @@ package mock.claimrequest.service;
 
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
+import mock.claimrequest.dto.claim.ClaimUpdateStatusDTO;
+import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import org.springframework.data.domain.Page;
@@ -23,9 +25,9 @@ public interface ClaimService {
 
     Optional<ProjectRole> getEmployeeRoleInProject();
 
-    void actionCreate(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO);
+    Claim actionCreate(ClaimStatus claimStatus, ClaimSaveDTO claimSaveDTO);
 
-    void updateStatus(ClaimStatus claimStatus, UUID id);
+    void updateStatus(ClaimStatus claimStatus, UUID id, ClaimUpdateStatusDTO claimUpdateStatusDTO);
 
     void update(ClaimGetDTO claimGetDTO, UUID id, String status);
 
