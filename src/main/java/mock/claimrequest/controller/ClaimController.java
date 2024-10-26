@@ -106,15 +106,15 @@ public class ClaimController {
             }
             case "canceled" ->{
                 claimService.updateStatus(ClaimStatus.CANCELED, id);
-                yield "redirect:/claims/index/cenceled";
+                yield "redirect:/claims/index/canceled";
             }
             case "rejected" -> {
                 claimService.updateStatus(ClaimStatus.REJECTED, id);
                 yield "redirect:/claims/index/rejected";
             }
             case "returned" -> {
-                claimService.updateStatus(ClaimStatus.RETURNED, id);
-                yield "redirect:/claims/index/returned";
+                claimService.updateStatus(ClaimStatus.DRAFT, id);
+                yield "redirect:/claims/index/pending";
             }
             default -> "redirect:/claims/index";
         };

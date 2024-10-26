@@ -27,6 +27,8 @@ public class ClaimGetDTO {
     private String employeeName;
     private String projectName;
     private String requestReason;
+    private String returnReason;
+    private String rejectReason;
     private ClaimStatus status;
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;

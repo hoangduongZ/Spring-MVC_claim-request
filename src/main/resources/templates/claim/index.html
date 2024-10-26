@@ -84,6 +84,8 @@
                                 <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM
                                 </div>
                                 <div class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
+                                    <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')" action=""></form>
+                                    <form th:if="${status == 'approved'}" sec:authorize="hasRole('FINANCE')" action=""></form>
                                     <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
                                           th:action="@{/claims/approved/{id}(id=${claim.id})}" method="post">
                                         <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>

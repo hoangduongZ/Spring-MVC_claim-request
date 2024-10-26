@@ -63,18 +63,17 @@ public class ClaimServiceImpl implements ClaimService {
         this.modelMapper = modelMapper;
     }
 
+    @Override
     public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         AccountRole currentRole = authService.getCurrentRoleAccount();
         Employee employee = currentRole == AccountRole.ADMIN ? null : authService.getCurrentAccount().getEmployee();
 
         if (currentRole == AccountRole.FINANCE) {
-            if (status == ClaimStatus.APPROVED) {
-                return claimRepository.findByStatus(ClaimStatus.APPROVED, pageable).map(this::convertToDTO);
-            } else if (status == ClaimStatus.PAID) {
-                return claimRepository.findByStatus(ClaimStatus.PAID, pageable).map(this::convertToDTO);
-            } else {
-                return Page.empty();
+            if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
+                return claimRepository.findByStatusKeywordAndDateRange(status, keyword, null, startDate, endDate, pageable)
+                        .map(this::convertToDTO);
             }
+            return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
         }
         if (currentRole == AccountRole.APPROVER){
             return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
@@ -160,6 +159,8 @@ public class ClaimServiceImpl implements ClaimService {
                         .map(claimDetail -> modelMapper.map(claimDetail, ClaimDetailDTO.class))
                         .toList()
         );
+        claimGetDto.setReturnReason(claim.getReturnReason());
+        claimGetDto.setRejectReason(claim.getRejectReason());
         claimGetDto.setAccount(claim.getEmployee().getAccount());
         ProjectDTO project = modelMapper.map(claim.getProject(),ProjectDTO.class);
         claimGetDto.setProject(project);
@@ -263,7 +264,7 @@ public class ClaimServiceImpl implements ClaimService {
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         Font titleFont = workbook.createFont();
         titleFont.setBold(true);
-        titleFont.setFontHeightInPoints((short) 14); // Font lớn hơn
+        titleFont.setFontHeightInPoints((short) 14);
         titleStyle.setFont(titleFont);
 
         // Tạo tiêu đề chính
