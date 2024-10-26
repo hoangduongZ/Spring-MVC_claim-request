@@ -23,9 +23,8 @@ import mock.claimrequest.repository.EmployeeRepository;
 import mock.claimrequest.repository.ProjectRepository;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.ClaimService;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -258,15 +257,64 @@ public class ClaimServiceImpl implements ClaimService {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Claims");
 
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("ID");
-        headerRow.createCell(1).setCellValue("Employee Name");
-        headerRow.createCell(2).setCellValue("Project Name");
-        headerRow.createCell(3).setCellValue("Title");
-        headerRow.createCell(4).setCellValue("Reason");
-        headerRow.createCell(5).setCellValue("Amount");
+        // Tạo style cho tiêu đề chính
+        CellStyle titleStyle = workbook.createCellStyle();
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        Font titleFont = workbook.createFont();
+        titleFont.setBold(true);
+        titleFont.setFontHeightInPoints((short) 14); // Font lớn hơn
+        titleStyle.setFont(titleFont);
 
-        int rowIndex = 1;
+        // Tạo tiêu đề chính
+        Row titleRow = sheet.createRow(0);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("DANH SÁCH YÊU CẦU CLAIM REQUEST");
+        titleCell.setCellStyle(titleStyle);
+
+        // Hợp nhất các ô để tiêu đề kéo dài toàn bộ bảng
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
+
+        // Thêm dòng thông tin chi tiết (nếu cần)
+        Row subtitleRow = sheet.createRow(1);
+        Cell subtitleCell = subtitleRow.createCell(0);
+        subtitleCell.setCellValue("Dự kiến cấp vào: " + "tháng" + " " + "năm" + "2024");
+        subtitleCell.setCellStyle(titleStyle);
+
+        // Hợp nhất các ô cho dòng thông tin chi tiết
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 5));
+
+        // Tạo style cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 12);
+        headerStyle.setFont(headerFont);
+
+        // Tạo header row với style
+        Row headerRow = sheet.createRow(2); // Bắt đầu từ dòng 3
+        String[] headers = {"ID", "Employee Name", "Project Name", "Title", "Reason", "Amount"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // Style cho các ô thông tin
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        cellStyle.setWrapText(true);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.cloneStyleFrom(cellStyle);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("$#,##0.00"));
+
+        // Điền dữ liệu vào các hàng
+        int rowIndex = 3;
         for (Claim claim : claims) {
             Row row = sheet.createRow(rowIndex++);
             row.createCell(0).setCellValue(claim.getId().toString());
@@ -274,13 +322,24 @@ public class ClaimServiceImpl implements ClaimService {
             row.createCell(2).setCellValue(claim.getProject().getName());
             row.createCell(3).setCellValue(claim.getTitle());
             row.createCell(4).setCellValue(claim.getRequestReason());
-            row.createCell(5).setCellValue(claim.getAmount().toString());
+
+            // Dùng style định dạng số tiền
+            Cell amountCell = row.createCell(5);
+            amountCell.setCellValue(claim.getAmount().doubleValue());
+            amountCell.setCellStyle(amountStyle);
         }
 
+        // Tự động điều chỉnh kích thước các cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // Ghi vào output stream
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
 
         return outputStream;
     }
+
 }

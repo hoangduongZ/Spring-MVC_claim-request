@@ -7,9 +7,9 @@
         </style>
 
         <!-- Logo -->
-        <div class="w-[8vh] h-[8vh] ml-3 mr-10 rounded-full hover:shadow-lg shadow border overflow-hidden">
+        <a href = "dashboard" class="w-[8vh] h-[8vh] ml-3 mr-10 rounded-full hover:shadow-lg shadow border overflow-hidden">
             <img class="w-full h-full object-cover" th:src="@{/img/bee.png}" alt="Bee">
-        </div>
+        </a>
 
         <div sec:authorize="hasRole('CLAIMER')" class="text-gray-700 flex cursor-pointer bg-white rounded">
             <a th:href="@{/claims/add}" class="font-bold text-white p-3 rounded-lg text-lg bg-gradient-to-l from-purple-400 to-purple-500
