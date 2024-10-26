@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.entity.entityEnum.ProjectStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -36,10 +37,12 @@ public class ProjectDTO {
     private String description;
 
     @NotNull(message = "Start date is required.")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
     @NotNull(message = "End date is required.")
     @Future(message = "End date must be in the future.")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     @NotNull(message = "Budget is required.")

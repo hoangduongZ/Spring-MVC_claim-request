@@ -87,7 +87,7 @@
                             <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM
                             </div>
                             <div sec:authorize="hasRole('CLAIMER')" class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
-                                <form th:action="@{/claims/cancel/{id}(id=${claim.id})}" method="post">
+                                <form th:action="@{/claims/canceled/{id}(id=${claim.id})}" method="post">
                                     <button type="submit"
                                             class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Cancel
                                     </button>
