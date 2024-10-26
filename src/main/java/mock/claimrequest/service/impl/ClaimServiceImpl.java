@@ -66,27 +66,58 @@ public class ClaimServiceImpl implements ClaimService {
     @Override
     public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         AccountRole currentRole = authService.getCurrentRoleAccount();
-        Employee employee = currentRole == AccountRole.ADMIN ? null : authService.getCurrentAccount().getEmployee();
+
+        if (currentRole == AccountRole.ADMIN) {
+            return handleAdminClaims(status, keyword, startDate, endDate, pageable);
+        }
+
+        Employee employee = authService.getCurrentAccount().getEmployee();
 
         if (currentRole == AccountRole.FINANCE) {
-            if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
-                return claimRepository.findByStatusKeywordAndDateRange(status, keyword, null, startDate, endDate, pageable)
-                        .map(this::convertToDTO);
-            }
-            return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
-        }
-        if (currentRole == AccountRole.APPROVER){
-            return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
+            return handleFinanceClaims(status, keyword, startDate, endDate, pageable);
         }
 
+        if (currentRole == AccountRole.APPROVER) {
+            return handleApproverClaims(status, keyword, startDate, endDate, employee, pageable);
+        }
+
+        return handleDefaultClaims(status, keyword, startDate, endDate, employee, pageable);
+    }
+
+    private Page<ClaimGetDTO> handleAdminClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
+            return claimRepository.findByStatusKeywordAndDateRange(status, keyword, null, startDate, endDate, pageable)
+                    .map(this::convertToDTO);
+        }
+        return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
+    }
+
+    private Page<ClaimGetDTO> handleFinanceClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
+            return claimRepository.findByStatusKeywordAndDateRange(status, keyword, null, startDate, endDate, pageable)
+                    .map(this::convertToDTO);
+        }
+        return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
+    }
+
+    private Page<ClaimGetDTO> handleApproverClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Employee employee, Pageable pageable) {
+        UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
+        UUID projectId = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN).getProject().getId();
+
+        if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
+            return claimRepository.findByStatusKeywordAndDateRangeAndProjectId(status, keyword, projectId, startDate, endDate, pageable)
+                    .map(this::convertToDTO);
+        }
+        return claimRepository.findByStatusAndProject(status, projectId, pageable).map(this::convertToDTO);
+    }
+
+    private Page<ClaimGetDTO> handleDefaultClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Employee employee, Pageable pageable) {
         if ((keyword == null || keyword.trim().isEmpty()) && (startDate == null || endDate == null)) {
             return claimRepository.findByStatusAndEmployee(status, employee, pageable).map(this::convertToDTO);
         }
-
         return claimRepository.findByStatusKeywordAndDateRange(status, keyword, employee, startDate, endDate, pageable)
                 .map(this::convertToDTO);
     }
-
 
     @Override
     public List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus) {
