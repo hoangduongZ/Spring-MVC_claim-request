@@ -178,7 +178,6 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(project);
         UUID projectId = project.getId();
 
-
         if (projectDTO.getEmployeeProjects() == null) {
             List<EmployeeProject> employeeProjectsInDB = employeeProjectRepository.findByProjectIdAndEmpProjectStatus(
                     projectId, EmpProjectStatus.IN);
