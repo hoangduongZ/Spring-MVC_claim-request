@@ -16,6 +16,8 @@ import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.EmpProjectStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
+import mock.claimrequest.entity.entityEnum.ProjectStatus;
+import mock.claimrequest.exception.ProjectNotInProgressException;
 import mock.claimrequest.repository.ClaimDetailRepository;
 import mock.claimrequest.repository.ClaimRepository;
 import mock.claimrequest.repository.EmployeeProjectRepository;
@@ -212,6 +214,10 @@ public class ClaimServiceImpl implements ClaimService {
         EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
                 ()->new IllegalStateException("EmployeeProject not existed")
         );
+        if (!project.getProjectStatus().equals(ProjectStatus.IN_PROGRESS)){
+            throw new ProjectNotInProgressException();
+        }
+
         Claim claim= new Claim();
         if (claimSaveDTO.getDuration().isEmpty()){
             claimSaveDTO.setDuration("0");
@@ -254,6 +260,9 @@ public class ClaimServiceImpl implements ClaimService {
                 .orElseThrow(() -> new IllegalStateException("Claim is not existed!"));
         Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
         Project project = projectRepository.findById(claimGetDTO.getProject().getId()).orElseThrow(()-> new IllegalStateException("Project not existed"));
+        if (!project.getProjectStatus().equals(ProjectStatus.IN_PROGRESS)){
+            throw new ProjectNotInProgressException();
+        }
         EmployeeProject employeeProject = employeeProjectRepository.findById(new EmployeeProjectId(employee.getId(), project.getId())).orElseThrow(
                 ()->new IllegalStateException("EmployeeProject not existed")
         );

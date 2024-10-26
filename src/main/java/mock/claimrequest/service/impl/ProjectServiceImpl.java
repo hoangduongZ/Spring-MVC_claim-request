@@ -174,7 +174,6 @@ public class ProjectServiceImpl implements ProjectService {
         project.setEndDate(projectDTO.getEndDate());
         project.setBudget(projectDTO.getBudget());
         project.setProjectStatus(projectDTO.getStatus());
-
         projectRepository.save(project);
         UUID projectId = project.getId();
 
@@ -223,7 +222,7 @@ public class ProjectServiceImpl implements ProjectService {
                     projectId, EmpProjectStatus.IN);
 
             handleRemove(employeeProjectsInDB, employeeProjectsRecieve);
-            handleSave(employeeProjectsInDB, employeeProjectsRecieve);
+            handleSave(project,employeeProjectsInDB, employeeProjectsRecieve);
         }
     }
 
@@ -258,11 +257,27 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
 
-    private void handleSave(List<EmployeeProject> employeeProjectsInDB, List<EmployeeProject> employeeProjectsRecieve) {
+    private void handleSave(Project project,List<EmployeeProject> employeeProjectsInDB, List<EmployeeProject> employeeProjectsRecieve) {
         List<EmployeeProject> toSave = new ArrayList<>();
         LocalDate now = LocalDate.now();
         LocalDate projectStartDate = employeeProjectsRecieve.isEmpty() ? null : employeeProjectsRecieve.get(0).getProject().getStartDate();
         LocalDate projectEndDate = employeeProjectsRecieve.isEmpty() ? null : employeeProjectsRecieve.get(0).getProject().getEndDate();
+
+        if (project.getProjectStatus().equals(ProjectStatus.COMPLETED)|| project.getProjectStatus().equals(ProjectStatus.CANCELLED)){
+            employeeProjectsInDB.forEach(employeeProject -> {
+                Employee employee = employeeProject.getEmployee();
+                if (employeeProject.getRole().equals(ProjectRole.PM)) {
+                    employee.getAccount().getRoles().clear();
+                    Role role= roleRepository.findByName(AccountRole.CLAIMER).get();
+                    employee.getAccount().getRoles().add(role);
+                }
+                employee.setEmployeeStatus(EmployeeStatus.FREE);
+                employeeProject.setEmpProjectStatus(EmpProjectStatus.OUT);
+                employeeRepository.save(employee);
+            });
+            employeeProjectRepository.saveAll(employeeProjectsInDB);
+            return;
+        }
 
         for (EmployeeProject empProjectRecieve : employeeProjectsRecieve) {
             EmployeeProjectId empProjectId = empProjectRecieve.getId();
