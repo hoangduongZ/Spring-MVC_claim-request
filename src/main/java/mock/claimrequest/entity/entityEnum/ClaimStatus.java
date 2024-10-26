@@ -2,11 +2,11 @@ package mock.claimrequest.entity.entityEnum;
 
 public enum ClaimStatus {
     PENDING("Pending"),
-    APPROVE("Approved"),
-    RETURN("Returned"),
-    REJECT("Rejected"),
+    APPROVED("Approved"),
+    RETURNED("Returned"),
+    REJECTED("Rejected"),
     PAID("Paid"),
-    CANCEL("Cancel"),
+    CANCELED("Cancel"),
     DRAFT("Draft");
 
     private final String displayName;

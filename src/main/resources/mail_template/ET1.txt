@@ -1,0 +1,11 @@
+Subject: Claim Request ${projectName} ${staffName} - ${staffId}
+
+Dear ${pmName},
+
+Claim Request for ${projectName} ${staffName} - ${staffId} is submitted and waiting for approval.
+Please access the Claim via the following link:
+${link}
+
+Sincerely,
+System Administrator
+Note: This is an auto-generated email, please do not reply.

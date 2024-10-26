@@ -1,12 +1,22 @@
 package mock.claimrequest.dto.employeeProject;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mock.claimrequest.entity.entityEnum.EmployeeStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.UUID;
 
 @Getter
@@ -15,7 +25,16 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EmployeeProjectDTO {
     private UUID employeeId;
+
     private String accountName;
+
     private ProjectRole role;
+
     private EmployeeStatus employeeStatus;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 }

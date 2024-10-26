@@ -10,14 +10,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js" integrity="sha512-KFHXdr2oObHKI9w4Hv1XPKc898mE4kgYx58oqsc/JqqdLMDI4YjOLzom+EMlW8HFUd0QfjfAvxSL6sEq/a42fQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        fetch('/welcome')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(userName => {
+                document.getElementById('userName').innerText = userName;
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    </script>
+    <style>
+        .error{
+            color:red;
+        }
+    </style>
+    <script th:src="@{/js/common.js}"></script>
 </head>
 <body>
 <div th:replace="~{common/header::header}"></div>
 <div class="flex">
-    <div th:replace="~{common/aside::aside}"></div>
-    <main layout:fragment="content" class="bg-purple-100/30 w-5/6 ">
+<!--    <div th:replace="~{common/aside::aside}"></div>-->
+    <main layout:fragment="content">
     </main>
 </div>
+<script th:src="@{/js/validate.js}"></script>
 <script>
     const asides = document.querySelectorAll(".aside-item button");
     asides.forEach(e => {

@@ -2,6 +2,7 @@ package mock.claimrequest.controller;
 
 import jakarta.validation.Valid;
 import mock.claimrequest.dto.auth.AccountRegisterDTO;
+import mock.claimrequest.entity.Employee;
 import mock.claimrequest.service.AccountService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

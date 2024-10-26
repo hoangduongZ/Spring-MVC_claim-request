@@ -30,7 +30,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
-                        .requestMatchers("/login", "/register").permitAll()
+                                .requestMatchers("/register").permitAll()
+                                .requestMatchers("/projects").hasRole("ADMIN")
+                                .requestMatchers("/employees").hasRole("ADMIN")
+                                .requestMatchers("/departments").hasRole("ADMIN")
                         .anyRequest().authenticated()
                         )
                 .formLogin(formLogin -> formLogin
@@ -38,7 +41,10 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/dashboard",true)
                         .permitAll())
-                .logout(LogoutConfigurer::permitAll)
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .permitAll())
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(accessDeniedHandler()));
         return http.build();

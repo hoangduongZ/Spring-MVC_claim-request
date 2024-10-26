@@ -2,6 +2,8 @@ package mock.claimrequest.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import mock.claimrequest.entity.entityEnum.AccountRole;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,8 +30,13 @@ public class Role {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private AccountRole name;
 
     @ManyToMany(mappedBy = "roles")
     private List<Account> accounts;
+
+    public Role(AccountRole name) {
+        this.name = name;
+    }
 }

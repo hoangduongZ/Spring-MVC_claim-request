@@ -7,105 +7,109 @@
     <title>Title</title>
 </head>
 <body>
-<main layout:fragment="content" class="w-full mx-auto p-6 bg-purple-100/30 w-5/6">
-    <h1 class="inline-block p-6 bg-white text-2xl mb-3 drop-shadow-md text-purple-500 font-bold rounded-md">Department Management</h1>
+<main layout:fragment="content" class="w-full mx-auto">
+    <div class="bg-gradient-to-b from-purple-100 to-white min-h-[90vh] rounded-md shadow-md p-4">
+        <div class="flex justify-center">
+            <h1 class="inline-block p-4 bg-white text-2xl mb-3 drop-shadow-md text-purple-500 font-bold italic rounded-md">Departments</h1>
+        </div>
+        <div>
+            <button id="addDepartmentBtn" class="bg-green-500 text-white px-4 py-2 rounded mb-4">
+                <i class="fas fa-plus"></i> Add Department
+            </button>
+        </div>
+        <div class="drop-shadow-md" th:if="${!departments.isEmpty()}">
+            <table class="min-w-full bg-white border border-gray-300">
+                <thead>
+                <tr class="bg-gray-700 text-white uppercase text-sm leading-normal">
+                    <th class="py-3 px-4 border-b">ID</th>
+                    <th class="py-3 px-4 border-b">Name</th>
+                    <th class="py-3 px-4 border-b">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="departmentTableBody">
+                <tr th:each="department: ${departments}">
+                    <td class="py-3 px-4 border-b" th:text="${department.id}"></td>
+                    <td class="py-3 px-4 border-b" th:text="${department.name}"></td>
+                    <td class="py-3 px-4 border-b">
+                        <button class="px-3 py-2 bg-sky-500 rounded-md text-white editBtn" th:data-id="${department.id}">Edit</button>
+                        <button class="px-3 py-2 bg-red-500 rounded-md text-white deleteBtn" th:data-id="${department.id}">Delete
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="card-footer pagination p-3 flex justify-between items-center">
+                <!-- Select page size -->
+                <div class="select-size">
+                    <label for="pageSize" class="text-sm font-medium text-gray-700 mb-2">Page Size:</label>
+                    <!-- Select size - keep keyword and reset page to page 1 -->
+                    <select id="pageSize" name="pageSize" class="p-2 border border-slate-300 rounded-md"
+                            onchange="window.location.href = '/manage/ingredients?keyword=' + document.getElementById('keyword').value + '&sortBy=name&order=asc&page=0&size=' + this.value">
+                        <option th:each="size : ${pageSizes}" th:value="${size}" th:text="${size}"
+                                th:selected="${size == pageSize}"></option>
+                    </select>
+                </div>
+                <!-- Pagination -->
+                <ul class="page-menu flex justify-center items-center gap-2">
+                    <li class="page-item">
+                        <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
+                           th:classappend="0 == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
+                           th:href="@{/departments(keyword=${keyword}, sortBy=${sortBy}, order=${order}, page=0, size=${pageSize})}">
+                            <i class="fa-solid fa-angle-double-left"></i>
+                        </a>
+                    </li>
 
-    <div>
-        <button id="addDepartmentBtn" class="bg-purple-500 text-white px-4 py-2 rounded mb-4">
-            <i class="fas fa-plus"></i> Add Department
-        </button>
-    </div>
-    <div class="drop-shadow-md" th:if="${!departments.isEmpty()}">
-        <table class="min-w-full bg-white border border-gray-300">
-            <thead>
-            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                <th class="py-2 px-4 border-b">ID</th>
-                <th class="py-2 px-4 border-b">Name</th>
-                <th class="py-2 px-4 border-b">Actions</th>
-            </tr>
-            </thead>
-            <tbody id="departmentTableBody">
-            <tr th:each="department: ${departments}">
-                <td class="py-2 px-4 border-b" th:text="${department.id}"></td>
-                <td class="py-2 px-4 border-b" th:text="${department.name}"></td>
-                <td class="py-2 px-4 border-b">
-                    <button class="px-3 py-2 bg-sky-500 rounded-md text-white editBtn" th:data-id="${department.id}">Edit</button>
-                    <button class="px-3 py-2 bg-red-500 rounded-md text-white deleteBtn" th:data-id="${department.id}">Delete
-                    </button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <div class="card-footer pagination p-3 flex justify-between items-center">
-            <!-- Select page size -->
-            <div class="select-size">
-                <label for="pageSize" class="text-sm font-medium text-gray-700 mb-2">Page Size:</label>
-                <!-- Select size - keep keyword and reset page to page 1 -->
-                <select id="pageSize" name="pageSize" class="p-2 border border-slate-300 rounded-md"
-                        onchange="window.location.href = '/manage/ingredients?keyword=' + document.getElementById('keyword').value + '&sortBy=name&order=asc&page=0&size=' + this.value">
-                    <option th:each="size : ${pageSizes}" th:value="${size}" th:text="${size}"
-                            th:selected="${size == pageSize}"></option>
-                </select>
-            </div>
-            <!-- Pagination -->
-            <ul class="page-menu flex justify-center items-center gap-2">
-                <li class="page-item">
-                    <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
-                       th:classappend="0 == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
-                       th:href="@{/departments(keyword=${keyword}, sortBy=${sortBy}, order=${order}, page=0, size=${pageSize})}">
-                        <i class="fa-solid fa-angle-double-left"></i>
-                    </a>
-                </li>
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(page - pageLimit < 0 ? 0 : page - pageLimit,  totalPages - 1 - page >= pageLimit ? page + pageLimit  : totalPages - 1)}">
+                        <!-- Page i and size 2 -->
+                        <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
+                           th:classappend="${i} == ${page} ? '!bg-blue-500 text-white' : ''"
+                           th:href="@{/departments(keyword=${keyword}, sortBy=${sortBy}, order=${order}, page=${i}, size=${pageSize})}"
+                           th:text="${i} + 1"></a>
+                    </li>
 
-                <li class="page-item"
-                    th:each="i : ${#numbers.sequence(page - pageLimit < 0 ? 0 : page - pageLimit,  totalPages - 1 - page >= pageLimit ? page + pageLimit  : totalPages - 1)}">
-                    <!-- Page i and size 2 -->
-                    <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
-                       th:classappend="${i} == ${page} ? '!bg-blue-500 text-white' : ''"
-                       th:href="@{/departments(keyword=${keyword}, sortBy=${sortBy}, order=${order}, page=${i}, size=${pageSize})}"
-                       th:text="${i} + 1"></a>
-                </li>
-
-                <li class="page-item">
-                    <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
-                       th:classappend="${totalPages - 1} == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
-                       th:href="@{/departments(keyword=${keyword},sortBy=${sortBy}, order=${order}, page=${totalPages - 1}, size=${pageSize})}">
-                        <i class="fa-solid fa-angle-double-right"></i>
-                    </a>
-                </li>
-            </ul>
-            <!-- Page Info -->
-            <div class="page-info">
-                <!-- 1-2 of 7 items -->
-                <span th:text="${page * pageSize + 1}"></span>-
-                <span
-                        th:text="${(page + 1) * pageSize > totalElements ? totalElements : (page + 1) * pageSize}"></span>
-                of
-                <span th:text="${totalElements}"></span>
-                items
+                    <li class="page-item">
+                        <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
+                           th:classappend="${totalPages - 1} == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
+                           th:href="@{/departments(keyword=${keyword},sortBy=${sortBy}, order=${order}, page=${totalPages - 1}, size=${pageSize})}">
+                            <i class="fa-solid fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!-- Page Info -->
+                <div class="page-info">
+                    <!-- 1-2 of 7 items -->
+                    <span th:text="${page * pageSize + 1}"></span>-
+                    <span
+                            th:text="${(page + 1) * pageSize > totalElements ? totalElements : (page + 1) * pageSize}"></span>
+                    of
+                    <span th:text="${totalElements}"></span>
+                    items
+                </div>
             </div>
         </div>
-    </div>
-    <div class="drop-shadow-md flex justify-center items-center" th:if="${departments.isEmpty()}">
-        <p class="bg-white text-gray-700 p-7">Department empty! </p>
-    </div>
+        <div class="drop-shadow-md flex justify-center items-center" th:if="${departments.isEmpty()}">
+            <p class="bg-white text-gray-700 p-7">Department empty! </p>
+        </div>
 
 
-    <div id="departmentModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center hidden">
-        <form th:action="@{/departments/add}" method="post" class="bg-white rounded-lg p-6 w-1/3">
-            <h2 class="text-xl font-bold mb-4" id="modalTitle">Add Department</h2>
-            <label class="block mb-2">Name:</label>
-            <input type="text" id="departmentName" class="border border-gray-300 w-full p-2 rounded mb-4"
-                   placeholder="Department Name" name="name">
-            <label class="block mb-2">Description:</label>
-            <textarea id="desc" class="border border-gray-300 w-full p-2 rounded mb-4 h-24 resize-none overflow-auto"
-                      placeholder="Department desc" name="description"></textarea>
-            <div class="flex justify-end">
-                <button type="submit" id="saveDepartmentBtn" class="bg-purple-500 text-white px-4 py-2 rounded mr-2">Save</button>
-                <button type="button" id="closeModalBtn" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-            </div>
-        </form>
+        <div id="departmentModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center hidden">
+            <form th:action="@{/departments/add}" method="post" class="bg-white rounded-lg p-6 w-1/3">
+                <h2 class="text-xl font-bold mb-4" id="modalTitle">Add Department</h2>
+                <label class="block mb-2">Name:</label>
+                <input type="text" id="departmentName" class="border border-gray-300 w-full p-2 rounded mb-4"
+                       placeholder="Department Name" name="name">
+                <label class="block mb-2">Description:</label>
+                <textarea id="desc" class="border border-gray-300 w-full p-2 rounded mb-4 h-24 resize-none overflow-auto"
+                          placeholder="Department desc" name="description"></textarea>
+                <div class="flex justify-end">
+                    <button type="submit" id="saveDepartmentBtn" class="bg-purple-500 text-white px-4 py-2 rounded mr-2">Save</button>
+                    <button type="button" id="closeModalBtn" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
+                </div>
+            </form>
+        </div>
     </div>
+
     <script>
         const departmentModal = document.getElementById('departmentModal');
 
