@@ -1,5 +1,6 @@
 package mock.claimrequest.controller;
 
+import jakarta.mail.MessagingException;
 import mock.claimrequest.dto.claim.ClaimExportDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
@@ -9,9 +10,11 @@ import mock.claimrequest.entity.Employee;
 import mock.claimrequest.entity.entityEnum.ClaimStatus;
 import mock.claimrequest.entity.entityEnum.ProjectRole;
 import mock.claimrequest.security.AuthService;
+import mock.claimrequest.service.AccountService;
 import mock.claimrequest.service.ClaimService;
 import mock.claimrequest.service.EmployeeProjectService;
 import mock.claimrequest.service.ProjectService;
+import mock.claimrequest.service.impl.MailService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -37,12 +40,17 @@ public class ClaimController {
     private final ProjectService projectService;
     private final AuthService authService;
     private final EmployeeProjectService employeeProjectService;
+    private final MailService mailService ;
 
-    public ClaimController(ClaimService claimService, ProjectService projectService, AuthService authService, EmployeeProjectService employeeProjectService) {
+    private final AccountService accountService ;
+
+    public ClaimController(ClaimService claimService, ProjectService projectService, AuthService authService, EmployeeProjectService employeeProjectService, MailService mailService,  AccountService accountService) {
         this.claimService = claimService;
         this.projectService = projectService;
         this.authService = authService;
         this.employeeProjectService = employeeProjectService;
+        this.mailService = mailService;
+        this.accountService = accountService;
     }
 
     @GetMapping("/add")
@@ -172,8 +180,21 @@ public class ClaimController {
 
     @PostMapping("{status}/{id}/update")
     public String postUpdateClaim(@ModelAttribute ClaimGetDTO claim, @PathVariable("id") UUID id
-            , @PathVariable("status") String status) {
+            , @PathVariable("status") String status) throws MessagingException {
         claimService.update(claim, id, status);
+
+        if (status.equalsIgnoreCase("reject")) {
+
+            String email = accountService.findEmailByEmployeeId(claimService.findEmployeeIdByClaimId(id));
+
+            // Nội dung email
+            String subject = "Claim Rejected";
+            String content = "Your claim has been rejected. Please contact support for more details.";
+
+            // Gửi email
+            mailService.sendEmail(email, subject, content, false, true);
+        }
+
         if (status.equalsIgnoreCase("draft")){
             return "redirect:/claims/index/draft";
         }

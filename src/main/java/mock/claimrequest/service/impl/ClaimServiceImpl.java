@@ -1,11 +1,9 @@
 package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.claim.ClaimDetailDTO;
-import mock.claimrequest.dto.claim.ClaimExportDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
 import mock.claimrequest.dto.project.ProjectDTO;
-import mock.claimrequest.dto.project.ProjectGetDTO;
 import mock.claimrequest.entity.Claim;
 import mock.claimrequest.entity.ClaimDetail;
 import mock.claimrequest.entity.Employee;
@@ -282,5 +280,10 @@ public class ClaimServiceImpl implements ClaimService {
         workbook.close();
 
         return outputStream;
+    }
+
+    @Override
+    public UUID findEmployeeIdByClaimId(UUID id) {
+        return claimRepository.findEmployeeIdByClaimId(id);
     }
 }

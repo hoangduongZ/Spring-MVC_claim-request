@@ -30,4 +30,7 @@ public interface ClaimService {
     void update(ClaimGetDTO claimGetDTO, UUID id, String status);
 
     ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException;
+
+
+    UUID findEmployeeIdByClaimId(UUID id);
 }

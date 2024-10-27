@@ -15,4 +15,6 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
 
     @Query("SELECT a FROM Account a JOIN a.roles r WHERE r.name != 'ADMIN'")
     List<Account> findAllNonAdminAccounts();
+
+    String findEmailByEmployeeId(UUID id);
 }

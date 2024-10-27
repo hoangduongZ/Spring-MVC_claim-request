@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -70,5 +71,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean existByUsername(String username) {
         return accountRepository.existsByUserName(username);
+    }
+
+    @Override
+    public String findEmailByEmployeeId(UUID id) {
+        return accountRepository.findEmailByEmployeeId(id);
     }
 }

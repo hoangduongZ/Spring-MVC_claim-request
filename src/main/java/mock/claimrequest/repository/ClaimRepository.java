@@ -44,4 +44,7 @@ public interface ClaimRepository extends JpaRepository<Claim, UUID> {
 
     Page<Claim> findByStatus(ClaimStatus status, Pageable pageable);
 
+
+    UUID findEmployeeIdByClaimId( UUID id);
+
 }
