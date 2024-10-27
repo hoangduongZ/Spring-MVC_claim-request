@@ -260,7 +260,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public void update(ClaimGetDTO claimGetDTO, UUID id, String status) {
+    public Claim update(ClaimGetDTO claimGetDTO, UUID id, String status) {
         Claim claim = claimRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Claim is not existed!"));
         Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
@@ -294,7 +294,7 @@ public class ClaimServiceImpl implements ClaimService {
         claim.getClaimDetails().clear();
         claim.getClaimDetails().addAll(claimDetails);
 
-        claimRepository.save(claim);
+        return claimRepository.save(claim);
     }
 
     public ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException {

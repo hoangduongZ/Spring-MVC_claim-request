@@ -30,7 +30,7 @@
                 <i class="fa-solid fa-chevron-left text-white"></i>
             </div>
         </div>
-        <form th:action="@{/claims/draft/add}" method="post" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
+        <form th:action="@{/claims/draft/add}" method="post" id="claim-add" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
             <div class="flex justify-center">
                 <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow">
                     New claim</h1>
@@ -165,6 +165,8 @@
         }
 
         function calculateDuration() {
+            const projectStartDate = new Date(document.getElementById('projectStartDate').value);
+            const projectEndDate = new Date(document.getElementById('projectEndDate').value);
             const rows = document.querySelectorAll("#claimDetailTable tbody tr");
             let totalDuration = 0;
 
@@ -174,6 +176,13 @@
 
                 const startTime = new Date(startTimeInput.value);
                 const endTime = new Date(endTimeInput.value);
+
+                if (startTime < projectStartDate || endTime > projectEndDate) {
+                    alert("Start Time and End Time must be within the project's time frame.");
+                    startTimeInput.value = "";
+                    endTimeInput.value = "";
+                    return;
+                }
 
                 if (endTime <= startTime) {
                     alert("End Time must be greater than Start Time.");
@@ -189,6 +198,7 @@
 
             document.getElementById('duration').value = totalDuration.toFixed(2);
         }
+
     </script>
 </main>
 </body>

@@ -29,7 +29,7 @@ public interface ClaimService {
 
     void updateStatus(ClaimStatus claimStatus, UUID id, ClaimUpdateStatusDTO claimUpdateStatusDTO);
 
-    void update(ClaimGetDTO claimGetDTO, UUID id, String status);
+    Claim update(ClaimGetDTO claimGetDTO, UUID id, String status);
 
     ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException;
 }

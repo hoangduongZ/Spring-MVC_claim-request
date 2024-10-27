@@ -19,11 +19,14 @@
 
                 <div class="mt-4" id="reason-block">
                     <label for="reason" class="block text-sm font-medium text-gray-700">Reason:</label>
-                    <textarea id="reason" rows="4" class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                    <textarea id="reason" rows="4"
+                              class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
                 </div>
 
                 <div class="flex justify-end mt-4 gap-3">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md">Cancel</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md">
+                        Cancel
+                    </button>
                     <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md">Submit</button>
                 </div>
             </form>
@@ -35,8 +38,11 @@
         <div class="w-full flex bg-white shadow rounded-t-2xl overflow-hidden">
             <form th:action="@{/claims/index/{active}(active=${active})}" method="get"
                   class="w-full flex items-center bg-white shadow rounded-t-2xl p-4 gap-5">
-                <div class="ml-3">
-                    <button type="button" onclick="submitExportForm()" id="exportButton" class="p-1 rounded-lg text-white bg-sky-600 hidden hover-sky-600">
+                <div class="ml-3 flex items-center justify-center" sec:authorize="hasRole('FINANCE')"
+                     th:if="${status== 'paid'} ">
+                    <input type="checkbox" id="selectAllCheckbox" onclick="toggleAllCheckboxes()" class="w-4 h-4 mr-2"/>
+                    <button type="button" onclick="submitExportForm()" id="exportButton"
+                            class="p-1 rounded-lg text-white bg-sky-600 hover-sky-600">
                         <i class="fa-solid fa-file-export"></i>
                     </button>
                 </div>
@@ -88,7 +94,7 @@
                 <form id="exportForm" th:action="@{/api/claims/export}" method="post">
                     <div th:each="claim : ${claims}">
                         <div class="group border-b hover:shadow-md px-4 flex justify-between items-center hover:bg-gray-50 transition duration-200 cursor-pointer">
-                            <div class="ml-4 flex-1 flex items-center">
+                            <div class="ml-4 flex-1 flex gap-1 items-center">
                                 <input sec:authorize="hasRole('FINANCE')"
                                        th:if="${status} == 'paid'"
                                        onchange="checkCheckboxes()"
@@ -96,7 +102,7 @@
                                        name="claimIds"
                                        th:value="${claim.id}"
                                        th:id="'claimCheckbox_' + ${claim.id}"
-                                       class="mr-4 w-4 h-4"/>
+                                       class="w-4 h-4"/>
                                 <a th:href="@{/claims/{id}/detail(id=${claim.id})}" class="py-4 flex items-center">
                                     <p class="text-sm text-gray-600 min-w-[15vw]" th:text="${claim.account.userName}">
                                         <span th:text="${claim.projectName}"></span></p>
@@ -110,25 +116,26 @@
                                 <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM
                                 </div>
                                 <div class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
-                                    <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')" action=""></form>
-                                    <form th:if="${status == 'approved'}" sec:authorize="hasRole('FINANCE')" action=""></form>
-                                    <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
-                                          th:action="@{/claims/approved/{id}(id=${claim.id})}" method="post">
-                                        <button data-type="approved" th:data-id="${claim.id}" type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve</button>
-                                    </form>
-                                    <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
-                                          th:action="@{/claims/returned/{id}(id=${claim.id})}" method="post">
-                                        <button data-type="returned" th:data-id="${claim.id}" type="submit" class="bg-sky-500 text-white rounded px-2 py-1 hover:bg-sky-600">Return</button>
-                                    </form>
-                                    <form th:if="${status == 'pending'}" sec:authorize="hasRole('APPROVER')"
-                                          th:action="@{/claims/rejected/{id}(id=${claim.id})}" method="post">
-                                        <button data-type="rejected" th:data-id="${claim.id}" type="submit" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject</button>
-                                    </form>
-                                    <form sec:authorize="hasRole('FINANCE')"
-                                          th:if="${status == 'approved'}"
-                                          th:action="@{/claims/paid/{id}(id=${claim.id})}" method="post">
-                                        <button type="submit" class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Paid</button>
-                                    </form>
+                                    <button sec:authorize="hasRole('APPROVER')" th:if="${claim.status.name() == 'PENDING'}"
+                                            data-type="approved" th:data-id="${claim.id}"
+                                            class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve
+                                    </button>
+
+                                    <button sec:authorize="hasRole('APPROVER')" th:if="${claim.status.name() == 'PENDING'}"
+                                            data-type="returned" th:data-id="${claim.id}"
+                                            class="bg-sky-500 text-white rounded px-2 py-1 hover:bg-sky-600">Return
+                                    </button>
+
+                                    <button sec:authorize="hasRole('APPROVER')" th:if="${claim.status.name() == 'PENDING'}"
+                                            data-type="rejected" th:data-id="${claim.id}"
+                                            class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject
+                                    </button>
+
+                                    <button sec:authorize="hasRole('FINANCE')" type="submit"
+                                            th:if="${claim.status.name() == 'APPROVED'}"
+                                            data-type="paid" th:data-id="${claim.id}"
+                                            class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Paid
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -137,7 +144,8 @@
             </div>
         </div>
 
-        <div th:if="${claims.isEmpty()}" class="shadow-md min-h-[70vh] bg-white rounded-md p-4 flex items-center justify-center">
+        <div th:if="${claims.isEmpty()}"
+             class="shadow-md min-h-[70vh] bg-white rounded-md p-4 flex items-center justify-center">
             <p class="p-4 shadow-md rounded-md">Empty claim!</p>
         </div>
 

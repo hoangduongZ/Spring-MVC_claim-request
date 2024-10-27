@@ -191,8 +191,27 @@ public class ClaimController {
 
     @PostMapping("{status}/{id}/update")
     public String postUpdateClaim(@ModelAttribute ClaimGetDTO claim, @PathVariable("id") UUID id
-            , @PathVariable("status") String status) {
-        claimService.update(claim, id, status);
+            , @PathVariable("status") String status) throws IOException {
+        Claim claimUpdated = claimService.update(claim, id, status);
+        Project project = claimUpdated.getProject();
+        Employee staff = claimUpdated.getEmployee();
+
+        if (status.equals("PENDING")){
+            Employee pm = employeeProjectService.findProjectManager(project.getId());
+            if (pm != null) {
+                String claimLink = "http://localhost:8080/claims/"+ claim.getId().toString() +"/detail";
+                ClaimEmailRequestDTO emailRequest = new ClaimEmailRequestDTO(
+                        pm.getFirstname() + " " + pm.getLastname(),
+                        pm.getAccount().getEmail(),
+                        project.getName(),
+                        staff.getFirstname() + " " + staff.getLastname(),
+                        staff.getAccount().getEmail(),
+                        staff.getId().toString(),
+                        claimLink
+                );
+                emailService.sendClaimRequestEmail(emailRequest);
+            }
+        }
         if (status.equalsIgnoreCase("draft")) {
             return "redirect:/claims/index/draft";
         }

@@ -76,12 +76,15 @@ $(document).ready(function () {
             },
             accountRole: {
                 required: "Please select a role"
-            }
+            },
+            errorClass: "text-red-600",
         },
-        // errorClass: "text-red-500 text-sm",
-        // errorPlacement: function (error, element) {
-        //     error.appendTo(element.parent());
-        // }
+        highlight: function(element) {
+            $(element).addClass("border-red-500");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("border-red-500");
+        }
     });
     $("#employee-update").validate({
         rules: {
@@ -160,8 +163,15 @@ $(document).ready(function () {
             },
             accountRole: {
                 required: "Please select a role"
-            }
+            },
+            errorClass: "text-red-600",
         },
+        highlight: function(element) {
+            $(element).addClass("border-red-500");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("border-red-500");
+        }
         // errorClass: "text-red-500 text-sm",
         // errorPlacement: function (error, element) {
         //     error.appendTo(element.parent());
@@ -220,7 +230,14 @@ $(document).ready(function () {
             },
             status: {
                 required: "Please select a project status"
-            }
+            },
+            errorClass: "text-red-600",
+        },
+        highlight: function(element) {
+            $(element).addClass("border-red-500");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("border-red-500");
         }
     });
 
@@ -282,7 +299,64 @@ $(document).ready(function () {
             },
             status: {
                 required: "Please select a project status"
-            }
+            },
+            errorClass: "text-red-600",
+
+        },
+        highlight: function(element) {
+            $(element).addClass("border-red-500");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("border-red-500");
         }
     });
+
+    $("#claim-add").validate({
+        rules: {
+            "title": {
+                required: true,
+                maxlength: 100
+            },
+            "requestReason": {
+                required: true,
+                maxlength: 500
+            },
+            "claimDetails[0].startTime": {
+                required: true,
+                date: true
+            },
+            "claimDetails[0].endTime": {
+                required: true,
+                date: true
+            },
+        },
+        messages: {
+            "title": {
+                required: "Please enter the claim title.",
+                maxlength: "The title must be less than 100 characters."
+            },
+            "requestReason": {
+                required: "Please provide a reason for the request.",
+                maxlength: "The reason must be less than 500 characters."
+            },
+            "claimDetails[0].startTime": {
+                required: "Please select a start time.",
+                date: "Please enter a valid date."
+            },
+            "claimDetails[0].endTime": {
+                required: "Please select an end time.",
+                date: "Please enter a valid date."
+            }
+        },
+        errorClass: "text-red-600",
+        highlight: function(element) {
+            $(element).addClass("border-red-500");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("border-red-500");
+        }
+    });
+
+
+
 });
