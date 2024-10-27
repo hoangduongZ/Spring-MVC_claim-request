@@ -357,6 +357,89 @@ $(document).ready(function () {
         }
     });
 
+    $("#claim-update").validate({
+        rules: {
+            "title": {
+                required: true,
+                maxlength: 100
+            },
+            "requestReason": {
+                required: true,
+                maxlength: 500
+            },
+            "claimDetails[0].startTime": {
+                required: true,
+                date: true
+            },
+            "claimDetails[0].endTime": {
+                required: true,
+                date: true
+            },
+        },
+        messages: {
+            "title": {
+                required: "Please enter the claim title.",
+                maxlength: "The title must be less than 100 characters."
+            },
+            "requestReason": {
+                required: "Please provide a reason for the request.",
+                maxlength: "The reason must be less than 500 characters."
+            },
+            "claimDetails[0].startTime": {
+                required: "Please select a start time.",
+                date: "Please enter a valid date."
+            },
+            "claimDetails[0].endTime": {
+                required: "Please select an end time.",
+                date: "Please enter a valid date."
+            }
+        },
+        errorClass: "text-red-600",
+        highlight: function(element) {
+            $(element).addClass("border-red-500");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("border-red-500");
+        }
+    });
+
+    $("#password-change").validate({
+        rules: {
+            currentPassword: {
+                required: true
+            },
+            newPassword: {
+                required: true,
+                minlength: 6
+            },
+            confirmPassword: {
+                required: true,
+                equalTo: "#newPassword"
+            }
+        },
+        messages: {
+            currentPassword: {
+                required: "Please enter your current password."
+            },
+            newPassword: {
+                required: "Please enter a new password.",
+                minlength: "Your password must be at least 6 characters long."
+            },
+            confirmPassword: {
+                required: "Please confirm your new password.",
+                equalTo: "New password and confirmation password do not match."
+            }
+        },
+        submitHandler: function (form) {
+            form.submit();
+        },
+        highlight: function(element) {
+            $(element).addClass("border-red-500");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("border-red-500");
+        }
+    });
 
 
 });

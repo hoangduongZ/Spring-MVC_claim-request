@@ -119,6 +119,7 @@ public class ProjectServiceImpl implements ProjectService {
                 employeeProject.setProject(project);
                 employeeProject.setRole(employeeProjectDTO.getRole());
                 employeeProject.setEmpProjectStatus(EmpProjectStatus.IN);
+                employeeProject.getEmployee().setEmployeeStatus(EmployeeStatus.WORKING);
                 employeeProject.setStartDate(employeeProjectDTO.getStartDate());
                 employeeProject.setEndDate(employeeProjectDTO.getEndDate());
                 employeeProjects.add(employeeProject);

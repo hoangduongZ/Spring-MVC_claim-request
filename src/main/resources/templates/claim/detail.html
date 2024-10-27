@@ -123,7 +123,10 @@
                                 class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Paid
                         </button>
                     </div>
-                    <div>
+                    <div th:if="${claim.claimDetailDTOList.isEmpty()}" class="p-3 rounded shadow-md border">
+                        Empty claim detail !
+                    </div>
+                    <div th:if="${!claim.claimDetailDTOList.isEmpty()}">
                         <table id="claimDetailTable" class="mb-4 border border-gray-300" th:object="${claim}">
                             <thead class="bg-slate-200">
                             <tr>

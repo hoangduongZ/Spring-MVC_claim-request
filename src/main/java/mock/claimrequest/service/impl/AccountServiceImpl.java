@@ -71,4 +71,5 @@ public class AccountServiceImpl implements AccountService {
     public boolean existByUsername(String username) {
         return accountRepository.existsByUserName(username);
     }
+
 }

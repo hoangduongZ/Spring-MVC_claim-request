@@ -50,8 +50,8 @@
                         class="px-3 py-2 border active:border-purple-500 border-purple-500 rounded-md shadow-sm focus:outline-none focus:border-purple-500"
                         name="sortOption">
                     <option value="">--Choose--</option>
-                    <option value="employeeName" th:selected="${sortOption == 'employeeName'}">Staff Name</option>
-                    <option value="projectName" th:selected="${sortOption == 'projectName'}">Project Name</option>
+                    <option value="employee.firstname" th:selected="${sortOption == 'employee.firstname'}">Staff Name</option>
+                    <option value="project.name" th:selected="${sortOption == 'project.name'}">Project Name</option>
                     <option value="duration" th:selected="${sortOption == 'duration'}">Working hour</option>
                 </select>
 
@@ -113,7 +113,7 @@
                                 </a>
                             </div>
                             <div class="flex gap-10 justify-between items-center py-4">
-                                <div class="text-gray-500 text-sm" th:text="${claim.getFormattedCreatedTime()}">10:30 AM
+                                <div class="text-gray-500 text-sm" th:text="${claim.getFormattedUpdatedTime()}">10:30 AM
                                 </div>
                                 <div class="flex opacity-0 transition-opacity group-hover:opacity-100 space-x-2 ml-4">
                                     <button sec:authorize="hasRole('APPROVER')" th:if="${claim.status.name() == 'PENDING'}"
@@ -146,7 +146,7 @@
 
         <div th:if="${claims.isEmpty()}"
              class="shadow-md min-h-[70vh] bg-white rounded-md p-4 flex items-center justify-center">
-            <p class="p-4 shadow-md rounded-md">Empty claim!</p>
+            <p class="p-4 shadow-md rounded-md border">Empty claim!</p>
         </div>
 
         <div th:if="${!claims.isEmpty()}" class="flex justify-end gap-3 items-center p-4">

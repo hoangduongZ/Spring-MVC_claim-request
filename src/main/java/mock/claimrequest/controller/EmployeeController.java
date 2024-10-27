@@ -44,7 +44,12 @@ public class EmployeeController {
     }
 
     @PostMapping("/add")
-    public String postEmployeeAdd(@Valid @ModelAttribute EmployeeSaveDTO employeeSaveDTO, RedirectAttributes attributes){
+    public String postEmployeeAdd(@Valid @ModelAttribute("employee") EmployeeSaveDTO employeeSaveDTO, RedirectAttributes attributes,Model model, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("employee", employeeSaveDTO);
+            model.addAttribute("departments", departmentService.findAll());
+            return "employee/create";
+        }
         if(employeeService.saveEmployeeAlongWithAccount(employeeSaveDTO)){
             attributes.addFlashAttribute("message", "Save employee success");
         }

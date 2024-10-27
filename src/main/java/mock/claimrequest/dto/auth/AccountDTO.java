@@ -1,12 +1,10 @@
 package mock.claimrequest.dto.auth;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mock.claimrequest.entity.Role;
-import mock.claimrequest.entity.entityEnum.AccountRole;
 
 import java.util.Set;
 import java.util.UUID;
@@ -15,9 +13,10 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountGetDTO {
+public class AccountDTO {
     private UUID id;
     private String userName;
     private String email;
+    private String image;
     private Set<Role> roles;
 }

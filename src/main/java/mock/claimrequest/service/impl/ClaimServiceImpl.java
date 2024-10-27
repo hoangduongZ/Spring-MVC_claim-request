@@ -1,5 +1,6 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.controller.ClaimController;
 import mock.claimrequest.dto.claim.ClaimDetailDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
@@ -65,7 +66,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         AccountRole currentRole = authService.getCurrentRoleAccount();
 
         if (currentRole == AccountRole.ADMIN) {
@@ -85,7 +86,7 @@ public class ClaimServiceImpl implements ClaimService {
         return handleDefaultClaims(status, keyword, startDate, endDate, employee, pageable);
     }
 
-    private Page<ClaimGetDTO> handleAdminClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    private Page<ClaimGetDTO> handleAdminClaims(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
             return claimRepository.findByStatusKeywordAndDateRange(status, keyword, null, startDate, endDate, pageable)
                     .map(this::convertToDTO);
@@ -93,7 +94,7 @@ public class ClaimServiceImpl implements ClaimService {
         return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
     }
 
-    private Page<ClaimGetDTO> handleFinanceClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    private Page<ClaimGetDTO> handleFinanceClaims(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
             return claimRepository.findByStatusKeywordAndDateRange(status, keyword, null, startDate, endDate, pageable)
                     .map(this::convertToDTO);
@@ -101,7 +102,7 @@ public class ClaimServiceImpl implements ClaimService {
         return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
     }
 
-    private Page<ClaimGetDTO> handleApproverClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Employee employee, Pageable pageable) {
+    private Page<ClaimGetDTO> handleApproverClaims(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Employee employee, Pageable pageable) {
         UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
         UUID projectId = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN).getProject().getId();
 
@@ -112,7 +113,7 @@ public class ClaimServiceImpl implements ClaimService {
         return claimRepository.findByStatusAndProject(status, projectId, pageable).map(this::convertToDTO);
     }
 
-    private Page<ClaimGetDTO> handleDefaultClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Employee employee, Pageable pageable) {
+    private Page<ClaimGetDTO> handleDefaultClaims(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Employee employee, Pageable pageable) {
         if ((keyword == null || keyword.trim().isEmpty()) && (startDate == null || endDate == null)) {
             return claimRepository.findByStatusAndEmployee(status, employee, pageable).map(this::convertToDTO);
         }
@@ -251,7 +252,15 @@ public class ClaimServiceImpl implements ClaimService {
         Claim claim = claimRepository.findById(id).orElseThrow(
                 () -> new IllegalStateException("Claim is not existed!"));
         claim.setStatus(claimStatus);
-        if (claimStatus.equals(ClaimStatus.DRAFT)){
+        if (claimStatus.equals(ClaimStatus.PAID)){
+            if (claim.getProject().getBudget().compareTo(claim.getAmount()) < 0){
+                throw new RuntimeException("Budget not enough for paid!");
+            }
+            claim.getProject().setBudget(
+                    claim.getProject().getBudget().subtract(claim.getAmount())
+            );
+        }
+        else if (claimStatus.equals(ClaimStatus.DRAFT)){
             claim.setReturnReason(claimUpdateStatusDTO.getReturnReason());
         }else if(claimStatus.equals(ClaimStatus.REJECTED)){
             claim.setRejectReason(claimUpdateStatusDTO.getRejectReason());
@@ -299,6 +308,9 @@ public class ClaimServiceImpl implements ClaimService {
 
     public ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException {
         List<Claim> claims = claimRepository.findAllById(claimIds);
+        String month = claims.stream().findFirst().get().getClaimDetails().
+                stream().findFirst().get().getStartTime().getMonth().toString();
+
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Claims");
@@ -315,7 +327,7 @@ public class ClaimServiceImpl implements ClaimService {
         // Tạo tiêu đề chính
         Row titleRow = sheet.createRow(0);
         Cell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue("CLAIM REQUEST");
+        titleCell.setCellValue("Claim Request");
         titleCell.setCellStyle(titleStyle);
 
         // Hợp nhất các ô để tiêu đề kéo dài toàn bộ bảng
@@ -324,7 +336,7 @@ public class ClaimServiceImpl implements ClaimService {
         // Thêm dòng thông tin chi tiết (nếu cần)
         Row subtitleRow = sheet.createRow(1);
         Cell subtitleCell = subtitleRow.createCell(0);
-        subtitleCell.setCellValue("List");
+        subtitleCell.setCellValue("List of " + month);
         subtitleCell.setCellStyle(titleStyle);
 
         // Hợp nhất các ô cho dòng thông tin chi tiết

@@ -8,7 +8,7 @@
 
         <!-- Logo -->
         <a href = "/dashboard" class="w-[8vh] h-[8vh] ml-3 mr-10 rounded-full hover:shadow-lg shadow border overflow-hidden">
-            <img class="w-full h-full object-cover" th:src="@{/img/bee.png}" alt="Bee">
+            <img class="w-full h-full object-cover"  th:src="@{/img/bee.png}" alt="Bee">
         </a>
 
         <div sec:authorize="hasRole('CLAIMER')" class="text-gray-700 flex cursor-pointer bg-white rounded">
@@ -66,22 +66,25 @@
 
 
         </ul>
-
     </div>
+
 
     <!-- User Profile, Notifications, and Logout -->
     <div class="flex items-center mr-4 gap-2">
         <div class="flex items-center gap-1 mr-2 cursor-pointer" onclick="toggleProfileDropdown()">
-            <div class="inline-block w-8 h-8 bg-slate-300 rounded-full overflow-hidden">
-                <img th:src="@{/img/user.png}" class="w-full h-full object-cover" alt="user">
+            <div class="inline-block w-10 h-10 bg-slate-300 rounded-full overflow-hidden">
+<!--                <img th:src="@{/img/user.png}"-->
+<!--                     class="w-full h-full object-cover" alt="user">-->
+                <img th:src="@{${account.image != null} ? ${account.image} : '/img/user.png'}"
+                     class="w-full h-full object-cover" alt="user">
             </div>
             <span><span id="userName"></span></span>
             <i class="fa-solid fa-chevron-down text-xs"></i>
         </div>
         <div id="profileDropdown" class="absolute right-[8vw] top-[8vh] shadow h-auto w-[200px] bg-white rounded hidden">
             <div>
-                <a href="/edit-profile" class="block px-2 py-2 hover:bg-gray-200">My profile</a>
-                <a href="/change-password" class="block px-2 py-2 hover:bg-gray-200">Change password</a>
+                <a th:href="@{/profile/avatar/update}" class="block px-2 py-2 hover:bg-gray-200">Update avatar</a>
+                <a href="/password/change" class="block px-2 py-2 hover:bg-gray-200">Change password</a>
             </div>
         </div>
         <div class="relative">

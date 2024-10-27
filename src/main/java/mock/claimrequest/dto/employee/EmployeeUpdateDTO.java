@@ -8,12 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mock.claimrequest.dto.auth.AccountGetDTO;
-import mock.claimrequest.dto.auth.AccountRegisterDTO;
+import mock.claimrequest.dto.auth.AccountDTO;
 import mock.claimrequest.dto.department.DepartmentDTO;
-import mock.claimrequest.entity.Account;
-import mock.claimrequest.entity.Department;
-import mock.claimrequest.entity.Role;
 import mock.claimrequest.entity.entityEnum.AccountRole;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -49,7 +45,7 @@ public class EmployeeUpdateDTO {
 
     private DepartmentDTO department;
 
-    private AccountGetDTO accountDTO;
+    private AccountDTO accountDTO;
 
     private AccountRole role;
 }

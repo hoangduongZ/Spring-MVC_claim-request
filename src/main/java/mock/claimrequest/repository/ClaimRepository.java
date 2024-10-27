@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,42 +30,46 @@ public interface ClaimRepository extends JpaRepository<Claim, UUID> {
             @Param("employee") Employee employee,
             Pageable pageable);
 
-    @Query("SELECT c FROM Claim c JOIN FETCH c.employee e " +
+    @Query("SELECT c FROM Claim c " +
+            "JOIN FETCH c.employee e " +
             "JOIN c.project p " +
-            "WHERE c.status = :status AND " +
-            "(c.title LIKE %:keyword% OR c.requestReason LIKE %:keyword%) " +
+            "JOIN c.claimDetails d " +  // Join ClaimDetail
+            "WHERE c.status = :status " +
+            "AND (c.title LIKE %:keyword% OR c.requestReason LIKE %:keyword%) " +
             "AND (:employee IS NULL OR c.employee = :employee) " +
             "AND (" +
             "   (:startDate IS NULL AND :endDate IS NULL) OR " +
-            "   (p.startDate BETWEEN :startDate AND :endDate OR p.endDate BETWEEN :startDate AND :endDate OR " +
-            "    (p.startDate <= :startDate AND p.endDate >= :endDate))" +
+            "   (d.startTime BETWEEN :startDate AND :endDate OR d.endTime BETWEEN :startDate AND :endDate OR " +
+            "    (d.startTime <= :startDate AND d.endTime >= :endDate))" +
             ")")
     Page<Claim> findByStatusKeywordAndDateRange(
             @Param("status") ClaimStatus status,
             @Param("keyword") String keyword,
             @Param("employee") Employee employee,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
 
     Page<Claim> findByStatus(ClaimStatus status, Pageable pageable);
 
-    @Query("SELECT c FROM Claim c JOIN FETCH c.employee e " +
+    @Query("SELECT c FROM Claim c " +
+            "JOIN FETCH c.employee e " +
             "JOIN c.project p " +
+            "JOIN c.claimDetails d " +  // Join ClaimDetail
             "WHERE c.status = :status " +
-            "AND (c.title LIKE %:keyword% OR c.employee.account.userName LIKE %:keyword%) " +
+            "AND (c.title LIKE %:keyword% OR e.account.userName LIKE %:keyword%) " +
             "AND p.id = :projectId " +
             "AND (" +
             "   (:startDate IS NULL AND :endDate IS NULL) OR " +
-            "   (p.startDate BETWEEN :startDate AND :endDate OR p.endDate BETWEEN :startDate AND :endDate OR " +
-            "    (p.startDate <= :startDate AND p.endDate >= :endDate))" +
+            "   (d.startTime BETWEEN :startDate AND :endDate OR d.endTime BETWEEN :startDate AND :endDate OR " +
+            "    (d.startTime <= :startDate AND d.endTime >= :endDate))" +
             ")")
     Page<Claim> findByStatusKeywordAndDateRangeAndProjectId(
             @Param("status") ClaimStatus status,
             @Param("keyword") String keyword,
             @Param("projectId") UUID projectId,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
 
     @Query("SELECT c FROM Claim c JOIN FETCH c.employee e " +

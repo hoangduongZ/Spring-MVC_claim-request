@@ -16,6 +16,7 @@ import mock.claimrequest.service.EmailService;
 import mock.claimrequest.service.EmployeeProjectService;
 import mock.claimrequest.service.ProjectService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Controller
@@ -145,20 +147,26 @@ public class ClaimController {
             Model model,
             @PathVariable(name = "status") String status,
             @RequestParam(defaultValue = "", name = "keyword") String keyword,
-            @RequestParam(defaultValue = "", name = "sortOption") String sortOption,
+            @RequestParam(defaultValue = "updatedTime", name = "sortOption") String sortOption,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @PageableDefault(size = 10, sort = "updatedTime", direction = Sort.Direction.DESC) Pageable pageable) {
 
+        Sort sort = Sort.by(Sort.Direction.DESC, sortOption);
+
+        if (!sortOption.isEmpty()) {
+            sort = Sort.by(Sort.Direction.DESC, sortOption);
+        }
+        Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         ClaimStatus claimStatus = ClaimStatus.valueOf(status.toUpperCase());
 
-        Page<ClaimGetDTO> claimPage = claimService.getClaimByStatusAndKeyword(claimStatus, keyword, startDate, endDate, pageable);
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(23, 59, 59) : null;
+
+        Page<ClaimGetDTO> claimPage = claimService.getClaimByStatusAndKeyword(claimStatus, keyword, startDateTime,
+                endDateTime, pageableWithSort);
 
         model.addAttribute("currentPage", "claims");
-//    if (claimPage.isEmpty()) {
-//        model.addAttribute("warnMessage", "You currently not in any project!");
-//        return "warn/warn";
-//    }
 
         model.addAttribute("claims", claimPage.getContent());
         model.addAttribute("totalPages", claimPage.getTotalPages());
