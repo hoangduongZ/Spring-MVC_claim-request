@@ -72,4 +72,11 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.existsByUserName(username);
     }
 
+    @Override
+    public void updatePassword(String email, String newPassword) {
+        Account account= accountRepository.findByEmail(email);
+        account.setPassword(passwordEncoder.encode(newPassword));
+    }
+
+
 }

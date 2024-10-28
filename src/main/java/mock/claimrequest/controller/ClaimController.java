@@ -226,5 +226,10 @@ public class ClaimController {
         return "redirect:/claims/index/pending";
     }
 
+    @GetMapping("/report")
+    public String getReportPage(){
+        return "claim/report";
+    }
+
 
 }

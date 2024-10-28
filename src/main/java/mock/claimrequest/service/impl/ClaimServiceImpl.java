@@ -39,7 +39,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -315,7 +318,6 @@ public class ClaimServiceImpl implements ClaimService {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Claims");
 
-        // Tạo style cho tiêu đề chính
         CellStyle titleStyle = workbook.createCellStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -324,25 +326,20 @@ public class ClaimServiceImpl implements ClaimService {
         titleFont.setFontHeightInPoints((short) 14);
         titleStyle.setFont(titleFont);
 
-        // Tạo tiêu đề chính
         Row titleRow = sheet.createRow(0);
         Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue("Claim Request");
         titleCell.setCellStyle(titleStyle);
 
-        // Hợp nhất các ô để tiêu đề kéo dài toàn bộ bảng
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
 
-        // Thêm dòng thông tin chi tiết (nếu cần)
         Row subtitleRow = sheet.createRow(1);
         Cell subtitleCell = subtitleRow.createCell(0);
         subtitleCell.setCellValue("List of " + month);
         subtitleCell.setCellStyle(titleStyle);
 
-        // Hợp nhất các ô cho dòng thông tin chi tiết
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 5));
 
-        // Tạo style cho header
         CellStyle headerStyle = workbook.createCellStyle();
         headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -353,7 +350,6 @@ public class ClaimServiceImpl implements ClaimService {
         headerFont.setFontHeightInPoints((short) 12);
         headerStyle.setFont(headerFont);
 
-        // Tạo header row với style
         Row headerRow = sheet.createRow(2); // Bắt đầu từ dòng 3
         String[] headers = {"ID", "Employee Name", "Project Name", "Title", "Reason", "Amount"};
         for (int i = 0; i < headers.length; i++) {
@@ -362,7 +358,6 @@ public class ClaimServiceImpl implements ClaimService {
             cell.setCellStyle(headerStyle);
         }
 
-        // Style cho các ô thông tin
         CellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         cellStyle.setWrapText(true);
@@ -371,7 +366,6 @@ public class ClaimServiceImpl implements ClaimService {
         amountStyle.cloneStyleFrom(cellStyle);
         amountStyle.setDataFormat(workbook.createDataFormat().getFormat("$#,##0.00"));
 
-        // Điền dữ liệu vào các hàng
         int rowIndex = 3;
         for (Claim claim : claims) {
             Row row = sheet.createRow(rowIndex++);
@@ -381,23 +375,36 @@ public class ClaimServiceImpl implements ClaimService {
             row.createCell(3).setCellValue(claim.getTitle());
             row.createCell(4).setCellValue(claim.getRequestReason());
 
-            // Dùng style định dạng số tiền
             Cell amountCell = row.createCell(5);
             amountCell.setCellValue(claim.getAmount().doubleValue());
             amountCell.setCellStyle(amountStyle);
         }
 
-        // Tự động điều chỉnh kích thước các cột
         for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
-        // Ghi vào output stream
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
 
         return outputStream;
+    }
+
+    public Long countByStatus(ClaimStatus claimStatus){
+        return claimRepository.countByStatus(claimStatus);
+    }
+
+    @Override
+    public Map<LocalDate, Long> countClaimsByDate() {
+        List<Claim> claims = claimRepository.findAll();
+        Map<LocalDate, Long> countMap = new LinkedHashMap<>();
+
+        for (Claim claim : claims) {
+            LocalDate date = claim.getCreatedTime().toLocalDate();
+            countMap.put(date, countMap.getOrDefault(date, 0L) + 1);
+        }
+        return countMap;
     }
 
 }

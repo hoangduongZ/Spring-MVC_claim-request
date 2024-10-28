@@ -16,7 +16,6 @@ public class DashboardController {
 
     @GetMapping
     public String dashboard(Model model){
-        model.addAttribute("currentPage", "dashboard");
         return "dashboard/index";
     }
 }

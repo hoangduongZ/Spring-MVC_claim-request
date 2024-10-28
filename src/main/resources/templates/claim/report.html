@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layouts/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script th:src="@{/js/fetchReport.js}"></script>
+</head>
+<body layout:fragment="content" class=" min-h-[100vh] bg-gradient-to-b from-purple-100 to-white">
+<section class="p-3 w-full flex justify-center">
+    <div class="p-3 w-full flex justify-center">
+        <div class="p-6 flex flex-col gap-5">
+            <div class="flex justify-center flex-col gap-4">
+                <button id="btnPaidVsRejection" onclick="fetchReportStatus()" class="py-2 px-6 bg-purple-600 text-white  hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none shadow-md">Paid vs Rejection</button>
+                <button id="btnClaimPerProject" onclick="fetchProjectReport()" class="py-2 px-6 bg-blue-600 text-white  hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none shadow-md">Claim per Project</button>
+                <button id="btnClaimsOverTime" onclick="fetchByDate()" class="py-2 px-6 bg-green-600 text-white  hover:bg-green-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none shadow-md">Claims Created Over Time</button>
+            </div>
+        </div>
+        <div id="chartContainer" class="w-full h-full bg-white shadow-lg rounded-lg p-4 flex flex-col items-center gap-4">
+            <canvas id="reportChart" class="w-full"></canvas>
+        </div>
+    </div>
+</section>
+</body>
+</html>

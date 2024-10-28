@@ -7,4 +7,7 @@ import java.util.UUID;
 
 public interface EmailService {
     void sendClaimRequestEmail(ClaimEmailRequestDTO claimEmailRequestDTO) throws IOException;
+
+    void sendResetLink(String email);
+
 }

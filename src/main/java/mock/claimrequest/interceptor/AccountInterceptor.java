@@ -24,7 +24,11 @@ public class AccountInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         if (modelAndView != null) {
             Account account = authService.getCurrentAccount();
-            modelAndView.addObject("account", account);
+            if (account != null) {
+                modelAndView.addObject("account", account);
+            } else {
+                modelAndView.addObject("account", new Account());
+            }
         }
     }
 }

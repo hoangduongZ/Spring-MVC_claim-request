@@ -80,4 +80,6 @@ public interface ClaimRepository extends JpaRepository<Claim, UUID> {
             @Param("status") ClaimStatus status,
             @Param("projectId") UUID projectId,
             Pageable pageable);
+
+    Long countByStatus(ClaimStatus claimStatus);
 }

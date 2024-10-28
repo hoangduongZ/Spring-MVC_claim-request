@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import mock.claimrequest.dto.auth.AccountRegisterDTO;
 import mock.claimrequest.entity.Employee;
 import mock.claimrequest.security.AuthService;
+import mock.claimrequest.security.TokenCache;
 import mock.claimrequest.service.AccountService;
+import mock.claimrequest.service.EmailService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,10 +27,14 @@ import java.time.LocalDateTime;
 public class AccountController {
     private final AuthService authService;
     private AccountService accountService;
+    private final EmailService emailService;
+    private final TokenCache tokenCache;
 
-    public AccountController(AccountService accountService, AuthService authService) {
+    public AccountController(AccountService accountService, AuthService authService, EmailService emailService, TokenCache tokenCache) {
         this.accountService = accountService;
         this.authService = authService;
+        this.emailService = emailService;
+        this.tokenCache = tokenCache;
     }
 
     @GetMapping("/register")
@@ -134,5 +140,50 @@ public class AccountController {
         return path.toString().replace("src\\main\\resources\\static", "");
     }
 
+    @GetMapping("/password/forgot")
+    public String getForgetPassword(Model model) {
+        return "auth/forgot-password";
+    }
+
+    @PostMapping("/password/forgot")
+    public String postForgetPassword(@RequestParam String email, RedirectAttributes attributes) {
+        if (!accountService.existByEmail(email)) {
+            attributes.addFlashAttribute("email", email);
+            attributes.addFlashAttribute("error", "Email not existed!");
+            return "redirect:/password/forgot";
+        }
+
+         emailService.sendResetLink(email);
+
+        attributes.addFlashAttribute("email", email);
+        attributes.addFlashAttribute("success", "We sent a link to your email, please check your email: " + email);
+        return "redirect:/password/forgot";
+    }
+
+    @GetMapping("/password/reset")
+    public String getResetPassword(@RequestParam String token, Model model) {
+        if (!tokenCache.exists(token)) {
+            model.addAttribute("error", "Invalid or expired token.");
+            return "auth/reset-password";
+        }
+        model.addAttribute("token", token);
+        return "auth/reset-password";
+    }
+
+    @PostMapping("/password/reset")
+    public String postResetPassword(@RequestParam String token, @RequestParam String newPassword, RedirectAttributes attributes) {
+        String email = tokenCache.get(token);
+
+        if (email == null) {
+            attributes.addFlashAttribute("error", "Invalid or expired token.");
+            return "redirect:/password/reset";
+        }
+
+        accountService.updatePassword(email, newPassword);
+        tokenCache.remove(token);
+
+        attributes.addFlashAttribute("success", "Your password has been reset successfully.");
+        return "redirect:/login";
+    }
 
 }

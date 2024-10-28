@@ -7,21 +7,22 @@
     <title>Employee List</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<main layout:fragment="content" class="w-full mx-auto bg-purple-100">
-
-    <div class="bg-gradient-to-b from-purple-100 to-white min-h-[90vh] p-4 rounded-md shadow-md">
+<body class="bg-gradient-to-b from-purple-100 to-white">
+<main layout:fragment="content" class="w-full mx-auto">
+    <div class="p-4 rounded-md shadow-md">
         <div class="flex justify-center">
             <h1 class="inline-block p-4 bg-white text-2xl mb-3 drop-shadow-md text-purple-500 font-bold italic rounded-md">Employees</h1>
         </div>
+        <div id="employeeList" class="overflow-x-auto pt-2">
+            <div class="flex">
+                <a href="employees/add" id="addEmployeeBtn" class="hover:bg-green-600 bg-green-500 text-white px-4 py-2 rounded mb-4">
+                    <i class="fas fa-plus"></i> Add Employee
+                </a>
+                <input type="text"
+                       class="w-1/3 ml-[25%] search border p-2 mb-4 rounded transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400 focus:shadow-lg"
+                       placeholder="Search employees...">
+            </div>
 
-        <div class="mb-4">
-            <a href="employees/add" id="addEmployeeBtn" class="hover:bg-green-600 bg-green-500 text-white px-4 py-2 rounded mb-4">
-                <i class="fas fa-plus"></i> Add Employee
-            </a>
-        </div>
-
-        <div class="overflow-x-auto">
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                 <thead>
                 <tr class="bg-gray-700 text-white ">
@@ -32,12 +33,12 @@
                     <th class="py-3 px-4 border-b">Actions</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="list">
                 <tr th:each="employee : ${employees}">
-                    <td class="py-3 px-4 border-b" th:text="${employee.fullName}"></td>
-                    <td class="py-3 px-4 border-b" th:text="${employee.account.userName}"></td>
-                    <td class="py-3 px-4 border-b" th:text="${employee.department.name}"></td>
-                    <td class="py-3 px-4 border-b" >
+                    <td class="py-3 px-4 border-b name" th:text="${employee.fullName}"></td>
+                    <td class="py-3 px-4 border-b username" th:text="${employee.account.userName}"></td>
+                    <td class="py-3 px-4 border-b department" th:text="${employee.department.name}"></td>
+                    <td class="py-3 px-4 border-b role">
                         <div th:each="role: ${employee.account.roles}" th:text="${role.name}"></div>
                     </td>
                     <td class="py-3 px-4 border-b flex space-x-2">
@@ -50,9 +51,24 @@
                 </tr>
                 </tbody>
             </table>
+            <div class="pagination-container flex justify-center">
+                <div class="pagination bg-white rounded-md border-purple-500 p-2 border flex justify-center space-x-2 mt-4"></div>
+            </div>
+
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+    <script>
+        var options = {
+            valueNames: ['name', 'username', 'department', 'role'],
+            page: 10,
+            pagination: true
+        };
+
+        var employeeList = new List('employeeList', options);
+    </script>
 
 </main>
+
 </body>
 </html>

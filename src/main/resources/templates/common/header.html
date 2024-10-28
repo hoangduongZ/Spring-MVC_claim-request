@@ -63,6 +63,9 @@
                     <li class="relative"><a th:href="@{/departments}" class="block px-4 py-2 border-b border-gray-300 text-black hover:bg-blue-200">Department information</a></li>
                 </ul>
             </li>
+            <li sec:authorize="hasRole('ADMIN')" class="relative inline-block p-4 hover:bg-slate-100 border-r">
+                <a th:href="@{/claims/report}" class="text-gray-800 ">Report</a>
+            </li>
 
 
         </ul>

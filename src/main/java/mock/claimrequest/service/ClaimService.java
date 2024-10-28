@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,4 +34,8 @@ public interface ClaimService {
     Claim update(ClaimGetDTO claimGetDTO, UUID id, String status);
 
     ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException;
+
+    Long countByStatus(ClaimStatus claimStatus);
+
+    Map<LocalDate, Long> countClaimsByDate();
 }

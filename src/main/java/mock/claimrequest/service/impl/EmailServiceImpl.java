@@ -1,6 +1,7 @@
 package mock.claimrequest.service.impl;
 
 import mock.claimrequest.dto.claim.ClaimEmailRequestDTO;
+import mock.claimrequest.security.TokenCache;
 import mock.claimrequest.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -12,11 +13,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class EmailServiceImpl implements EmailService {
-    @Autowired
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
+    private final TokenCache tokenCache;
+
+    public EmailServiceImpl(JavaMailSender emailSender, TokenCache tokenCache) {
+        this.emailSender = emailSender;
+        this.tokenCache = tokenCache;
+    }
 
     @Override
     public void sendClaimRequestEmail(ClaimEmailRequestDTO emailRequest) throws IOException {
@@ -45,6 +52,19 @@ public class EmailServiceImpl implements EmailService {
         emailSender.send(message);
     }
 
+    public void sendResetLink(String email) {
+        String token = UUID.randomUUID().toString();
+        tokenCache.put(token, email);
+
+        String resetLink = "http://localhost:8080/password/reset?token=" + token;
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Reset Your Password");
+        message.setText("To reset your password, please click the link below:\n" + resetLink);
+
+        emailSender.send(message);
+
+    }
 
     private String loadEmailTemplate() throws IOException {
         StringBuilder template = new StringBuilder();

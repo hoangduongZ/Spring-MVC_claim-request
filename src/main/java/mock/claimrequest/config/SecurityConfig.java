@@ -6,15 +6,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -30,16 +26,15 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
-                                .requestMatchers("/register").permitAll()
-                                .requestMatchers("/projects").hasRole("ADMIN")
-                                .requestMatchers("/employees").hasRole("ADMIN")
-                                .requestMatchers("/departments").hasRole("ADMIN")
+                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/password/**").permitAll()
+                        .requestMatchers("/projects", "/employees", "/departments").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                        )
+                )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/dashboard",true)
+                        .defaultSuccessUrl("/dashboard", true)
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")

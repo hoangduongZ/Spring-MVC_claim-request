@@ -32,7 +32,7 @@ public class EmployeeUpdateDTO {
     @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters.")
     private String lastname;
 
-    private boolean gender; // Gender could be a boolean or Enum depending on your logic
+    private boolean gender;
 
     @NotNull(message = "Date of birth is required.")
     @Past(message = "Date of birth must be in the past.")
