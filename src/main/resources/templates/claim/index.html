@@ -40,7 +40,7 @@
                   class="w-full flex items-center bg-white shadow rounded-t-2xl p-4 gap-5">
                 <div class="ml-3 flex items-center justify-center" sec:authorize="hasRole('FINANCE')"
                      th:if="${status== 'paid'} ">
-                    <input type="checkbox" id="selectAllCheckbox" onclick="toggleAllCheckboxes()" class="w-4 h-4 mr-2"/>
+                    <input th:value="${param.keyword}" type="checkbox" id="selectAllCheckbox" onclick="toggleAllCheckboxes()" class="w-4 h-4 mr-2"/>
                     <button type="button" onclick="submitExportForm()" id="exportButton"
                             class="p-1 rounded-lg text-white bg-sky-600 hover-sky-600">
                         <i class="fa-solid fa-file-export"></i>

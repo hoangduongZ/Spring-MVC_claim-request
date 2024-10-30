@@ -119,29 +119,8 @@ public class ClaimController {
     public String updateClaimStatus(@ModelAttribute ClaimUpdateStatusDTO claimUpdateStatusDTO,
                                     @PathVariable("status") String status,
                                     @PathVariable("id") UUID id) {
-        return switch (status.toLowerCase()) {
-            case "approved" -> {
-                claimService.updateStatus(ClaimStatus.APPROVED, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/approved";
-            }
-            case "paid" -> {
-                claimService.updateStatus(ClaimStatus.PAID, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/paid";
-            }
-            case "canceled" -> {
-                claimService.updateStatus(ClaimStatus.CANCELED, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/canceled";
-            }
-            case "rejected" -> {
-                claimService.updateStatus(ClaimStatus.REJECTED, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/rejected";
-            }
-            case "returned" -> {
-                claimService.updateStatus(ClaimStatus.DRAFT, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/pending";
-            }
-            default -> "redirect:/claims/index";
-        };
+        claimService.updateStatus(ClaimStatus.valueOf(status), id, claimUpdateStatusDTO);
+        return "redirect:/claims/index/" + status.toLowerCase();
     }
 
     @GetMapping("/index/{status}")
