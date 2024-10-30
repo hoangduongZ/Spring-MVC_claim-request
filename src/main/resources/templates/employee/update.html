@@ -36,12 +36,15 @@
             <label for="firstname" class="block text-sm font-medium text-gray-700">First Name</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="text" id="firstname" th:field="*{firstname}" required>
+            <div th:if="*{#fields.hasErrors('firstname')}" th:errors="*{firstname}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
             <label for="lastname" class="block text-sm font-medium text-gray-700">Last Name</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="text" id="lastname" th:field="*{lastname}" required>
+            <div th:if="*{#fields.hasErrors('lastname')}" th:errors="*{lastname}" class="text-red-500 text-sm"></div>
+
         </div>
 
         <div class="form-group">
@@ -56,18 +59,23 @@
                     <span class="ml-2">Female</span>
                 </label>
             </div>
+            <div th:if="*{#fields.hasErrors('gender')}" th:errors="*{gender}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
             <label for="dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="date" id="dob" th:field="*{dob}" required>
+            <div th:if="*{#fields.hasErrors('dob')}" th:errors="*{dob}" class="text-red-500 text-sm"></div>
+
         </div>
 
         <div class="form-group">
             <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="text" id="address" th:field="*{address}" required>
+            <div th:if="*{#fields.hasErrors('address')}" th:errors="*{address}" class="text-red-500 text-sm"></div>
+
         </div>
 
         <div class="form-group">
@@ -79,6 +87,8 @@
                 <option th:each="d : ${departments}" th:value="${d.id}"
                         th:text="${d.name}" th:selected="${d.id == employee.department.id}"></option>
             </select>
+            <div th:if="*{#fields.hasErrors('department.id')}" th:errors="*{department.id}" class="text-red-500 text-sm"></div>
+
         </div>
 
         <div class="form-group">

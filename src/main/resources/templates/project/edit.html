@@ -83,8 +83,9 @@
                 </select>
             </div>
 
-            <h2 class="text-xl font-bold text-purple-600 mb-2">Select Employees</h2>
-            <table id="employeeTable" class="mb-4 border border-gray-300">
+            <h2 class="text-xl font-bold text-purple-600 mb-2 italic">Select Employees</h2>
+<!--            th:if="${employeeProjects.isEmpty()}"-->
+            <table  id="employeeTable" class="mb-4 border border-gray-300">
                 <thead class="bg-slate-200">
                 <tr>
                     <th class="border px-4 py-2">Employee Name</th>
@@ -117,8 +118,6 @@
                         </select>
                     </td>
                     <td class="px-4 py-2">
-<!--                        <input type="date" id="startJoin" th:name="'employeeProjects['+ ${indexStat.index}+ '].startDate'"-->
-<!--                               th:value="${employeeProject.startDate}" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">-->
                         <input type="date" id="startJoin" th:field="*{employeeProjects[__${indexStat.index}__].startDate}"
                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </td>
@@ -135,6 +134,8 @@
                 </tr>
                 </tbody>
             </table>
+
+
             <div class="flex justify-end mt-2 mb-4">
                 <button type="button" onclick="addRow()"
                         class="text-xl flex justify-center items-center font-bold bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full focus:outline-none focus:shadow-outline">
@@ -142,6 +143,36 @@
                 </button>
             </div>
             <hr/>
+            <div th:if="${!employeeProjectOuts.isEmpty()}">
+                <h2 class="text-xl font-bold text-purple-600 mb-2 italic">Outed employees</h2>
+                <table  id="employeeOut" class="mb-4 border border-gray-300">
+                    <thead class="bg-slate-200">
+                    <tr>
+                        <th class="border px-4 py-2">Employee Name</th>
+                        <th class="border px-4 py-2">Role</th>
+                        <th class="border px-4 py-2">Start</th>
+                        <th class="border px-4 py-2">End</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="employeeProject, indexStat : ${employeeProjectOuts}" class="border-b">
+                        <td class="p-4">
+                            <input type="text" th:text="${employeeProject.employee.account.userName}">
+                        </td>
+                        <td class="p-4">
+                            <input type="text" th:text="${employeeProject.role.name}">
+                        </td>
+                        <td class="px-4 py-2">
+                            <input type="text" th:text="${employeeProject.startDate}">
+                        </td>
+                        <td class="px-4 py-2">
+                            <input type="text" th:text="${employeeProject.endDate}">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div class="mt-4 flex items-center gap-2">
                 <button type="submit"
                         class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">

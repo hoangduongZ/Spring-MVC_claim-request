@@ -82,7 +82,9 @@ public class ProjectController {
         model.addAttribute("employeeProjects", employeeProjects);
 
         var employees = employeeService.getAllEmployeeFreeAndWorkingCurrentProject(projectId);
+        var employeeProjectOuts = employeeService.getAllEmployeesExitedFromProject(projectId);
         model.addAttribute("employees", employees);
+        model.addAttribute("employeeProjectOuts", employeeProjectOuts);
         model.addAttribute("roles", ProjectRole.values());
         return "project/edit";
     }

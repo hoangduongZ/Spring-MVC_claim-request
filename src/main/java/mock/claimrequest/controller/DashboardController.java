@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @Controller
 @RequestMapping("dashboard")
 public class DashboardController {
-
     @GetMapping
     public String dashboard(Model model){
         return "dashboard/index";

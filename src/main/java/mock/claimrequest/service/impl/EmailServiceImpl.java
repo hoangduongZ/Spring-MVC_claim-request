@@ -1,5 +1,6 @@
 package mock.claimrequest.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import mock.claimrequest.dto.claim.ClaimEmailRequestDTO;
 import mock.claimrequest.security.TokenCache;
 import mock.claimrequest.service.EmailService;
@@ -52,11 +53,17 @@ public class EmailServiceImpl implements EmailService {
         emailSender.send(message);
     }
 
-    public void sendResetLink(String email) {
+    public String generateResetLink(HttpServletRequest request, String token) {
+        String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+        String resetLink = baseUrl + "/password/reset?token=" + token;
+        return resetLink;
+    }
+
+    public void sendResetLink(HttpServletRequest request,String email) {
         String token = UUID.randomUUID().toString();
         tokenCache.put(token, email);
 
-        String resetLink = "http://localhost:8080/password/reset?token=" + token;
+        String resetLink = generateResetLink(request, token);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("Reset Your Password");

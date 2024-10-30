@@ -76,12 +76,10 @@
     <div class="flex items-center mr-4 gap-2">
         <div class="flex items-center gap-1 mr-2 cursor-pointer" onclick="toggleProfileDropdown()">
             <div class="inline-block w-10 h-10 bg-slate-300 rounded-full overflow-hidden">
-<!--                <img th:src="@{/img/user.png}"-->
-<!--                     class="w-full h-full object-cover" alt="user">-->
                 <img th:src="@{${account.image != null} ? ${account.image} : '/img/user.png'}"
                      class="w-full h-full object-cover" alt="user">
             </div>
-            <span><span id="userName"></span></span>
+            <span th:text="'Welcome '+ ${account.userName}"></span>
             <i class="fa-solid fa-chevron-down text-xs"></i>
         </div>
         <div id="profileDropdown" class="absolute right-[8vw] top-[8vh] shadow h-auto w-[200px] bg-white rounded hidden">

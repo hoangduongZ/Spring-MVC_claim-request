@@ -39,6 +39,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -398,6 +399,8 @@ public class ClaimServiceImpl implements ClaimService {
     @Override
     public Map<LocalDate, Long> countClaimsByDate() {
         List<Claim> claims = claimRepository.findAll();
+        claims.sort(Comparator.comparing(claim -> claim.getCreatedTime().toLocalDate()));
+
         Map<LocalDate, Long> countMap = new LinkedHashMap<>();
 
         for (Claim claim : claims) {
@@ -406,5 +409,6 @@ public class ClaimServiceImpl implements ClaimService {
         }
         return countMap;
     }
+
 
 }

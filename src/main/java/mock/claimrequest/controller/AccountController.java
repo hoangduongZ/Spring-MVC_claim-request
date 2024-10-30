@@ -1,5 +1,6 @@
 package mock.claimrequest.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import mock.claimrequest.dto.auth.AccountRegisterDTO;
 import mock.claimrequest.entity.Employee;
@@ -146,14 +147,14 @@ public class AccountController {
     }
 
     @PostMapping("/password/forgot")
-    public String postForgetPassword(@RequestParam String email, RedirectAttributes attributes) {
+    public String postForgetPassword(@RequestParam String email, RedirectAttributes attributes, HttpServletRequest request) {
         if (!accountService.existByEmail(email)) {
             attributes.addFlashAttribute("email", email);
             attributes.addFlashAttribute("error", "Email not existed!");
             return "redirect:/password/forgot";
         }
 
-         emailService.sendResetLink(email);
+         emailService.sendResetLink(request, email);
 
         attributes.addFlashAttribute("email", email);
         attributes.addFlashAttribute("success", "We sent a link to your email, please check your email: " + email);

@@ -6,6 +6,7 @@ import mock.claimrequest.dto.employee.EmployeeSaveDTO;
 import mock.claimrequest.dto.employee.EmployeeUpdateDTO;
 import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.entity.Account;
+import mock.claimrequest.entity.EmployeeProject;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public interface EmployeeService {
     List<EmployeeProjectDTO> getAllEmployeeFree();
 
     List<EmployeeProjectDTO> getAllEmployeeFreeAndWorkingCurrentProject(UUID projectId);
+
+    List<EmployeeProject> getAllEmployeesExitedFromProject(UUID projectId);
 
     List<EmployeeListDTO> getAll();
 

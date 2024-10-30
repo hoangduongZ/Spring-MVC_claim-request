@@ -9,6 +9,7 @@ import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Department;
 import mock.claimrequest.entity.Employee;
+import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.Role;
 import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.AccountStatus;
@@ -113,12 +114,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findAllFreeOrWorkingInProject(projectId,
                 EmployeeStatus.FREE, EmployeeStatus.WORKING, EmpProjectStatus.IN).stream().map(
                 employee -> {
-                    EmployeeProjectDTO saveDTO = new EmployeeProjectDTO();
-                    saveDTO.setAccountName(employee.getAccount().getUserName());
-                    saveDTO.setEmployeeId(employee.getId());
-                    saveDTO.setEmployeeStatus(employee.getEmployeeStatus());
-                    return saveDTO;
+                    EmployeeProjectDTO dto = new EmployeeProjectDTO();
+                    dto.setAccountName(employee.getAccount().getUserName());
+                    dto.setEmployeeId(employee.getId());
+                    dto.setEmployeeStatus(employee.getEmployeeStatus());
+                    return dto;
                 }).toList();
+    }
+
+    public List<EmployeeProject> getAllEmployeesExitedFromProject(UUID projectId){
+        return employeeRepository.findAllEmployeesExitedFromProject(projectId,EmpProjectStatus.OUT);
+
     }
 
     @Override

@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import mock.claimrequest.entity.Account;
 import mock.claimrequest.security.AuthService;
 import mock.claimrequest.service.AccountService;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;

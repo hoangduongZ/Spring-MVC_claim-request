@@ -22,6 +22,20 @@ function closeModal() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    fetch('/welcome')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(userName => {
+            document.getElementById('userName').innerText = userName;
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+
     document.querySelectorAll("button[data-type]").forEach(button => {
         button.addEventListener("click", function(event) {
             event.preventDefault(); // Prevent immediate form submission

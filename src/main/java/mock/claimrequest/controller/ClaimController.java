@@ -1,5 +1,6 @@
 package mock.claimrequest.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import mock.claimrequest.dto.claim.ClaimEmailRequestDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
@@ -83,20 +84,21 @@ public class ClaimController {
     }
 
     @PostMapping("{status}/add")
-    public String createClaim(@ModelAttribute("claim") ClaimSaveDTO claimSaveDTO, @PathVariable("status") String status) throws IOException {
+    public String createClaim(@ModelAttribute("claim") ClaimSaveDTO claimSaveDTO, @PathVariable("status") String status, HttpServletRequest request) throws IOException {
         switch (status.toLowerCase()) {
             case "draft":
                 claimService.actionCreate(ClaimStatus.valueOf(status.toUpperCase()), claimSaveDTO);
                 return "redirect:/claims/index/draft";
             case "pending":
                 Claim claim = claimService.actionCreate(ClaimStatus.valueOf(status.toUpperCase()), claimSaveDTO);
+
                 Project project = claim.getProject();
                 Employee staff = claim.getEmployee();
-
                 Employee pm = employeeProjectService.findProjectManager(project.getId());
 
                 if (pm != null) {
-                    String claimLink = "http://localhost:8080/claims/"+ claim.getId().toString() +"/detail";
+                    String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+                    String claimLink = baseUrl + "/claims/" + claim.getId().toString() + "/detail";
                     ClaimEmailRequestDTO emailRequest = new ClaimEmailRequestDTO(
                             pm.getFirstname() + " " + pm.getLastname(),
                             pm.getAccount().getEmail(),
@@ -199,15 +201,16 @@ public class ClaimController {
 
     @PostMapping("{status}/{id}/update")
     public String postUpdateClaim(@ModelAttribute ClaimGetDTO claim, @PathVariable("id") UUID id
-            , @PathVariable("status") String status) throws IOException {
+            , @PathVariable("status") String status, HttpServletRequest request) throws IOException {
         Claim claimUpdated = claimService.update(claim, id, status);
         Project project = claimUpdated.getProject();
         Employee staff = claimUpdated.getEmployee();
 
-        if (status.equals("PENDING")){
+        if (status.equals("PENDING")) {
             Employee pm = employeeProjectService.findProjectManager(project.getId());
             if (pm != null) {
-                String claimLink = "http://localhost:8080/claims/"+ claim.getId().toString() +"/detail";
+                String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+                String claimLink = baseUrl + "/claims/" + claim.getId().toString() + "/detail";
                 ClaimEmailRequestDTO emailRequest = new ClaimEmailRequestDTO(
                         pm.getFirstname() + " " + pm.getLastname(),
                         pm.getAccount().getEmail(),
@@ -227,7 +230,7 @@ public class ClaimController {
     }
 
     @GetMapping("/report")
-    public String getReportPage(){
+    public String getReportPage() {
         return "claim/report";
     }
 

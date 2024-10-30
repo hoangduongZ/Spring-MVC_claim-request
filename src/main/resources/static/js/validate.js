@@ -84,7 +84,14 @@ $(document).ready(function () {
         },
         unhighlight: function(element) {
             $(element).removeClass("border-red-500");
-        }
+        },
+        errorPlacement: function(error, element) {
+            if (element.attr("name") == "gender") {
+                error.appendTo(".error-gender");
+            } else {
+                error.insertAfter(element);
+            }
+        },
     });
     $("#employee-update").validate({
         rules: {
@@ -171,11 +178,14 @@ $(document).ready(function () {
         },
         unhighlight: function(element) {
             $(element).removeClass("border-red-500");
-        }
-        // errorClass: "text-red-500 text-sm",
-        // errorPlacement: function (error, element) {
-        //     error.appendTo(element.parent());
-        // }
+        },
+        errorPlacement: function(error, element) {
+            if (element.attr("name") == "gender") {
+                error.appendTo(".error-gender");
+            } else {
+                error.insertAfter(element);
+            }
+        },
     });
     $("#project-add").validate({
         rules: {
@@ -441,5 +451,38 @@ $(document).ready(function () {
         }
     });
 
+    $("#resetPasswordForm").validate({
+        rules: {
+            newPassword: {
+                required: true,
+                minlength: 6
+            },
+            confirmPassword: {
+                required: true,
+                equalTo: "#newPassword"
+            }
+        },
+        messages: {
+            newPassword: {
+                required: "Please enter a new password.",
+                minlength: "Password must be at least 6 characters long."
+            },
+            confirmPassword: {
+                required: "Please confirm your password.",
+                equalTo: "Passwords do not match."
+            }
+        },
+        errorClass: "text-red-500 text-sm mt-1",
+        validClass: "text-green-500 text-sm mt-1",
+        submitHandler: function (form) {
+            form.submit();
+        },
+        highlight: function(element) {
+            $(element).addClass("border-red-500");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("border-red-500");
+        }
+    });
 
 });
