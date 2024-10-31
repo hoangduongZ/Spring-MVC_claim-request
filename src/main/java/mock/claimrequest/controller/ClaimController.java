@@ -119,7 +119,7 @@ public class ClaimController {
     public String updateClaimStatus(@ModelAttribute ClaimUpdateStatusDTO claimUpdateStatusDTO,
                                     @PathVariable("status") String status,
                                     @PathVariable("id") UUID id) {
-        claimService.updateStatus(ClaimStatus.valueOf(status), id, claimUpdateStatusDTO);
+        claimService.updateStatus(ClaimStatus.valueOf(status.toUpperCase()), id, claimUpdateStatusDTO);
         return "redirect:/claims/index/" + status.toLowerCase();
     }
 
