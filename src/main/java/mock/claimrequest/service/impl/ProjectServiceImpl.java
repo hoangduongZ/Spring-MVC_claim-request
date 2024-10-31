@@ -119,6 +119,7 @@ public class ProjectServiceImpl implements ProjectService {
                 employeeProject.setProject(project);
                 employeeProject.setRole(employeeProjectDTO.getRole());
                 employeeProject.setEmpProjectStatus(EmpProjectStatus.IN);
+                employeeProject.getEmployee().setEmployeeStatus(EmployeeStatus.WORKING);
                 employeeProject.setStartDate(employeeProjectDTO.getStartDate());
                 employeeProject.setEndDate(employeeProjectDTO.getEndDate());
                 employeeProjects.add(employeeProject);
@@ -160,9 +161,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-
-
-
     @Override
     public void update(ProjectDTO projectDTO) {
         Project project = projectRepository.findById(projectDTO.getId())
@@ -186,7 +184,7 @@ public class ProjectServiceImpl implements ProjectService {
 
                 if (employeeProject.getRole().equals(ProjectRole.PM)) {
                     employee.getAccount().getRoles().clear();
-                    Role role= roleRepository.findByName(AccountRole.CLAIMER).get();
+                    Role role = roleRepository.findByName(AccountRole.CLAIMER).get();
                     employee.getAccount().getRoles().add(role);
                 }
 
@@ -197,7 +195,7 @@ public class ProjectServiceImpl implements ProjectService {
             employeeProjectRepository.deleteAll(employeeProjectsInDB);
         }
 
-        if(projectDTO.getEmployeeProjects()!= null){
+        if (projectDTO.getEmployeeProjects() != null) {
             List<EmployeeProject> employeeProjectsRecieve = projectDTO.getEmployeeProjects().stream()
                     .map(employeeProjectDTO -> {
                         EmployeeProject employeeProject = new EmployeeProject();
@@ -222,7 +220,7 @@ public class ProjectServiceImpl implements ProjectService {
                     projectId, EmpProjectStatus.IN);
 
             handleRemove(employeeProjectsInDB, employeeProjectsRecieve);
-            handleSave(project,employeeProjectsInDB, employeeProjectsRecieve);
+            handleSave(project, employeeProjectsInDB, employeeProjectsRecieve);
         }
     }
 
@@ -257,22 +255,23 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
 
-    private void handleSave(Project project,List<EmployeeProject> employeeProjectsInDB, List<EmployeeProject> employeeProjectsRecieve) {
+    private void handleSave(Project project, List<EmployeeProject> employeeProjectsInDB, List<EmployeeProject> employeeProjectsRecieve) {
         List<EmployeeProject> toSave = new ArrayList<>();
         LocalDate now = LocalDate.now();
         LocalDate projectStartDate = employeeProjectsRecieve.isEmpty() ? null : employeeProjectsRecieve.get(0).getProject().getStartDate();
         LocalDate projectEndDate = employeeProjectsRecieve.isEmpty() ? null : employeeProjectsRecieve.get(0).getProject().getEndDate();
 
-        if (project.getProjectStatus().equals(ProjectStatus.COMPLETED)|| project.getProjectStatus().equals(ProjectStatus.CANCELLED)){
+        if (project.getProjectStatus().equals(ProjectStatus.COMPLETED) || project.getProjectStatus().equals(ProjectStatus.CANCELLED)) {
             employeeProjectsInDB.forEach(employeeProject -> {
                 Employee employee = employeeProject.getEmployee();
                 if (employeeProject.getRole().equals(ProjectRole.PM)) {
                     employee.getAccount().getRoles().clear();
-                    Role role= roleRepository.findByName(AccountRole.CLAIMER).get();
+                    Role role = roleRepository.findByName(AccountRole.CLAIMER).get();
                     employee.getAccount().getRoles().add(role);
                 }
                 employee.setEmployeeStatus(EmployeeStatus.FREE);
                 employeeProject.setEmpProjectStatus(EmpProjectStatus.OUT);
+                employeeProject.setEndDate(LocalDate.now());
                 employeeRepository.save(employee);
             });
             employeeProjectRepository.saveAll(employeeProjectsInDB);
@@ -325,17 +324,17 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (isUpdated) {
             validateProjectDates(empProjectRecieve, projectStartDate, projectEndDate);
-
-            if (empProjectRecieve.getStartDate() != null &&
-                    (empProjectRecieve.getStartDate().isEqual(now) || empProjectRecieve.getStartDate().isAfter(now))) {
-                empProjectInDB.getEmployee().setEmployeeStatus(EmployeeStatus.WORKING);
-                empProjectInDB.setEmpProjectStatus(EmpProjectStatus.IN);
+            if (empProjectRecieve.getStartDate() != null) {
+                if ((empProjectRecieve.getStartDate().isEqual(now) || empProjectRecieve.getStartDate().isAfter(now))) {
+                    empProjectInDB.getEmployee().setEmployeeStatus(EmployeeStatus.WORKING);
+                    empProjectInDB.setEmpProjectStatus(EmpProjectStatus.IN);
+                }
             }
-
-            if (empProjectRecieve.getEndDate() != null &&
-                    empProjectRecieve.getEndDate().isEqual(now)) {
-                empProjectInDB.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
-                empProjectInDB.setEmpProjectStatus(EmpProjectStatus.OUT);
+            if (empProjectRecieve.getEndDate() != null){
+                if (empProjectRecieve.getEndDate().equals(now) || Objects.requireNonNull(empProjectRecieve.getEndDate()).isBefore(now)) {
+                    empProjectInDB.getEmployee().setEmployeeStatus(EmployeeStatus.FREE);
+                    empProjectInDB.setEmpProjectStatus(EmpProjectStatus.OUT);
+                }
             }
         }
 
@@ -378,11 +377,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectGetDTO getCurrentProject(Employee employee) {
-        EmployeeProject employeeProject= employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employee.getId(), EmpProjectStatus.IN);
-        if (employeeProject== null){
-           return null;
+        EmployeeProject employeeProject = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employee.getId(), EmpProjectStatus.IN);
+        if (employeeProject == null) {
+            return null;
         }
-        Project project= projectRepository.findById(employeeProject.getProject().getId()).get();
+        Project project = projectRepository.findById(employeeProject.getProject().getId()).get();
         return modelMapper.map(project, ProjectGetDTO.class);
     }
 

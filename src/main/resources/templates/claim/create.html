@@ -30,7 +30,7 @@
                 <i class="fa-solid fa-chevron-left text-white"></i>
             </div>
         </div>
-        <form th:action="@{/claims/draft/add}" method="post" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
+        <form th:action="@{/claims/draft/add}" method="post" id="claim-add" th:object="${claim}" class="rounded-b px-8 pb-8 mb-4">
             <div class="flex justify-center">
                 <h1 class="text-3xl text-center text-purple-600 font-bold mb-6 italic p-4 bg-white rounded-2xl shadow">
                     New claim</h1>
@@ -138,58 +138,6 @@
             </div>
         </form>
     </div>
-    <script>
-        function addRow() {
-            const tableBody = document.getElementById("claimDetailTable").getElementsByTagName('tbody')[0];
-            const newRow = tableBody.insertRow();
-            newRow.innerHTML = `
-            <td class="p-4">
-                <input type="datetime-local" name="claimDetails[${tableBody.rows.length - 1}].startTime"
-                       onchange="calculateDuration()"
-                       class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </td>
-            <td class="p-4">
-                <input type="datetime-local" name="claimDetails[${tableBody.rows.length - 1}].endTime"
-                       onchange="calculateDuration()"
-                       class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </td>
-            <td class="border px-4 py-2 text-center">
-                <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remove</button>
-            </td>`;
-        }
-
-        function removeRow(button) {
-            const row = button.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-            calculateDuration();
-        }
-
-        function calculateDuration() {
-            const rows = document.querySelectorAll("#claimDetailTable tbody tr");
-            let totalDuration = 0;
-
-            rows.forEach(row => {
-                const startTimeInput = row.querySelector('input[name^="claimDetails"][name$="startTime"]');
-                const endTimeInput = row.querySelector('input[name^="claimDetails"][name$="endTime"]');
-
-                const startTime = new Date(startTimeInput.value);
-                const endTime = new Date(endTimeInput.value);
-
-                if (endTime <= startTime) {
-                    alert("End Time must be greater than Start Time.");
-                    endTimeInput.value = "";
-                    return;
-                }
-
-                if (startTime && endTime) {
-                    const duration = (endTime - startTime) / (1000 * 60 * 60);
-                    totalDuration += duration;
-                }
-            });
-
-            document.getElementById('duration').value = totalDuration.toFixed(2);
-        }
-    </script>
 </main>
 </body>
 </html>

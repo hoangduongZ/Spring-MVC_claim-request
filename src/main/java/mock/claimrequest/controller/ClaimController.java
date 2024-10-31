@@ -1,5 +1,6 @@
 package mock.claimrequest.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import mock.claimrequest.dto.claim.ClaimEmailRequestDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
@@ -16,6 +17,7 @@ import mock.claimrequest.service.EmailService;
 import mock.claimrequest.service.EmployeeProjectService;
 import mock.claimrequest.service.ProjectService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Controller
@@ -81,20 +84,21 @@ public class ClaimController {
     }
 
     @PostMapping("{status}/add")
-    public String createClaim(@ModelAttribute("claim") ClaimSaveDTO claimSaveDTO, @PathVariable("status") String status) throws IOException {
+    public String createClaim(@ModelAttribute("claim") ClaimSaveDTO claimSaveDTO, @PathVariable("status") String status, HttpServletRequest request) throws IOException {
         switch (status.toLowerCase()) {
             case "draft":
                 claimService.actionCreate(ClaimStatus.valueOf(status.toUpperCase()), claimSaveDTO);
                 return "redirect:/claims/index/draft";
             case "pending":
                 Claim claim = claimService.actionCreate(ClaimStatus.valueOf(status.toUpperCase()), claimSaveDTO);
+
                 Project project = claim.getProject();
                 Employee staff = claim.getEmployee();
-
                 Employee pm = employeeProjectService.findProjectManager(project.getId());
 
                 if (pm != null) {
-                    String claimLink = "http://localhost:8080/claims/"+ claim.getId().toString() +"/detail";
+                    String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+                    String claimLink = baseUrl + "/claims/" + claim.getId().toString() + "/detail";
                     ClaimEmailRequestDTO emailRequest = new ClaimEmailRequestDTO(
                             pm.getFirstname() + " " + pm.getLastname(),
                             pm.getAccount().getEmail(),
@@ -115,29 +119,8 @@ public class ClaimController {
     public String updateClaimStatus(@ModelAttribute ClaimUpdateStatusDTO claimUpdateStatusDTO,
                                     @PathVariable("status") String status,
                                     @PathVariable("id") UUID id) {
-        return switch (status.toLowerCase()) {
-            case "approved" -> {
-                claimService.updateStatus(ClaimStatus.APPROVED, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/approved";
-            }
-            case "paid" -> {
-                claimService.updateStatus(ClaimStatus.PAID, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/paid";
-            }
-            case "canceled" -> {
-                claimService.updateStatus(ClaimStatus.CANCELED, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/canceled";
-            }
-            case "rejected" -> {
-                claimService.updateStatus(ClaimStatus.REJECTED, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/rejected";
-            }
-            case "returned" -> {
-                claimService.updateStatus(ClaimStatus.DRAFT, id, claimUpdateStatusDTO);
-                yield "redirect:/claims/index/pending";
-            }
-            default -> "redirect:/claims/index";
-        };
+        claimService.updateStatus(ClaimStatus.valueOf(status), id, claimUpdateStatusDTO);
+        return "redirect:/claims/index/" + status.toLowerCase();
     }
 
     @GetMapping("/index/{status}")
@@ -145,20 +128,26 @@ public class ClaimController {
             Model model,
             @PathVariable(name = "status") String status,
             @RequestParam(defaultValue = "", name = "keyword") String keyword,
-            @RequestParam(defaultValue = "", name = "sortOption") String sortOption,
+            @RequestParam(defaultValue = "updatedTime", name = "sortOption") String sortOption,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @PageableDefault(size = 10, sort = "updatedTime", direction = Sort.Direction.DESC) Pageable pageable) {
 
+        Sort sort = Sort.by(Sort.Direction.DESC, sortOption);
+
+        if (!sortOption.isEmpty()) {
+            sort = Sort.by(Sort.Direction.DESC, sortOption);
+        }
+        Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         ClaimStatus claimStatus = ClaimStatus.valueOf(status.toUpperCase());
 
-        Page<ClaimGetDTO> claimPage = claimService.getClaimByStatusAndKeyword(claimStatus, keyword, startDate, endDate, pageable);
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(23, 59, 59) : null;
+
+        Page<ClaimGetDTO> claimPage = claimService.getClaimByStatusAndKeyword(claimStatus, keyword, startDateTime,
+                endDateTime, pageableWithSort);
 
         model.addAttribute("currentPage", "claims");
-//    if (claimPage.isEmpty()) {
-//        model.addAttribute("warnMessage", "You currently not in any project!");
-//        return "warn/warn";
-//    }
 
         model.addAttribute("claims", claimPage.getContent());
         model.addAttribute("totalPages", claimPage.getTotalPages());
@@ -191,12 +180,37 @@ public class ClaimController {
 
     @PostMapping("{status}/{id}/update")
     public String postUpdateClaim(@ModelAttribute ClaimGetDTO claim, @PathVariable("id") UUID id
-            , @PathVariable("status") String status) {
-        claimService.update(claim, id, status);
+            , @PathVariable("status") String status, HttpServletRequest request) throws IOException {
+        Claim claimUpdated = claimService.update(claim, id, status);
+        Project project = claimUpdated.getProject();
+        Employee staff = claimUpdated.getEmployee();
+
+        if (status.equals("PENDING")) {
+            Employee pm = employeeProjectService.findProjectManager(project.getId());
+            if (pm != null) {
+                String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+                String claimLink = baseUrl + "/claims/" + claim.getId().toString() + "/detail";
+                ClaimEmailRequestDTO emailRequest = new ClaimEmailRequestDTO(
+                        pm.getFirstname() + " " + pm.getLastname(),
+                        pm.getAccount().getEmail(),
+                        project.getName(),
+                        staff.getFirstname() + " " + staff.getLastname(),
+                        staff.getAccount().getEmail(),
+                        staff.getId().toString(),
+                        claimLink
+                );
+                emailService.sendClaimRequestEmail(emailRequest);
+            }
+        }
         if (status.equalsIgnoreCase("draft")) {
             return "redirect:/claims/index/draft";
         }
         return "redirect:/claims/index/pending";
+    }
+
+    @GetMapping("/report")
+    public String getReportPage() {
+        return "claim/report";
     }
 
 

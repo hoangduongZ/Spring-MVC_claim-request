@@ -1,7 +1,6 @@
 package mock.claimrequest.security;
 
 import mock.claimrequest.entity.Account;
-import mock.claimrequest.entity.Role;
 import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.repository.AccountRepository;
 import org.springframework.security.core.Authentication;
@@ -48,9 +47,18 @@ public class AuthService implements UserDetailsService {
     public Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String email= Objects.requireNonNull(userDetails.getUsername());
-            return accountRepository.findByEmail(email);
+//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//            String email= Objects.requireNonNull(userDetails.getUsername());
+//            return accountRepository.findByEmail(email);
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                String email = Objects.requireNonNull(userDetails.getUsername());
+                return accountRepository.findByEmail(email);
+            } else {
+                String username = (String) principal;
+                return accountRepository.findByEmail(username);
+            }
         }
         return null;
     }
@@ -66,5 +74,21 @@ public class AuthService implements UserDetailsService {
             }
         }
         return null;
+    }
+
+    public boolean checkPassword(String currentPassword){
+        Account account= getCurrentAccount();
+        return passwordEncoder.matches(currentPassword, account.getPassword());
+    }
+
+    public void updatePassword(String newPassword) {
+        Account account = getCurrentAccount();
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
+    public void updateAvatar(String imgPath) {
+        Account account = getCurrentAccount();
+        account.setImage(imgPath);
     }
 }

@@ -12,12 +12,14 @@ import org.springframework.data.domain.Pageable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface ClaimService {
-    Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
     List<ClaimGetDTO> getClaimByStatus(ClaimStatus claimStatus);
 
@@ -29,7 +31,11 @@ public interface ClaimService {
 
     void updateStatus(ClaimStatus claimStatus, UUID id, ClaimUpdateStatusDTO claimUpdateStatusDTO);
 
-    void update(ClaimGetDTO claimGetDTO, UUID id, String status);
+    Claim update(ClaimGetDTO claimGetDTO, UUID id, String status);
 
     ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException;
+
+    Long countByStatus(ClaimStatus claimStatus);
+
+    Map<LocalDate, Long> countClaimsByDate();
 }

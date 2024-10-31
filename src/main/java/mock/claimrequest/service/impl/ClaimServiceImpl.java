@@ -1,5 +1,6 @@
 package mock.claimrequest.service.impl;
 
+import mock.claimrequest.controller.ClaimController;
 import mock.claimrequest.dto.claim.ClaimDetailDTO;
 import mock.claimrequest.dto.claim.ClaimGetDTO;
 import mock.claimrequest.dto.claim.ClaimSaveDTO;
@@ -38,7 +39,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,7 +70,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public Page<ClaimGetDTO> getClaimByStatusAndKeyword(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         AccountRole currentRole = authService.getCurrentRoleAccount();
 
         if (currentRole == AccountRole.ADMIN) {
@@ -85,7 +90,7 @@ public class ClaimServiceImpl implements ClaimService {
         return handleDefaultClaims(status, keyword, startDate, endDate, employee, pageable);
     }
 
-    private Page<ClaimGetDTO> handleAdminClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    private Page<ClaimGetDTO> handleAdminClaims(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
             return claimRepository.findByStatusKeywordAndDateRange(status, keyword, null, startDate, endDate, pageable)
                     .map(this::convertToDTO);
@@ -93,7 +98,7 @@ public class ClaimServiceImpl implements ClaimService {
         return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
     }
 
-    private Page<ClaimGetDTO> handleFinanceClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    private Page<ClaimGetDTO> handleFinanceClaims(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         if ((keyword != null && !keyword.trim().isEmpty()) || (startDate != null && endDate != null)) {
             return claimRepository.findByStatusKeywordAndDateRange(status, keyword, null, startDate, endDate, pageable)
                     .map(this::convertToDTO);
@@ -101,7 +106,7 @@ public class ClaimServiceImpl implements ClaimService {
         return claimRepository.findByStatus(status, pageable).map(this::convertToDTO);
     }
 
-    private Page<ClaimGetDTO> handleApproverClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Employee employee, Pageable pageable) {
+    private Page<ClaimGetDTO> handleApproverClaims(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Employee employee, Pageable pageable) {
         UUID employeeId = authService.getCurrentAccount().getEmployee().getId();
         UUID projectId = employeeProjectRepository.findByEmployeeIdAndEmpProjectStatus(employeeId, EmpProjectStatus.IN).getProject().getId();
 
@@ -112,7 +117,7 @@ public class ClaimServiceImpl implements ClaimService {
         return claimRepository.findByStatusAndProject(status, projectId, pageable).map(this::convertToDTO);
     }
 
-    private Page<ClaimGetDTO> handleDefaultClaims(ClaimStatus status, String keyword, LocalDate startDate, LocalDate endDate, Employee employee, Pageable pageable) {
+    private Page<ClaimGetDTO> handleDefaultClaims(ClaimStatus status, String keyword, LocalDateTime startDate, LocalDateTime endDate, Employee employee, Pageable pageable) {
         if ((keyword == null || keyword.trim().isEmpty()) && (startDate == null || endDate == null)) {
             return claimRepository.findByStatusAndEmployee(status, employee, pageable).map(this::convertToDTO);
         }
@@ -251,7 +256,15 @@ public class ClaimServiceImpl implements ClaimService {
         Claim claim = claimRepository.findById(id).orElseThrow(
                 () -> new IllegalStateException("Claim is not existed!"));
         claim.setStatus(claimStatus);
-        if (claimStatus.equals(ClaimStatus.DRAFT)){
+        if (claimStatus.equals(ClaimStatus.PAID)){
+            if (claim.getProject().getBudget().compareTo(claim.getAmount()) < 0){
+                throw new RuntimeException("Budget not enough for paid!");
+            }
+            claim.getProject().setBudget(
+                    claim.getProject().getBudget().subtract(claim.getAmount())
+            );
+        }
+        else if (claimStatus.equals(ClaimStatus.DRAFT)){
             claim.setReturnReason(claimUpdateStatusDTO.getReturnReason());
         }else if(claimStatus.equals(ClaimStatus.REJECTED)){
             claim.setRejectReason(claimUpdateStatusDTO.getRejectReason());
@@ -260,7 +273,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public void update(ClaimGetDTO claimGetDTO, UUID id, String status) {
+    public Claim update(ClaimGetDTO claimGetDTO, UUID id, String status) {
         Claim claim = claimRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Claim is not existed!"));
         Employee employee = employeeRepository.findByAccount(authService.getCurrentAccount());
@@ -294,16 +307,18 @@ public class ClaimServiceImpl implements ClaimService {
         claim.getClaimDetails().clear();
         claim.getClaimDetails().addAll(claimDetails);
 
-        claimRepository.save(claim);
+        return claimRepository.save(claim);
     }
 
     public ByteArrayOutputStream exportClaimsToExcel(List<UUID> claimIds) throws IOException {
         List<Claim> claims = claimRepository.findAllById(claimIds);
+        String month = claims.stream().findFirst().get().getClaimDetails().
+                stream().findFirst().get().getStartTime().getMonth().toString();
+
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Claims");
 
-        // Tạo style cho tiêu đề chính
         CellStyle titleStyle = workbook.createCellStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -312,25 +327,20 @@ public class ClaimServiceImpl implements ClaimService {
         titleFont.setFontHeightInPoints((short) 14);
         titleStyle.setFont(titleFont);
 
-        // Tạo tiêu đề chính
         Row titleRow = sheet.createRow(0);
         Cell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue("CLAIM REQUEST");
+        titleCell.setCellValue("Claim Request");
         titleCell.setCellStyle(titleStyle);
 
-        // Hợp nhất các ô để tiêu đề kéo dài toàn bộ bảng
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
 
-        // Thêm dòng thông tin chi tiết (nếu cần)
         Row subtitleRow = sheet.createRow(1);
         Cell subtitleCell = subtitleRow.createCell(0);
-        subtitleCell.setCellValue("List");
+        subtitleCell.setCellValue("List of " + month);
         subtitleCell.setCellStyle(titleStyle);
 
-        // Hợp nhất các ô cho dòng thông tin chi tiết
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 5));
 
-        // Tạo style cho header
         CellStyle headerStyle = workbook.createCellStyle();
         headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -341,7 +351,6 @@ public class ClaimServiceImpl implements ClaimService {
         headerFont.setFontHeightInPoints((short) 12);
         headerStyle.setFont(headerFont);
 
-        // Tạo header row với style
         Row headerRow = sheet.createRow(2); // Bắt đầu từ dòng 3
         String[] headers = {"ID", "Employee Name", "Project Name", "Title", "Reason", "Amount"};
         for (int i = 0; i < headers.length; i++) {
@@ -350,7 +359,6 @@ public class ClaimServiceImpl implements ClaimService {
             cell.setCellStyle(headerStyle);
         }
 
-        // Style cho các ô thông tin
         CellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         cellStyle.setWrapText(true);
@@ -359,7 +367,6 @@ public class ClaimServiceImpl implements ClaimService {
         amountStyle.cloneStyleFrom(cellStyle);
         amountStyle.setDataFormat(workbook.createDataFormat().getFormat("$#,##0.00"));
 
-        // Điền dữ liệu vào các hàng
         int rowIndex = 3;
         for (Claim claim : claims) {
             Row row = sheet.createRow(rowIndex++);
@@ -369,23 +376,39 @@ public class ClaimServiceImpl implements ClaimService {
             row.createCell(3).setCellValue(claim.getTitle());
             row.createCell(4).setCellValue(claim.getRequestReason());
 
-            // Dùng style định dạng số tiền
             Cell amountCell = row.createCell(5);
             amountCell.setCellValue(claim.getAmount().doubleValue());
             amountCell.setCellStyle(amountStyle);
         }
 
-        // Tự động điều chỉnh kích thước các cột
         for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
-        // Ghi vào output stream
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
 
         return outputStream;
     }
+
+    public Long countByStatus(ClaimStatus claimStatus){
+        return claimRepository.countByStatus(claimStatus);
+    }
+
+    @Override
+    public Map<LocalDate, Long> countClaimsByDate() {
+        List<Claim> claims = claimRepository.findAll();
+        claims.sort(Comparator.comparing(claim -> claim.getCreatedTime().toLocalDate()));
+
+        Map<LocalDate, Long> countMap = new LinkedHashMap<>();
+
+        for (Claim claim : claims) {
+            LocalDate date = claim.getCreatedTime().toLocalDate();
+            countMap.put(date, countMap.getOrDefault(date, 0L) + 1);
+        }
+        return countMap;
+    }
+
 
 }

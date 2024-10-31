@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layouts/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Avatar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-purple-100 to-white">
+<main layout:fragment="content" class="container mx-auto p-6 min-h-[90vh] flex items-center justify-center">
+    <div class="w-full max-w-md bg-white p-6 rounded shadow">
+        <h2 class="text-2xl font-bold text-center mb-6">Update Avatar</h2>
+        <form th:action="@{/profile/avatar/update}" method="post" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="imageFile" class="block text-sm font-medium text-gray-700">Select New Avatar</label>
+                <input type="file" id="imageFile" name="imageFile" required
+                       class="block w-full text-sm text-gray-900 border border-gray-300 cursor-pointer
+               focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <div class="file-preview mt-2">
+                    <label for="imageFile" class="block text-sm font-medium text-gray-700 mb-2">Preview</label>
+                    <div class="w-full flex justify-center">
+                        <div class="w-48 h-48 border border-gray-300 rounded-full overflow-hidden flex items-center justify-center">
+                            <img id="imagePreview" th:src="@{${account.image != null} ? ${account.image} : '/img/user.png'}" alt="Preview"
+                                 class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+                Update Avatar
+            </button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('imageFile').onchange = function (evt) {
+            var tgt = evt.target || window.event.srcElement,
+                files = tgt.files;
+
+            if (FileReader && files && files.length) {
+                var fr = new FileReader();
+                fr.onload = function (e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                }
+                fr.readAsDataURL(files[0]);
+            }
+        }
+    </script>
+</main>
+</body>
+</html>

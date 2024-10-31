@@ -7,4 +7,6 @@ public interface AccountService {
 
     boolean existByEmail(String email);
     boolean existByUsername(String username);
+    void updatePassword(String email, String newPassword);
+
 }

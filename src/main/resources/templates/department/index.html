@@ -8,7 +8,7 @@
 </head>
 <body>
 <main layout:fragment="content" class="w-full mx-auto">
-    <div class="bg-gradient-to-b from-purple-100 to-white min-h-[90vh] rounded-md shadow-md p-4">
+    <div class=" min-h-[90vh] rounded-md shadow-md p-4">
         <div class="flex justify-center">
             <h1 class="inline-block p-4 bg-white text-2xl mb-3 drop-shadow-md text-purple-500 font-bold italic rounded-md">Departments</h1>
         </div>
@@ -23,18 +23,18 @@
                 <tr class="bg-gray-700 text-white uppercase text-sm leading-normal">
                     <th class="py-3 px-4 border-b">ID</th>
                     <th class="py-3 px-4 border-b">Name</th>
-                    <th class="py-3 px-4 border-b">Actions</th>
+<!--                    <th class="py-3 px-4 border-b">Actions</th>-->
                 </tr>
                 </thead>
                 <tbody id="departmentTableBody">
                 <tr th:each="department: ${departments}">
-                    <td class="py-3 px-4 border-b" th:text="${department.id}"></td>
-                    <td class="py-3 px-4 border-b" th:text="${department.name}"></td>
-                    <td class="py-3 px-4 border-b">
-                        <button class="px-3 py-2 bg-sky-500 rounded-md text-white editBtn" th:data-id="${department.id}">Edit</button>
-                        <button class="px-3 py-2 bg-red-500 rounded-md text-white deleteBtn" th:data-id="${department.id}">Delete
-                        </button>
-                    </td>
+                    <td class="py-3 px-4 border-b text-center" th:text="${department.id}"></td>
+                    <td class="py-3 px-4 border-b text-center" th:text="${department.name}"></td>
+<!--                    <td class="py-3 px-4 border-b">-->
+<!--                        <button class="px-3 py-2 bg-sky-500 rounded-md text-white editBtn" th:data-id="${department.id}">Edit</button>-->
+<!--                        <button class="px-3 py-2 bg-red-500 rounded-md text-white deleteBtn" th:data-id="${department.id}">Delete-->
+<!--                        </button>-->
+<!--                    </td>-->
                 </tr>
                 </tbody>
             </table>

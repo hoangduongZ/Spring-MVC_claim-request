@@ -42,6 +42,8 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
+    private String image;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "account_roles",
             joinColumns = @JoinColumn(name = "account_id"),

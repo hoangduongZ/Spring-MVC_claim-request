@@ -11,6 +11,7 @@ import mock.claimrequest.entity.entityEnum.ProjectStatus;
 import mock.claimrequest.service.EmployeeService;
 import mock.claimrequest.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,7 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/add")
     public String getAddProject(Model model) throws JsonProcessingException {
         var employees = employeeService.getAllEmployeeFree();
@@ -54,18 +56,21 @@ public class ProjectController {
     }
 
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/add")
     public String postAddProject(@ModelAttribute @Valid ProjectSaveDTO projectSaveDTO){
         projectService.create(projectSaveDTO);
         return "redirect:/projects";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping
     public String getListProject(Model model){
         model.addAttribute("projects", projectService.list());
         return "project/index";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/{id}/edit")
     public String editProject(@PathVariable("id") UUID projectId, Model model) {
         ProjectDTO project = projectService.getById(projectId);
@@ -77,17 +82,21 @@ public class ProjectController {
         model.addAttribute("employeeProjects", employeeProjects);
 
         var employees = employeeService.getAllEmployeeFreeAndWorkingCurrentProject(projectId);
+        var employeeProjectOuts = employeeService.getAllEmployeesExitedFromProject(projectId);
         model.addAttribute("employees", employees);
+        model.addAttribute("employeeProjectOuts", employeeProjectOuts);
         model.addAttribute("roles", ProjectRole.values());
         return "project/edit";
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/{id}/edit")
     public String updateProject(@ModelAttribute ProjectDTO projectDTO) {
         projectService.update(projectDTO);
         return "redirect:/projects";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/{id}/delete")
     public String deleteProject(@PathVariable UUID id) {
         projectService.delete(id);

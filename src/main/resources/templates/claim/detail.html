@@ -9,6 +9,27 @@
 </head>
 <body>
 <main layout:fragment="content" class="w-full mx-auto bg-gradient-to-b from-purple-100 to-white p-6 min-h-[80vh]">
+    <div id="actionModal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <div class="bg-white p-6 rounded-md shadow-lg w-1/3">
+            <h2 id="modalTitle" class="text-lg font-semibold mb-4">Confirm Action</h2>
+            <form id="modalForm" method="post">
+                <p id="modalMessage">Are you sure you want to proceed with this action? Please provide a reason:</p>
+
+                <div class="mt-4" id="reason-block">
+                    <label for="reason" class="block text-sm font-medium text-gray-700">Reason:</label>
+                    <textarea id="reason" rows="4"
+                              class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                </div>
+
+                <div class="flex justify-end mt-4 gap-3">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="w-full flex bg-white shadow rounded-t-2xl p-3">
         <div class="w-8 h-8 block rounded-full bg-purple-400 hover:bg-purple-500 flex justify-center items-center"
              onclick="history.back()">
@@ -16,66 +37,126 @@
         </div>
     </div>
     <div class="flex flex-col gap-4 mt-1">
-        <div class="overflow-x-auto flex gap-[20vw] bg-white shadow-md border border-gray-200 p-6 pb-[10vh]">
-            <div class="flex flex-col gap-4">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Claim Details</h2>
-                <p class="text-gray-600 mb-4">This is claim detail of <span class="font-bold"
-                                                                            th:text="${claim.account.userName}"></span></p>
-                <p class="text-gray-600 mb-4">Please find below the details of the claim submitted before do next
-                    action:</p>
-                <div class="space-y-4 mt-4">
-                    <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Title:</span>
-                        <span class="text-gray-900" th:text="${claim.title}"></span>
+        <div class="overflow-x-auto bg-white shadow-md border border-gray-200 p-6 pb-[10vh]">
+            <div class="flex gap-[20vw]">
+                <div class="flex flex-col gap-4">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Claim Details</h2>
+                    <p class="text-gray-600 mb-4">This is claim detail of <span class="font-bold"
+                                                                                th:text="${claim.account.userName}"></span>
+                    </p>
+                    <p class="text-gray-600 mb-4">Please find below the details of the claim submitted before do next
+                        action:</p>
+                    <div class="space-y-4 mt-4">
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Title:</span>
+                            <span class="text-gray-900" th:text="${claim.title}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Project Name:</span>
+                            <span class="text-gray-900" th:text="${claim.projectName}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Amount:</span>
+                            <span class="text-gray-900" th:text="${claim.amount}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Request Reason:</span>
+                            <span class="text-gray-900" th:text="${claim.requestReason}"></span>
+                        </div>
+                        <div th:if="${claim.returnReason}" class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Return Reason:</span>
+                            <span class="text-gray-900" th:text="${claim.returnReason}"></span>
+                        </div>
+                        <div th:if="${claim.rejectReason}" class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Reject Reason:</span>
+                            <span class="text-gray-900" th:text="${claim.rejectReason}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Status:</span>
+                            <span class="text-gray-900" th:text="${claim.status}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Duration OT (hours):</span>
+                            <span class="text-gray-900" th:text="${claim.duration}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Created Time:</span>
+                            <span class="text-gray-900" th:text="${claim.createdTime}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Project Start:</span>
+                            <span class="text-gray-900" th:text="${claim.project.startDate}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-1/3 text-gray-700">Project End:</span>
+                            <span class="text-gray-900" th:text="${claim.project.endDate}"></span>
+                        </div>
                     </div>
-                    <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Project Name:</span>
-                        <span class="text-gray-900" th:text="${claim.projectName}"></span>
+                    <p class="text-gray-600 mt-4">Thank you for your attention to this matter.</p>
+                </div>
+                <div class="flex flex-col gap-3 mt-6">
+                    <!--                    <form th:if="${claim.status.name() != 'PAID'}" sec:authorize="hasRole('FINANCE')" th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">-->
+                    <!--                        <button type="submit"-->
+                    <!--                                class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600 transition duration-200">-->
+                    <!--                            Verify Claim-->
+                    <!--                        </button>-->
+                    <!--                    </form>-->
+                    <div class="flex gap-2">
+                        <button sec:authorize="hasRole('APPROVER')" th:if="${claim.status.name() == 'PENDING'}"
+                                data-type="approved" th:data-id="${claim.id}"
+                                class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Approve
+                        </button>
+
+                        <button sec:authorize="hasRole('APPROVER')" th:if="${claim.status.name() == 'PENDING'}"
+                                data-type="returned" th:data-id="${claim.id}"
+                                class="bg-sky-500 text-white rounded px-2 py-1 hover:bg-sky-600">Return
+                        </button>
+
+                        <button sec:authorize="hasRole('APPROVER')" th:if="${claim.status.name() == 'PENDING'}"
+                                data-type="rejected" th:data-id="${claim.id}"
+                                class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600">Reject
+                        </button>
+
+                        <button sec:authorize="hasRole('FINANCE')" type="submit"
+                                th:if="${claim.status.name() == 'APPROVED'}"
+                                data-type="paid" th:data-id="${claim.id}"
+                                class="bg-green-500 text-white rounded px-2 py-1 hover:bg-green-600">Paid
+                        </button>
                     </div>
-                    <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Amount:</span>
-                        <span class="text-gray-900" th:text="${claim.amount}"></span>
+                    <div th:if="${claim.claimDetailDTOList.isEmpty()}" class="p-3 rounded shadow-md border">
+                        Empty claim detail !
                     </div>
-                    <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Request Reason:</span>
-                        <span class="text-gray-900" th:text="${claim.requestReason}"></span>
-                    </div>
-                    <div th:if="${claim.returnReason}" class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Return Reason:</span>
-                        <span class="text-gray-900" th:text="${claim.returnReason}"></span>
-                    </div>
-                    <div th:if="${claim.rejectReason}" class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Reject Reason:</span>
-                        <span class="text-gray-900" th:text="${claim.rejectReason}"></span>
-                    </div>
-                    <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Status:</span>
-                        <span class="text-gray-900" th:text="${claim.status}"></span>
-                    </div>
-                    <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Created Time:</span>
-                        <span class="text-gray-900" th:text="${claim.createdTime}"></span>
-                    </div>
-                    <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Project Start:</span>
-                        <span class="text-gray-900" th:text="${claim.project.startDate}"></span>
-                    </div>
-                    <div class="flex">
-                        <span class="font-medium w-1/3 text-gray-700">Project End:</span>
-                        <span class="text-gray-900" th:text="${claim.project.endDate}"></span>
+                    <div th:if="${!claim.claimDetailDTOList.isEmpty()}">
+                        <table id="claimDetailTable" class="mb-4 border border-gray-300" th:object="${claim}">
+                            <thead class="bg-slate-200">
+                            <tr>
+                                <th class="border px-4 py-2">Start Time</th>
+                                <th class="border px-4 py-2">End Time</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="claimDetail, indexStat : ${claim.claimDetailDTOList}" class="border-b">
+                                <td class="p-4">
+                                    <input readonly type="datetime-local"
+                                           th:field="*{claimDetailDTOList[__${indexStat.index}__].startTime}"
+                                           onchange="calculateDuration()"
+                                           class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                </td>
+                                <td class="p-4">
+                                    <input readonly type="datetime-local"
+                                           th:field="*{claimDetailDTOList[__${indexStat.index}__].endTime}"
+                                           onchange="calculateDuration()"
+                                           class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <p class="text-gray-600 mt-4">Thank you for your attention to this matter.</p>
             </div>
-            <div class="flex space-x-2 mt-6">
-                <form th:if="${claim.status.name() != 'PAID'}" sec:authorize="hasRole('FINANCE')" th:action="@{/claims/{id}/paid(id=${claim.id})}" method="post">
-                    <button type="submit"
-                            class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600 transition duration-200">
-                        Verify Claim
-                    </button>
-                </form>
-            </div>
+
         </div>
+
 
     </div>
 </main>

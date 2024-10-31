@@ -30,38 +30,46 @@
             <label for="firstname" class="block text-sm font-medium text-gray-700">First Name</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="text" id="firstname" name="firstname" required>
+            <div th:if="*{#fields.hasErrors('firstname')}" th:errors="*{firstname}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
             <label for="lastname" class="block text-sm font-medium text-gray-700">Last Name</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="text" id="lastname" name="lastname" required>
+            <div th:if="*{#fields.hasErrors('lastname')}" th:errors="*{lastname}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
             <label class="block text-sm font-medium text-gray-700">Gender</label>
             <div class="mt-1">
-                <label class="inline-flex items-center">
+                <div class="inline-flex items-center">
                     <input type="radio" name="gender" value="0" class="form-radio">
                     <span class="ml-2">Male</span>
-                </label>
-                <label class="inline-flex items-center ml-4">
+                </div>
+                <div class="inline-flex items-center ml-4">
                     <input type="radio" name="gender" value="1" class="form-radio">
                     <span class="ml-2">Female</span>
-                </label>
+                </div>
             </div>
+            <div class="error-gender">
+            </div>
+            <div th:if="*{#fields.hasErrors('gender')}" th:errors="*{gender}" class="text-red-500 text-sm"></div>
+
         </div>
 
         <div class="form-group">
             <label for="dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="date" id="dob" name="dob" required>
+            <div th:if="*{#fields.hasErrors('dob')}" th:errors="*{dob}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
             <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="text" id="address" name="address" required>
+            <div th:if="*{#fields.hasErrors('address')}" th:errors="*{address}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
@@ -73,24 +81,29 @@
                 <option th:each="d : ${departments}" th:value="${d.id}"
                         th:text="${d.name}"></option>
             </select>
+            <div th:if="*{#fields.hasErrors('departmentId')}" th:errors="*{departmentId}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
             <label for="userName" class="block text-sm font-medium text-gray-700">Username</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="text" id="userName" th:field="*{accountRegisterDTO.userName}" required>
+            <div th:if="*{#fields.hasErrors('accountRegisterDTO.userName')}" th:errors="*{accountRegisterDTO.userName}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="email" id="email" th:field="*{accountRegisterDTO.email}" required>
+            <div th:if="*{#fields.hasErrors('accountRegisterDTO.email')}" th:errors="*{accountRegisterDTO.email}" class="text-red-500 text-sm"></div>
         </div>
 
         <div class="form-group">
             <label for="password" class="block text-sm font-medium text-gray-700">Pasword</label>
             <input class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                    type="password" id="password" th:field="*{accountRegisterDTO.password}" required>
+            <div th:if="*{#fields.hasErrors('accountRegisterDTO.password')}" th:errors="*{accountRegisterDTO.password}" class="text-red-500 text-sm"></div>
+
         </div>
 
         <div class="form-group">
@@ -102,6 +115,7 @@
                 <option value="ADMIN">Admin</option>
                 <option value="FINANCE">Finance</option>
             </select>
+            <div th:if="*{#fields.hasErrors('accountRole')}" th:errors="*{accountRole}" class="text-red-500 text-sm"></div>
         </div>
         <button type="submit"
                 class="mt-4 w-full bg-purple-500 text-white font-semibold py-2 rounded-md hover:bg-purple-600">Save

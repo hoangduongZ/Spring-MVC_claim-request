@@ -1,8 +1,7 @@
 package mock.claimrequest.service.impl;
 
-import mock.claimrequest.dto.auth.AccountGetDTO;
+import mock.claimrequest.dto.auth.AccountDTO;
 import mock.claimrequest.dto.department.DepartmentDTO;
-import mock.claimrequest.dto.employee.EmployeeGetDTO;
 import mock.claimrequest.dto.employee.EmployeeListDTO;
 import mock.claimrequest.dto.employee.EmployeeSaveDTO;
 import mock.claimrequest.dto.employee.EmployeeUpdateDTO;
@@ -10,6 +9,7 @@ import mock.claimrequest.dto.employeeProject.EmployeeProjectDTO;
 import mock.claimrequest.entity.Account;
 import mock.claimrequest.entity.Department;
 import mock.claimrequest.entity.Employee;
+import mock.claimrequest.entity.EmployeeProject;
 import mock.claimrequest.entity.Role;
 import mock.claimrequest.entity.entityEnum.AccountRole;
 import mock.claimrequest.entity.entityEnum.AccountStatus;
@@ -24,7 +24,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -115,12 +114,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findAllFreeOrWorkingInProject(projectId,
                 EmployeeStatus.FREE, EmployeeStatus.WORKING, EmpProjectStatus.IN).stream().map(
                 employee -> {
-                    EmployeeProjectDTO saveDTO = new EmployeeProjectDTO();
-                    saveDTO.setAccountName(employee.getAccount().getUserName());
-                    saveDTO.setEmployeeId(employee.getId());
-                    saveDTO.setEmployeeStatus(employee.getEmployeeStatus());
-                    return saveDTO;
+                    EmployeeProjectDTO dto = new EmployeeProjectDTO();
+                    dto.setAccountName(employee.getAccount().getUserName());
+                    dto.setEmployeeId(employee.getId());
+                    dto.setEmployeeStatus(employee.getEmployeeStatus());
+                    return dto;
                 }).toList();
+    }
+
+    public List<EmployeeProject> getAllEmployeesExitedFromProject(UUID projectId){
+        return employeeRepository.findAllEmployeesExitedFromProject(projectId,EmpProjectStatus.OUT);
+
     }
 
     @Override
@@ -134,13 +138,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeListDTO.setFullName(employee.getFirstname() + " " + employee.getLastname());
 
             Set<Role> roles = account.getRoles();
-            AccountGetDTO accountGetDTO = new AccountGetDTO();
-            accountGetDTO.setRoles(roles);
-            accountGetDTO.setUserName(account.getUserName());
-            accountGetDTO.setEmail(account.getEmail());
-            accountGetDTO.setId(account.getId());
-            employeeListDTO.setAccount(accountGetDTO);
-            employeeListDTO.setAccount(accountGetDTO);
+            AccountDTO accountDTO = new AccountDTO();
+            accountDTO.setRoles(roles);
+            accountDTO.setUserName(account.getUserName());
+            accountDTO.setEmail(account.getEmail());
+            accountDTO.setId(account.getId());
+            employeeListDTO.setAccount(accountDTO);
+            employeeListDTO.setAccount(accountDTO);
             employeeListDTO.setId(employee.getId());
 
             DepartmentDTO departmentDTO = modelMapper.map(employee.getDepartment(), DepartmentDTO.class);
@@ -163,8 +167,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeUpdateDTO.setGender(employee.isGender());
         DepartmentDTO departmentDTO = modelMapper.map(employee.getDepartment(), DepartmentDTO.class);
         employeeUpdateDTO.setDepartment(departmentDTO);
-        AccountGetDTO accountGetDTO = modelMapper.map(employee.getAccount(), AccountGetDTO.class);
-        employeeUpdateDTO.setAccountDTO(accountGetDTO);
+        AccountDTO accountDTO = modelMapper.map(employee.getAccount(), AccountDTO.class);
+        employeeUpdateDTO.setAccountDTO(accountDTO);
         AccountRole accountRole= Objects.requireNonNull(employee.getAccount().getRoles().stream().findFirst().orElse(null)).getName();
         employeeUpdateDTO.setRole(accountRole);
         return employeeUpdateDTO;
