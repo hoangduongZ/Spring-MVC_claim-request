@@ -253,7 +253,7 @@ $(document).ready(function () {
 
     $.validator.addMethod("greaterThanStartDate", function (value, element) {
         var startDate = $('#startDate').val();
-        return Date.parse(value) > Date.parse(startDate);
+        return value > startDate;
     }, "End date must be after start date.");
 
     $("#project-update").validate({
